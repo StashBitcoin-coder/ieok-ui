@@ -2,9 +2,9 @@
 
 import { ethers } from "ethers";
 
-export const BASE_CHAIN_ID       = 8453n;
+export const BASE_CHAIN_ID       = 8453;
 export const BASE_HEX            = "0x2105";
-export const BASE_SEPOLIA_CHAIN_ID = 84532n;
+export const BASE_SEPOLIA_CHAIN_ID = 84532;
 export const BASE_SEPOLIA_HEX    = "0x14a34";
 
 export const IS_TESTNET           = true;
