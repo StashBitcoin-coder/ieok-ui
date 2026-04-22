@@ -5,6 +5,12 @@ import { ethers } from "ethers";
 import { ensureBase, getBrowserProvider } from "@/lib/provider";
 import { IEOK_ADDRESS, CBBTC_ADDRESS } from "@/lib/contracts";
 
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+
 const IEOK_ABI = [
   "function balanceOf(address) view returns (uint256)",
   "function dividendsOf(address) view returns (uint256)",
