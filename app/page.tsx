@@ -134,12 +134,12 @@ function SkeletonKey({ size = 28, color = C.blue }: { size?: number; color?: str
   );
 }
 
-// ─── cbBTC LOGO SVG ───────────────────────────────────────────────────────────
+// ─── cbBTC LOGO SVG — blue outline, not filled ───────────────────────────────
 function CbbtcLogo({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="16" fill="#0052FF"/>
-      <text x="16" y="21" textAnchor="middle" fontSize="14" fontWeight="bold" fill="white" fontFamily="Arial, sans-serif">₿</text>
+      <circle cx="16" cy="16" r="14.5" fill="none" stroke="#0052FF" strokeWidth="2.5"/>
+      <text x="16" y="21.5" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#0052FF" fontFamily="Arial, sans-serif">₿</text>
     </svg>
   );
 }
@@ -631,7 +631,7 @@ export default function Home() {
       }}>
         {/* LEFT — cbBTC reserve info */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <CbbtcLogo size={mobile ? 24 : 28} />
+          <CbbtcLogo size={mobile ? 30 : 36} />
           {!mobile && (
             <div>
               <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, lineHeight: 1.3 }}>
@@ -658,7 +658,7 @@ export default function Home() {
               <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted, letterSpacing: "0.08em", lineHeight: 1, textTransform: "uppercase" as const }}>
                 Immutable Editions
               </div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 17, fontWeight: 700, color: C.blue, letterSpacing: "0.02em", lineHeight: 1.2 }}>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 19 : 22, fontWeight: 700, color: C.blue, letterSpacing: "0.02em", lineHeight: 1.2 }}>
                 Origin Key
               </div>
             </div>
