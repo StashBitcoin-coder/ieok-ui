@@ -139,7 +139,15 @@ function CbbtcLogo({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
       <circle cx="16" cy="16" r="14.5" fill="none" stroke="#0052FF" strokeWidth="2.5"/>
-      <text x="16" y="21.5" textAnchor="middle" fontSize="15" fontWeight="bold" fill="#0052FF" fontFamily="Arial, sans-serif">₿</text>
+      <text
+        x="16" y="22"
+        textAnchor="middle"
+        fontSize="19"
+        fontWeight="bold"
+        fill="#0052FF"
+        fontFamily="Arial, sans-serif"
+        transform="rotate(12, 16, 16)"
+      >₿</text>
     </svg>
   );
 }
