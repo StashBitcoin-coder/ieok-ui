@@ -13,9 +13,10 @@ const IEOK_ABI = [
   "function sell(uint256 tokens, uint256 minCbbtc) external",
   "function transfer(address to, uint256 tokens) external returns (bool)",
   "function withdraw() external",
-  "function inscribe(address vault, bytes32 assetId, uint256 amount, uint256 ordinalNumber) external",
+  "function inscribe(address vault, bytes32 assetId, uint256 cbbtcAmount, uint256 ordinalNumber) external",
   "function reportOrdinalMoved(uint256 ordinalNumber) external",
-  "function vaultStatus(address vault) view returns (bool registered, bool swept, uint256 balance, bytes32 assetId, uint256 ordinalNumber, bool ordinalMoved, uint256 ordinalMovedAt)",
+  "function vaultStatus(address vault) view returns (bool registered, bool swept, uint256 balance, bytes32 assetId)",
+  "function vaultOrdinalStatus(address vault) view returns (uint256 ordinalNumber, bool hasOrdinal, bool ordinalMoved, uint256 ordinalMovedAt)",
 ];
 
 const CBBTC_ABI = [
@@ -24,7 +25,6 @@ const CBBTC_ABI = [
   "function allowance(address owner, address spender) view returns (uint256)",
 ];
 
-// ─── PUBLIC RPC — vault checker works without MetaMask ────────────────────────
 const PUBLIC_RPC = "https://sepolia.base.org";
 
 declare global {
@@ -40,24 +40,23 @@ type VaultResult = {
   dividends: string;
   assetId: string;
   ordinalNumber: string;
+  hasOrdinal: boolean;
   ordinalMoved: boolean;
   ordinalMovedAt: string;
 } | null;
 
-// ─── COINBASE-INSPIRED COLOR PALETTE ─────────────────────────────────────────
 const C = {
   bg:        "#FFFFFF",
   panel:     "#F5F7FA",
   card:      "#FFFFFF",
   input:     "#F5F7FA",
   border:    "#E0E4EC",
-  borderDark:"#C8CDD8",
-  blue:      "#0052FF",   // Coinbase primary blue
+  blue:      "#0052FF",
   blueDark:  "#0039B3",
-  blueLight: "#E8EFFE",
   text:      "#0A0B0D",
   textDim:   "#2D3748",
   textMuted: "#5B6278",
+  gray:      "#808080",
   green:     "#00A878",
   red:       "#DA3A3A",
   orange:    "#E8913A",
@@ -65,19 +64,14 @@ const C = {
   redBg:     "#FDEAEA",
   orangeBg:  "rgba(232,145,58,0.12)",
   blueBg:    "#E8EFFE",
-  shadow:    "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)",
-  shadowMd:  "0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05)",
+  shadow:    "0 1px 3px rgba(0,0,0,0.08)",
 };
 
-// ─── VAULT REGISTRAR ──────────────────────────────────────────────────────────
 const VAULT_REGISTRAR = "0x10DB4bf0C9e7c14f320C4e831CC85fFD8D15BE6D";
+const CHAIN_ID        = "84532";
+const CHAIN_LABEL     = "BASE SEPOLIA";
+const BLOCK_EXPLORER  = "https://sepolia.basescan.org";
 
-// ─── NETWORK ──────────────────────────────────────────────────────────────────
-const CHAIN_ID       = "84532";
-const CHAIN_LABEL    = "BASE SEPOLIA";
-const BLOCK_EXPLORER = "https://sepolia.basescan.org";
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
 const satsToBtc = (s: number) => s / 1e8;
 const satsToUsd = (s: number, p: number) => satsToBtc(s) * p;
 const fmtUsd    = (n: number) => "$" + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -90,22 +84,24 @@ const fmtTs     = (ts: string) => {
   return new Date(n * 1000).toLocaleString();
 };
 
+function inscribePreview(sats: string) {
+  const n = Number(sats);
+  if (!n) return null;
+  const fee = Math.floor(n * 7 / 100);
+  return { fee, tokens: n - fee };
+}
 function buyPreview(sats: string) {
   const n = Number(sats);
   if (!n) return null;
-  const fee    = Math.floor(n * 7 / 100);
-  const tokens = n - fee;
-  return { fee, tokens };
+  const fee = Math.floor(n * 7 / 100);
+  return { fee, tokens: n - fee };
 }
-
 function sellPreview(tokens: string) {
   const n = Number(tokens);
   if (!n) return null;
   const fee = Math.floor(n * 7 / 100);
-  const out  = n - fee;
-  return { fee, out };
+  return { fee, out: n - fee };
 }
-
 function b32(str: string) {
   return ethers.encodeBytes32String(str.slice(0, 31));
 }
@@ -121,67 +117,46 @@ const useIsMobile = () => {
   return mobile;
 };
 
-// ─── SKELETON KEY SVG ─────────────────────────────────────────────────────────
-function SkeletonKey({ size = 28, color = C.blue }: { size?: number; color?: string }) {
+function SkeletonKey({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="4.5" stroke={color} strokeWidth="2" fill="none"/>
-      <circle cx="8" cy="8" r="1.5" fill={color}/>
-      <path d="M11.5 10.5L19 18" stroke={color} strokeWidth="2" strokeLinecap="round"/>
-      <path d="M16 16L16 19" stroke={color} strokeWidth="2" strokeLinecap="round"/>
-      <path d="M18.5 15L18.5 17" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="8" cy="8" r="4.5" stroke="#808080" strokeWidth="2" fill="none"/>
+      <circle cx="8" cy="8" r="1.5" fill="#808080"/>
+      <path d="M8 12.5L8 21" stroke="#808080" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M6 16L8 16" stroke="#808080" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M6 19L8 19" stroke="#808080" strokeWidth="2" strokeLinecap="round"/>
     </svg>
   );
 }
 
-// ─── cbBTC LOGO SVG — blue outline, not filled ───────────────────────────────
 function CbbtcLogo({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
       <circle cx="16" cy="16" r="14.5" fill="none" stroke="#0052FF" strokeWidth="2.5"/>
-      <text
-        x="16" y="22"
-        textAnchor="middle"
-        fontSize="19"
-        fontWeight="bold"
-        fill="#0052FF"
-        fontFamily="Arial, sans-serif"
-        transform="rotate(12, 16, 16)"
-      >₿</text>
+      <text x="16" y="22" textAnchor="middle" fontSize="19" fontWeight="bold" fill="#0052FF"
+        fontFamily="Arial, sans-serif" transform="rotate(12, 16, 16)">₿</text>
     </svg>
   );
 }
 
-// ─── COMPONENTS ───────────────────────────────────────────────────────────────
 function Status({ state, msg }: { state: TxState; msg: string }) {
   if (state === "idle" || !msg) return null;
   const cfg = {
-    pending: { bg: C.blueBg,   border: C.blue,    color: C.blue,   icon: "⏳" },
-    success: { bg: C.greenBg,  border: "#00A878", color: C.green,  icon: "✓"  },
-    failed:  { bg: C.redBg,    border: C.red,     color: C.red,    icon: "✗"  },
-    idle:    { bg: "",          border: "",         color: "",        icon: ""   },
+    pending: { bg: C.blueBg,  border: C.blue,  color: C.blue,  icon: "⏳" },
+    success: { bg: C.greenBg, border: C.green,  color: C.green, icon: "✓"  },
+    failed:  { bg: C.redBg,   border: C.red,    color: C.red,   icon: "✗"  },
+    idle:    { bg: "",         border: "",        color: "",       icon: ""   },
   }[state];
   return (
     <div style={{ marginTop: 12, padding: "14px 18px", background: cfg.bg, border: `1px solid ${cfg.border}`, borderRadius: 8 }}>
-      <span style={{ color: cfg.color, fontFamily: "Arial, sans-serif", fontSize: 15 }}>
-        {cfg.icon} {msg}
-      </span>
+      <span style={{ color: cfg.color, fontFamily: "Arial, sans-serif", fontSize: 15 }}>{cfg.icon} {msg}</span>
     </div>
   );
 }
 
 function FeeBadge({ mobile }: { mobile: boolean }) {
   return (
-    <div style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 10,
-      background: C.blueBg,
-      border: `1px solid ${C.blue}`,
-      borderRadius: 8,
-      padding: mobile ? "10px 14px" : "12px 18px",
-      marginBottom: 24,
-    }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: mobile ? "10px 14px" : "12px 18px", marginBottom: 24 }}>
       <span style={{ fontFamily: "Arial, sans-serif", fontSize: 18, color: C.blue }}>◈</span>
       <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, color: C.blue, fontWeight: 600 }}>
         7% fee on every buy and sell — distributed instantly to all Origin Key holders as cbBTC dividends
@@ -190,26 +165,11 @@ function FeeBadge({ mobile }: { mobile: boolean }) {
   );
 }
 
-function Card({ label, value, sub, sub2, accent }: {
-  label: string; value: string; sub?: string; sub2?: string; accent?: boolean;
-}) {
+function Card({ label, value, sub, sub2, accent }: { label: string; value: string; sub?: string; sub2?: string; accent?: boolean }) {
   return (
-    <div style={{
-      background: C.card,
-      border: `1px solid ${accent ? C.blue : C.border}`,
-      borderTop: `3px solid ${accent ? C.blue : C.border}`,
-      borderRadius: "0 0 8px 8px",
-      padding: "20px",
-      flex: 1,
-      minWidth: 0,
-      boxShadow: C.shadow,
-    }}>
-      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, marginBottom: 10, fontWeight: 600 }}>
-        {label}
-      </div>
-      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: accent ? C.blue : C.text, lineHeight: 1, wordBreak: "break-all" as const }}>
-        {value}
-      </div>
+    <div style={{ background: C.card, border: `1px solid ${accent ? C.blue : C.border}`, borderTop: `3px solid ${accent ? C.blue : C.border}`, borderRadius: "0 0 8px 8px", padding: "20px", flex: 1, minWidth: 0, boxShadow: C.shadow }}>
+      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, marginBottom: 10, fontWeight: 600 }}>{label}</div>
+      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: accent ? C.blue : C.text, lineHeight: 1, wordBreak: "break-all" as const }}>{value}</div>
       {sub  && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 6 }}>{sub}</div>}
       {sub2 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.green, marginTop: 3, fontWeight: 600 }}>{sub2}</div>}
     </div>
@@ -222,37 +182,14 @@ function Input({ label, value, onChange, placeholder, type = "text", hint, tag }
 }) {
   return (
     <div style={{ marginBottom: 20 }}>
-      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, marginBottom: 8, fontWeight: 600 }}>
-        {label}
-      </div>
+      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, marginBottom: 8, fontWeight: 600 }}>{label}</div>
       <div style={{ position: "relative" as const }}>
-        <input
-          type={type}
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder}
-          style={{
-            width: "100%",
-            background: C.input,
-            border: `1.5px solid ${C.border}`,
-            borderRadius: 8,
-            color: C.text,
-            fontFamily: "Arial, sans-serif",
-            fontSize: 17,
-            padding: tag ? "14px 80px 14px 16px" : "14px 16px",
-            outline: "none",
-            boxSizing: "border-box" as const,
-            WebkitAppearance: "none" as const,
-            transition: "border-color 0.15s",
-          }}
+        <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+          style={{ width: "100%", background: C.input, border: `1.5px solid ${C.border}`, borderRadius: 8, color: C.text, fontFamily: "Arial, sans-serif", fontSize: 17, padding: tag ? "14px 80px 14px 16px" : "14px 16px", outline: "none", boxSizing: "border-box" as const, WebkitAppearance: "none" as const }}
           onFocus={e => e.target.style.borderColor = C.blue}
           onBlur={e => e.target.style.borderColor = C.border}
         />
-        {tag && (
-          <div style={{ position: "absolute" as const, right: 16, top: "50%", transform: "translateY(-50%)", fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 700 }}>
-            {tag}
-          </div>
-        )}
+        {tag && <div style={{ position: "absolute" as const, right: 16, top: "50%", transform: "translateY(-50%)", fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 700 }}>{tag}</div>}
       </div>
       {hint && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginTop: 6 }}>{hint}</div>}
     </div>
@@ -276,36 +213,11 @@ function Preview({ rows }: { rows: { label: string; value: string; blue?: boolea
 }
 
 function BigBtn({ onClick, children, variant = "blue", disabled = false }: {
-  onClick: () => void; children: React.ReactNode;
-  variant?: "blue" | "outline"; disabled?: boolean;
+  onClick: () => void; children: React.ReactNode; variant?: "blue" | "outline"; disabled?: boolean;
 }) {
-  const v = {
-    blue:    { bg: C.blue,        color: "#FFFFFF",  border: "none",                      hover: C.blueDark },
-    outline: { bg: "transparent", color: C.blue,     border: `2px solid ${C.blue}`,       hover: C.blueBg   },
-  }[variant];
+  const v = { blue: { bg: C.blue, color: "#FFFFFF", border: "none" }, outline: { bg: "transparent", color: C.blue, border: `2px solid ${C.blue}` } }[variant];
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        width: "100%",
-        background: v.bg,
-        color: v.color,
-        border: v.border,
-        borderRadius: 8,
-        padding: "16px",
-        fontFamily: "Arial, sans-serif",
-        fontSize: 15,
-        letterSpacing: "0.05em",
-        textTransform: "uppercase" as const,
-        cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.4 : 1,
-        marginBottom: 4,
-        fontWeight: 700,
-        WebkitTapHighlightColor: "transparent",
-        boxShadow: disabled ? "none" : C.shadow,
-      }}
-    >
+    <button onClick={onClick} disabled={disabled} style={{ width: "100%", background: v.bg, color: v.color, border: v.border, borderRadius: 8, padding: "16px", fontFamily: "Arial, sans-serif", fontSize: 15, letterSpacing: "0.05em", textTransform: "uppercase" as const, cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.4 : 1, marginBottom: 4, fontWeight: 700, WebkitTapHighlightColor: "transparent", boxShadow: disabled ? "none" : C.shadow }}>
       {children}
     </button>
   );
@@ -313,17 +225,8 @@ function BigBtn({ onClick, children, variant = "blue", disabled = false }: {
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{
-      background: C.card,
-      border: `1px solid ${C.border}`,
-      borderRadius: 12,
-      padding: "24px",
-      marginBottom: 16,
-      boxShadow: C.shadow,
-    }}>
-      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: C.blue, marginBottom: 20, fontWeight: 700, letterSpacing: "0.02em" }}>
-        {title}
-      </div>
+    <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "24px", marginBottom: 16, boxShadow: C.shadow }}>
+      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: C.blue, marginBottom: 20, fontWeight: 700 }}>{title}</div>
       {children}
     </div>
   );
@@ -336,11 +239,26 @@ const VIDEOS = [
   { title: "How to buy Origin Key tokens",                  desc: "Buying IEOK using the exchange on Base.",                                             url: "https://youtube.com", tag: "TRADING",    tc: C.blue  },
   { title: "How cbBTC dividends work",                      desc: "How fees are distributed to all Origin Key holders and how to withdraw.",            url: "https://youtube.com", tag: "DIVIDENDS",  tc: C.blue  },
   { title: "How to verify a vault — NFC tap guide",         desc: "Tap an Analog Bitcoin NFC tag and verify vault status on chain.",                    url: "https://youtube.com", tag: "COLLECTORS", tc: C.green },
-  { title: "What is an Ordinal inscription",                desc: "Understanding Bitcoin Ordinals and how they connect to physical art.",                url: "https://youtube.com", tag: "ORDINALS",   tc: C.textMuted },
+  { title: "What is an Ordinal inscription",                desc: "Understanding Bitcoin Ordinals and how they connect to physical art.",                url: "https://youtube.com", tag: "ORDINALS",   tc: "#5B6278" },
   { title: "How to redeem an Analog Bitcoin art piece",     desc: "What happens when you destroy the art and sweep the tokens.",                        url: "https://youtube.com", tag: "REDEMPTION", tc: C.red   },
 ];
 
-// ─── MAIN ─────────────────────────────────────────────────────────────────────
+async function ensureAllowance(
+  cbbtc: ethers.Contract,
+  owner: string,
+  spender: string,
+  amount: bigint,
+  setMsg: (m: string) => void
+) {
+  const allowance = await cbbtc.allowance(owner, spender);
+  if (allowance >= amount) return;
+  setMsg("Approval needed — confirm in your wallet...");
+  const tx = await cbbtc.approve(spender, BigInt("999999999999999999"));
+  setMsg("Approving cbBTC — waiting for confirmation...");
+  await tx.wait();
+  setMsg("Approved ✓");
+}
+
 export default function Home() {
   const mobile = useIsMobile();
 
@@ -372,7 +290,7 @@ export default function Home() {
 
   const [insVault, setInsVault] = useState("");
   const [insAsset, setInsAsset] = useState("");
-  const [insAmt, setInsAmt]     = useState("");
+  const [insCbbtc, setInsCbbtc] = useState("");
   const [insOrd, setInsOrd]     = useState("");
   const [insS, setInsS]         = useState<TxState>("idle");
   const [insM, setInsM]         = useState("");
@@ -385,23 +303,22 @@ export default function Home() {
   const [vResult, setVResult]   = useState<VaultResult>(null);
   const [vS, setVS]             = useState<TxState>("idle");
   const [vM, setVM]             = useState("");
+  const [autoChecked, setAutoChecked] = useState(false);
 
-  const isRegistrar = account.toLowerCase() === VAULT_REGISTRAR.toLowerCase();
-  const connected   = !!account;
+  const isRegistrar  = account.toLowerCase() === VAULT_REGISTRAR.toLowerCase();
+  const connected    = !!account;
   const correctChain = chainId === CHAIN_ID;
 
-  // ─── BTC PRICE ──────────────────────────────────────────────────────────────
   async function fetchBtcPrice() {
     try {
       const res  = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
       const data = await res.json();
       setBtcPrice(data.bitcoin.usd);
-    } catch (e) { console.error("BTC price fetch failed", e); }
+    } catch (e) { console.error(e); }
   }
 
-  // ─── CONNECT ────────────────────────────────────────────────────────────────
   async function connect() {
-    if (!window.ethereum) { alert("Please open this app in MetaMask or Coinbase Wallet browser"); return; }
+    if (!window.ethereum) { alert("Please open in MetaMask or Coinbase Wallet browser"); return; }
     await ensureBase();
     const p = getBrowserProvider();
     const [user] = await p.send("eth_requestAccounts", []);
@@ -411,42 +328,28 @@ export default function Home() {
     await load(p, user);
   }
 
-  // ─── LOAD DATA ──────────────────────────────────────────────────────────────
   async function load(p: ethers.BrowserProvider, user: string) {
     try {
       const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, p);
       const ieok  = new ethers.Contract(IEOK_ADDRESS,  IEOK_ABI,  p);
       const [cb, ib, dv, ts] = await Promise.all([
-        cbbtc.balanceOf(user),
-        ieok.balanceOf(user),
-        ieok.dividendsOf(user),
-        ieok.totalSupply(),
+        cbbtc.balanceOf(user), ieok.balanceOf(user),
+        ieok.dividendsOf(user), ieok.totalSupply(),
       ]);
-      setCbbtcBal(cb.toString());
-      setIeokBal(ib.toString());
-      setDivs(dv.toString());
-      setSupply(ts.toString());
+      setCbbtcBal(cb.toString()); setIeokBal(ib.toString());
+      setDivs(dv.toString()); setSupply(ts.toString());
     } catch (e) { console.error(e); }
   }
 
-  // ─── BUY ────────────────────────────────────────────────────────────────────
   async function buy() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!buyAmt)  { alert("Enter cbBTC amount");   return; }
-    const p     = getBrowserProvider();
-    const s     = await p.getSigner();
+    const p = getBrowserProvider(); const s = await p.getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
     const ieok  = new ethers.Contract(IEOK_ADDRESS,  IEOK_ABI,  s);
     setBuyS("pending"); setBuyM("Checking allowance...");
     try {
-      const allowance = await cbbtc.allowance(account, IEOK_ADDRESS);
-      if (allowance < BigInt(buyAmt)) {
-        setBuyM("Approval needed — confirm in your wallet...");
-        const approveTx = await cbbtc.approve(IEOK_ADDRESS, BigInt("999999999999999999"));
-        setBuyM("Approving cbBTC — confirming on chain...");
-        await approveTx.wait();
-        setBuyM("Approved — now buying Origin Key tokens...");
-      }
+      await ensureAllowance(cbbtc, account, IEOK_ADDRESS, BigInt(buyAmt), setBuyM);
       setBuyM("Confirm purchase in your wallet...");
       const tx = await ieok.buy(BigInt(buyAmt), BigInt(0));
       setBuyM("Confirming on chain...");
@@ -456,108 +359,99 @@ export default function Home() {
     } catch (e: any) { setBuyS("failed"); setBuyM(e.reason || e.message || "Buy failed"); }
   }
 
-  // ─── SELL ───────────────────────────────────────────────────────────────────
   async function sell() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!sellAmt) { alert("Enter IEOK amount");    return; }
-    const p    = getBrowserProvider();
-    const s    = await p.getSigner();
+    const p = getBrowserProvider(); const s = await p.getSigner();
     const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, s);
     setSellS("pending"); setSellM("Awaiting wallet...");
     try {
-      const tx = await ieok.sell(BigInt(sellAmt), BigInt(0));
-      setSellM("Confirming...");
-      await tx.wait();
+      await (await ieok.sell(BigInt(sellAmt), BigInt(0))).wait();
       setSellS("success"); setSellM("Sell confirmed — cbBTC received");
       await load(p, account);
     } catch (e: any) { setSellS("failed"); setSellM(e.reason || e.message || "Sell failed"); }
   }
 
-  // ─── WITHDRAW ───────────────────────────────────────────────────────────────
   async function withdraw() {
     if (!account) { alert("Connect wallet first"); return; }
-    const p    = getBrowserProvider();
-    const s    = await p.getSigner();
+    const p = getBrowserProvider(); const s = await p.getSigner();
     const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, s);
     setWdS("pending"); setWdM("Awaiting wallet...");
     try {
-      const tx = await ieok.withdraw();
-      setWdM("Confirming...");
-      await tx.wait();
+      await (await ieok.withdraw()).wait();
       setWdS("success"); setWdM("cbBTC dividends sent to your wallet");
       await load(p, account);
     } catch (e: any) { setWdS("failed"); setWdM(e.reason || e.message || "Failed"); }
   }
 
-  // ─── TRANSFER ───────────────────────────────────────────────────────────────
   async function transfer() {
-    if (!account)        { alert("Connect wallet first"); return; }
-    if (!txTo || !txAmt) { alert("Fill in all fields");   return; }
-    const p    = getBrowserProvider();
-    const s    = await p.getSigner();
+    if (!account || !txTo || !txAmt) { alert("Fill in all fields"); return; }
+    const p = getBrowserProvider(); const s = await p.getSigner();
     const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, s);
     setTxS("pending"); setTxM("Awaiting wallet...");
     try {
-      const tx = await ieok.transfer(txTo, BigInt(txAmt));
-      setTxM("Confirming...");
-      await tx.wait();
+      await (await ieok.transfer(txTo, BigInt(txAmt))).wait();
       setTxS("success"); setTxM("Transfer complete — zero fee");
       await load(p, account);
     } catch (e: any) { setTxS("failed"); setTxM(e.reason || e.message || "Failed"); }
   }
 
-  // ─── INSCRIBE ───────────────────────────────────────────────────────────────
   async function inscribe() {
     if (!account) { alert("Connect wallet first"); return; }
-    if (!insVault || !insAsset || !insAmt || !insOrd) { alert("All four fields are required"); return; }
-    const p    = getBrowserProvider();
-    const s    = await p.getSigner();
-    const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, s);
-    setInsS("pending"); setInsM("Awaiting wallet...");
+    if (!insVault || !insAsset || !insCbbtc) { alert("Vault address, asset ID and cbBTC amount are required"); return; }
+    const p = getBrowserProvider(); const s = await p.getSigner();
+    const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
+    const ieok  = new ethers.Contract(IEOK_ADDRESS,  IEOK_ABI,  s);
+    setInsS("pending"); setInsM("Checking cbBTC allowance...");
     try {
-      const tx = await ieok.inscribe(insVault, b32(insAsset), BigInt(insAmt), BigInt(insOrd));
-      setInsM("Confirming...");
+      await ensureAllowance(cbbtc, account, IEOK_ADDRESS, BigInt(insCbbtc), setInsM);
+      setInsM("Confirm inscription in your wallet...");
+      const ordNum = insOrd ? BigInt(insOrd) : BigInt(0);
+      const tx = await ieok.inscribe(insVault, b32(insAsset), BigInt(insCbbtc), ordNum);
+      setInsM("Confirming on chain...");
       await tx.wait();
       setInsS("success"); setInsM(`Vault inscribed — ${insAsset} registered on chain`);
       await load(p, account);
     } catch (e: any) { setInsS("failed"); setInsM(e.reason || e.message || "Inscribe failed"); }
   }
 
-  // ─── REPORT ORDINAL MOVED ───────────────────────────────────────────────────
   async function reportOrdinalMoved() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!repOrd)  { alert("Enter ordinal number"); return; }
-    const p    = getBrowserProvider();
-    const s    = await p.getSigner();
+    const p = getBrowserProvider(); const s = await p.getSigner();
     const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, s);
     setRepS("pending"); setRepM("Awaiting wallet...");
     try {
-      const tx = await ieok.reportOrdinalMoved(BigInt(repOrd));
-      setRepM("Confirming...");
-      await tx.wait();
+      await (await ieok.reportOrdinalMoved(BigInt(repOrd))).wait();
       setRepS("success"); setRepM(`Ordinal #${repOrd} marked as moved — permanent on chain`);
     } catch (e: any) { setRepS("failed"); setRepM(e.reason || e.message || "Report failed"); }
   }
 
-  // ─── CHECK VAULT — works WITHOUT wallet connected via public RPC ─────────────
+  // ─── VAULT CHECK — two parallel calls ────────────────────────────────────
   async function checkVault() {
     if (!vAddr) { alert("Enter a vault address"); return; }
     setVS("pending"); setVM("Querying vault registry...");
     try {
-      // Always use public RPC — no wallet required for vault verification
       const provider = new ethers.JsonRpcProvider(PUBLIC_RPC);
       const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, provider);
-      const [status, divAmount] = await Promise.all([
+
+      // Three parallel calls — vaultStatus, vaultOrdinalStatus, dividendsOf
+      const [core, ordinal, divAmount] = await Promise.all([
         ieok.vaultStatus(vAddr),
+        ieok.vaultOrdinalStatus(vAddr),
         ieok.dividendsOf(vAddr),
       ]);
-      const [registered, swept, balance, assetId, ordinalNumber, ordinalMoved, ordinalMovedAt] = status;
+
+      const [registered, swept, balance, assetId]               = core;
+      const [ordinalNumber, hasOrdinal, ordinalMoved, ordinalMovedAt] = ordinal;
+
       setVResult({
         registered, swept,
         balance:        balance.toString(),
         dividends:      divAmount.toString(),
         assetId:        assetId.toString(),
         ordinalNumber:  ordinalNumber.toString(),
+        hasOrdinal,
         ordinalMoved,
         ordinalMovedAt: ordinalMovedAt.toString(),
       });
@@ -568,41 +462,20 @@ export default function Home() {
     }
   }
 
-  // ─── EFFECTS ────────────────────────────────────────────────────────────────
-  useEffect(() => {
-    fetchBtcPrice();
-    const iv = setInterval(fetchBtcPrice, 60000);
-    return () => clearInterval(iv);
-  }, []);
-
-  useEffect(() => {
-    if (!account) return;
-    const iv = setInterval(() => load(getBrowserProvider(), account), 10000);
-    return () => clearInterval(iv);
-  }, [account]);
-
-  // Auto-load vault from URL and trigger check
+  useEffect(() => { fetchBtcPrice(); const iv = setInterval(fetchBtcPrice, 60000); return () => clearInterval(iv); }, []);
+  useEffect(() => { if (!account) return; const iv = setInterval(() => load(getBrowserProvider(), account), 10000); return () => clearInterval(iv); }, [account]);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("vault");
-    if (v) {
-      setVAddr(v);
-      setTab("vault");
-    }
+    if (v) { setVAddr(v); setTab("vault"); }
   }, []);
-
-  // Auto-trigger vault check when vAddr is set from URL
-  const [autoChecked, setAutoChecked] = useState(false);
   useEffect(() => {
-    if (vAddr && tab === "vault" && !autoChecked) {
-      setAutoChecked(true);
-      setTimeout(() => checkVault(), 300);
-    }
+    if (vAddr && tab === "vault" && !autoChecked) { setAutoChecked(true); setTimeout(() => checkVault(), 300); }
   }, [vAddr, tab]);
 
-  // ─── COMPUTED ───────────────────────────────────────────────────────────────
   const bPrev     = buyPreview(buyAmt);
   const sPrev     = sellPreview(sellAmt);
+  const insPrev   = inscribePreview(insCbbtc);
   const cbbtcNum  = Number(cbbtcBal);
   const ieokNum   = Number(ieokBal);
   const divsNum   = Number(divs);
@@ -619,94 +492,51 @@ export default function Home() {
     ...(isRegistrar ? [{ id: "inscribe" as Tab, label: "INSCRIBE", short: "INSCRIBE" }] : []),
   ];
 
-  // ─── RENDER ─────────────────────────────────────────────────────────────────
   return (
     <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif" }}>
 
       {/* HEADER */}
-      <div style={{
-        background: C.card,
-        borderBottom: `1px solid ${C.border}`,
-        padding: mobile ? "0 16px" : "0 40px",
-        height: mobile ? 64 : 72,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        position: "sticky" as const,
-        top: 0,
-        zIndex: 100,
-        boxShadow: C.shadow,
-      }}>
-        {/* LEFT — cbBTC reserve info */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <CbbtcLogo size={mobile ? 30 : 36} />
+      <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: mobile ? "0 12px" : "0 40px", height: mobile ? 64 : 72, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky" as const, top: 0, zIndex: 100, boxShadow: C.shadow }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <CbbtcLogo size={mobile ? 26 : 34} />
           {!mobile && (
-            <div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, lineHeight: 1.3 }}>
-                Origin Key tokens are denominated in cbBTC,
-              </div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, lineHeight: 1.3 }}>
-                tokenized Bitcoin issued by Coinbase.
-              </div>
+            <div style={{ lineHeight: 1.4 }}>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>Origin Key tokens are denominated in cbBTC,</div>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>tokenized Bitcoin issued by Coinbase.</div>
             </div>
           )}
-          {btcPrice > 0 && (
-            <div style={{ marginLeft: mobile ? 0 : 12, fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, background: C.panel, padding: "4px 10px", borderRadius: 20, border: `1px solid ${C.border}` }}>
+          {btcPrice > 0 && !mobile && (
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, background: C.panel, padding: "4px 10px", borderRadius: 20, border: `1px solid ${C.border}`, marginLeft: 4 }}>
               BTC {fmtUsd(btcPrice)}
             </div>
           )}
         </div>
-
-        {/* RIGHT — logo + connect */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          {/* LOGO */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, borderRight: `1px solid ${C.border}`, paddingRight: 14, marginRight: 0 }}>
-            <SkeletonKey size={mobile ? 22 : 26} color={C.blue} />
-            <div style={{ textAlign: "right" as const }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted, letterSpacing: "0.08em", lineHeight: 1, textTransform: "uppercase" as const }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, borderRight: `1px solid ${C.border}`, paddingRight: 12 }}>
+            <SkeletonKey size={mobile ? 20 : 26} />
+            <div style={{ textAlign: "center" as const }}>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.06em", lineHeight: 1, textTransform: "uppercase" as const, whiteSpace: "nowrap" as const }}>
                 Immutable Editions
               </div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 19 : 22, fontWeight: 700, color: C.blue, letterSpacing: "0.02em", lineHeight: 1.2 }}>
-                Origin Key
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 18, fontWeight: 700, color: C.blue, lineHeight: 1.2, whiteSpace: "nowrap" as const }}>
+                Origin Key Exchange
               </div>
             </div>
           </div>
-
           {connected && !mobile && (
             <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: correctChain ? C.green : C.red, fontWeight: 600 }}>
               {correctChain ? `✓ ${CHAIN_LABEL}` : "⚠ WRONG NETWORK"}
             </span>
           )}
-
-          <button
-            onClick={connect}
-            style={{
-              background: connected ? C.greenBg : C.blue,
-              color: connected ? C.green : "#FFFFFF",
-              border: connected ? `1.5px solid ${C.green}` : "none",
-              borderRadius: 8,
-              padding: mobile ? "8px 14px" : "10px 20px",
-              fontFamily: "Arial, sans-serif",
-              fontSize: mobile ? 12 : 13,
-              cursor: "pointer",
-              textTransform: "uppercase" as const,
-              fontWeight: 700,
-              letterSpacing: "0.05em",
-              WebkitTapHighlightColor: "transparent",
-              boxShadow: connected ? "none" : C.shadow,
-            }}
-          >
-            {connected ? fmtAddr(account) : "Connect Wallet"}
+          <button onClick={connect} style={{ background: connected ? C.greenBg : C.blue, color: connected ? C.green : "#FFFFFF", border: connected ? `1.5px solid ${C.green}` : "none", borderRadius: 8, padding: mobile ? "7px 10px" : "10px 20px", fontFamily: "Arial, sans-serif", fontSize: mobile ? 11 : 13, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, letterSpacing: "0.05em", WebkitTapHighlightColor: "transparent", boxShadow: connected ? "none" : C.shadow, whiteSpace: "nowrap" as const }}>
+            {connected ? fmtAddr(account) : "Connect"}
           </button>
         </div>
       </div>
 
-      {/* WRONG NETWORK */}
       {connected && !correctChain && (
         <div style={{ background: C.redBg, borderBottom: `1px solid ${C.red}`, padding: "12px 20px", textAlign: "center" as const }}>
-          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.red, fontWeight: 600 }}>
-            ⚠ Please switch to {CHAIN_LABEL} in your wallet
-          </span>
+          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.red, fontWeight: 600 }}>⚠ Please switch to {CHAIN_LABEL} in your wallet</span>
         </div>
       )}
 
@@ -714,90 +544,29 @@ export default function Home() {
       {connected ? (
         <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: "1px" }}>
           <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 1, background: C.border }}>
-            {/* cbBTC BALANCE — sats primary */}
-            <Card
-              label="cbBTC Balance"
-              value={fmtSats(cbbtcBal)}
-              sub={fmtCbbtc(cbbtcBal)}
-              sub2={cbbtcUsd}
-            />
-            {/* IEOK BALANCE — sats primary */}
-            <Card
-              label="Origin Key Balance"
-              value={fmtSats(ieokBal)}
-              sub={ieokNum.toLocaleString() + " IEOK"}
-              sub2={ieokUsd}
-            />
-            {/* DIVIDENDS — sats primary */}
-            <Card
-              label="Dividends"
-              value={fmtSats(divs)}
-              sub={fmtCbbtc(divs)}
-              sub2={divsUsd}
-              accent
-            />
-            <Card
-              label="Total Supply"
-              value={fmtSats(supply)}
-              sub={supplyNum.toLocaleString() + " IEOK"}
-            />
+            <Card label="cbBTC Balance"      value={fmtSats(cbbtcBal)} sub={fmtCbbtc(cbbtcBal)} sub2={cbbtcUsd} />
+            <Card label="Origin Key Balance" value={fmtSats(ieokBal)}  sub={ieokNum.toLocaleString() + " IEOK"} sub2={ieokUsd} />
+            <Card label="Dividends"          value={fmtSats(divs)}     sub={fmtCbbtc(divs)} sub2={divsUsd} accent />
+            <Card label="Total Supply"       value={fmtSats(supply)}   sub={supplyNum.toLocaleString() + " IEOK"} />
           </div>
         </div>
       ) : (
         <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: "32px", textAlign: "center" as const }}>
-          <div style={{ marginBottom: 12 }}>
-            <SkeletonKey size={40} color={C.blue} />
-          </div>
-          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: C.textMuted, fontWeight: 600 }}>
-            Connect your wallet to see your balances
-          </div>
-          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 6 }}>
-            Use MetaMask or Coinbase Wallet on Base Sepolia
-          </div>
+          <div style={{ marginBottom: 12 }}><SkeletonKey size={40} /></div>
+          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: C.textMuted, fontWeight: 600 }}>Connect your wallet to see your balances</div>
+          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 6 }}>Use MetaMask or Coinbase Wallet on Base Sepolia</div>
         </div>
       )}
 
       {/* DIVIDENDS BANNER */}
       {connected && divsNum > 0 && (
-        <div style={{
-          background: C.blueBg,
-          borderBottom: `1px solid ${C.blue}`,
-          padding: mobile ? "14px 16px" : "14px 40px",
-          display: "flex",
-          flexDirection: mobile ? "column" : "row" as const,
-          alignItems: mobile ? "stretch" : "center",
-          justifyContent: "space-between",
-          gap: 12,
-        }}>
+        <div style={{ background: C.blueBg, borderBottom: `1px solid ${C.blue}`, padding: mobile ? "14px 16px" : "14px 40px", display: "flex", flexDirection: mobile ? "column" : "row" as const, alignItems: mobile ? "stretch" : "center", justifyContent: "space-between", gap: 12 }}>
           <div>
-            <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 16, color: C.blue, fontWeight: 700 }}>
-              🪙 {fmtSats(divs)} cbBTC dividends available
-            </span>
-            {divsUsd && (
-              <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginLeft: 10 }}>
-                {divsUsd}
-              </span>
-            )}
+            <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 16, color: C.blue, fontWeight: 700 }}>🪙 {fmtSats(divs)} cbBTC dividends available</span>
+            {divsUsd && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginLeft: 10 }}>{divsUsd}</span>}
           </div>
           <div>
-            <button
-              onClick={withdraw}
-              style={{
-                width: mobile ? "100%" : "auto",
-                background: C.blue,
-                color: "#FFFFFF",
-                border: "none",
-                borderRadius: 8,
-                padding: "11px 22px",
-                fontFamily: "Arial, sans-serif",
-                fontSize: 14,
-                cursor: "pointer",
-                textTransform: "uppercase" as const,
-                fontWeight: 700,
-                letterSpacing: "0.05em",
-                WebkitTapHighlightColor: "transparent",
-              }}
-            >
+            <button onClick={withdraw} style={{ width: mobile ? "100%" : "auto", background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "11px 22px", fontFamily: "Arial, sans-serif", fontSize: 14, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, letterSpacing: "0.05em", WebkitTapHighlightColor: "transparent" }}>
               Withdraw Now
             </button>
             <Status state={wdS} msg={wdM} />
@@ -805,80 +574,29 @@ export default function Home() {
         </div>
       )}
 
-      {/* WALLET ADDRESS */}
       {connected && (
         <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: mobile ? "8px 16px" : "8px 40px" }}>
-          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted }}>
-            {mobile ? fmtAddr(account) : account}
-          </span>
+          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted }}>{mobile ? fmtAddr(account) : account}</span>
         </div>
       )}
 
-      {/* MAIN */}
       <div style={{ maxWidth: 880, margin: "0 auto", padding: mobile ? "20px 12px" : "32px 24px" }}>
 
         {/* TABS */}
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          borderBottom: `2px solid ${C.border}`,
-          marginBottom: 24,
-          overflowX: "auto" as const,
-          WebkitOverflowScrolling: "touch" as const,
-          scrollbarWidth: "none" as const,
-        }}>
+        <div style={{ display: "flex", justifyContent: "center", borderBottom: `2px solid ${C.border}`, marginBottom: 24, overflowX: "auto" as const, WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const }}>
           {tabs.map(t => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              style={{
-                flexShrink: 0,
-                padding: mobile ? "12px 16px" : "14px 26px",
-                fontFamily: "Arial, sans-serif",
-                fontSize: mobile ? 12 : 13,
-                letterSpacing: "0.05em",
-                background: "transparent",
-                color: tab === t.id ? C.blue : C.textMuted,
-                border: "none",
-                borderBottom: tab === t.id ? `3px solid ${C.blue}` : "3px solid transparent",
-                marginBottom: "-2px",
-                cursor: "pointer",
-                fontWeight: tab === t.id ? 700 : 500,
-                WebkitTapHighlightColor: "transparent",
-                whiteSpace: "nowrap" as const,
-                textTransform: "uppercase" as const,
-              }}
-            >
+            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "12px 14px" : "14px 26px", fontFamily: "Arial, sans-serif", fontSize: mobile ? 11 : 13, letterSpacing: "0.05em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `3px solid ${C.blue}` : "3px solid transparent", marginBottom: "-2px", cursor: "pointer", fontWeight: tab === t.id ? 700 : 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
               {mobile ? t.short : t.label}
             </button>
           ))}
         </div>
 
-        {/* ── TRADE ── */}
+        {/* TRADE */}
         {tab === "trade" && (
           <div>
             <div style={{ display: "flex", gap: 8, marginBottom: 20, background: C.panel, borderRadius: 10, padding: 4, border: `1px solid ${C.border}` }}>
               {(["buy", "sell"] as const).map(m => (
-                <button
-                  key={m}
-                  onClick={() => setMode(m)}
-                  style={{
-                    flex: 1,
-                    padding: mobile ? "12px" : "14px",
-                    fontFamily: "Arial, sans-serif",
-                    fontSize: mobile ? 14 : 16,
-                    letterSpacing: "0.05em",
-                    background: mode === m ? (m === "buy" ? C.blue : C.card) : "transparent",
-                    color: mode === m ? (m === "buy" ? "#FFFFFF" : C.blue) : C.textMuted,
-                    border: mode === m && m === "sell" ? `1.5px solid ${C.blue}` : "none",
-                    borderRadius: 8,
-                    cursor: "pointer",
-                    textTransform: "uppercase" as const,
-                    fontWeight: 700,
-                    WebkitTapHighlightColor: "transparent",
-                    boxShadow: mode === m ? C.shadow : "none",
-                  }}
-                >
+                <button key={m} onClick={() => setMode(m)} style={{ flex: 1, padding: mobile ? "12px" : "14px", fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 16, background: mode === m ? (m === "buy" ? C.blue : C.card) : "transparent", color: mode === m ? (m === "buy" ? "#FFFFFF" : C.blue) : C.textMuted, border: mode === m && m === "sell" ? `1.5px solid ${C.blue}` : "none", borderRadius: 8, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, WebkitTapHighlightColor: "transparent", boxShadow: mode === m ? C.shadow : "none" }}>
                   {m === "buy" ? "▲ Buy" : "▼ Sell"}
                 </button>
               ))}
@@ -888,21 +606,14 @@ export default function Home() {
               <Panel title="Buy Origin Key — Fixed Price 1 Sat = 1 IEOK">
                 <FeeBadge mobile={mobile} />
                 <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
-                  Enter your cbBTC amount and tap Buy. First time buyers will see their wallet pop up twice — once to approve cbBTC, once to buy. Future purchases are single tap.
+                  Enter your cbBTC amount and tap Buy. First time buyers will see their wallet pop up twice — approve then buy. Future purchases are single tap.
                 </p>
-                <Input
-                  label="cbBTC amount in satoshis"
-                  value={buyAmt}
-                  onChange={setBuyAmt}
-                  placeholder="10000"
-                  type="number"
-                  tag="SATS"
-                  hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "10,000 sats = 10,000 IEOK before 7% fee"}
-                />
+                <Input label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="10000" type="number" tag="SATS"
+                  hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "10,000 sats = 10,000 IEOK before 7% fee"} />
                 {bPrev && (
                   <Preview rows={[
                     { label: "7% fee — paid to all Origin Key holders", value: bPrev.fee.toLocaleString() + " sats" },
-                    { label: "Origin Key tokens you receive",           value: bPrev.tokens.toLocaleString() + " IEOK" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.tokens, btcPrice)) : ""), blue: true },
+                    { label: "Origin Key tokens you receive", value: bPrev.tokens.toLocaleString() + " IEOK" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.tokens, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
                 <BigBtn onClick={buy} disabled={!connected}>Buy Origin Key</BigBtn>
@@ -913,19 +624,11 @@ export default function Home() {
             {mode === "sell" && (
               <Panel title="Sell Origin Key — Fixed Price 1 IEOK = 1 Sat">
                 <FeeBadge mobile={mobile} />
-                <Input
-                  label="IEOK amount to sell"
-                  value={sellAmt}
-                  onChange={setSellAmt}
-                  placeholder="9300"
-                  type="number"
-                  tag="IEOK"
-                  hint={`Your balance: ${ieokNum.toLocaleString()} IEOK`}
-                />
+                <Input label="IEOK amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="9300" type="number" tag="IEOK" hint={`Your balance: ${ieokNum.toLocaleString()} IEOK`} />
                 {sPrev && (
                   <Preview rows={[
                     { label: "7% fee — paid to all Origin Key holders", value: sPrev.fee.toLocaleString() + " sats" },
-                    { label: "cbBTC you receive",                        value: sPrev.out.toLocaleString() + " sats" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(sPrev.out, btcPrice)) : ""), blue: true },
+                    { label: "cbBTC you receive", value: sPrev.out.toLocaleString() + " sats" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(sPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
                 <BigBtn onClick={sell} variant="outline" disabled={!connected}>Sell for cbBTC</BigBtn>
@@ -935,36 +638,34 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── TRANSFER ── */}
+        {/* TRANSFER */}
         {tab === "transfer" && (
           <Panel title="Transfer Origin Key — Zero Fee">
             <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
-              Send Origin Key tokens to any wallet with no fee. Dividend yield moves proportionally with the tokens — the receiver earns future yield on what they receive.
+              Send Origin Key tokens to any wallet with no fee. Dividend yield moves proportionally with the tokens.
             </p>
-            <Input label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." hint="Full wallet address of the recipient" />
-            <Input label="IEOK amount" value={txAmt} onChange={setTxAmt} placeholder="9300" type="number" tag="IEOK" hint={`Your balance: ${ieokNum.toLocaleString()} IEOK — 1 IEOK = 1 satoshi`} />
+            <Input label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
+            <Input label="IEOK amount" value={txAmt} onChange={setTxAmt} placeholder="9300" type="number" tag="IEOK" hint={`Your balance: ${ieokNum.toLocaleString()} IEOK`} />
             <BigBtn onClick={transfer} disabled={!connected}>Transfer — Free</BigBtn>
             <Status state={txS} msg={txM} />
           </Panel>
         )}
 
-        {/* ── INSCRIBE — registrar only ── */}
+        {/* INSCRIBE */}
         {tab === "inscribe" && isRegistrar && (
           <div>
             <Panel title="Inscribe Vault — Analog Bitcoin Art Piece">
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
-                Register a vault wallet and load it with IEOK in one transaction.
+                You spend cbBTC — 7% goes to all IEOK holders as dividends, and the remaining 93% becomes IEOK tokens sealed inside the vault. The Ordinal number is optional — leave blank for series pieces without an Ordinal.
               </p>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "16px", marginBottom: 20 }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, marginBottom: 12, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.08em" }}>
-                  How It Works
-                </div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, marginBottom: 12, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.08em" }}>How It Works</div>
                 {[
                   "Generate a fresh wallet in MetaMask — click Add Account",
                   "Copy that wallet address into the Vault field below",
-                  "Get your Ordinal inscription number from ordinals.com",
-                  "Set the IEOK amount — 1 IEOK = 1 satoshi at fixed price",
-                  "Hit Inscribe — one transaction registers and loads tokens",
+                  "Get your Ordinal inscription number from ordinals.com (optional)",
+                  "Enter how much cbBTC you want embedded — 7% fee applies",
+                  "Hit Inscribe — cbBTC approved, fee distributed, IEOK sealed in vault",
                   "Print the private key and seal it inside the physical art",
                 ].map((s, i) => (
                   <div key={i} style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textDim, padding: "5px 0", display: "flex", gap: 12 }}>
@@ -973,18 +674,17 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <Input label="Vault wallet address (sealed inside the art)" value={insVault} onChange={setInsVault} placeholder="0x..." hint="Generate a fresh wallet in MetaMask — copy the address here" />
-              <Input label="Asset ID (max 31 characters)" value={insAsset} onChange={setInsAsset} placeholder="RWI-001" hint="e.g. RWI-001, IE-GENESIS-001, AB-001 — auto converts to bytes32" />
-              <Input label="Ordinal inscription number" value={insOrd} onChange={setInsOrd} placeholder="68743291" type="number" hint="The inscription number from ordinals.com — required" />
-              <Input
-                label="IEOK amount to embed (= satoshis at 1:1)"
-                value={insAmt}
-                onChange={setInsAmt}
-                placeholder="9300"
-                type="number"
-                tag="IEOK"
-                hint="No fee on inscribe — the full amount you enter goes directly into the vault"
-              />
+              <Input label="Vault wallet address (sealed inside the art)" value={insVault} onChange={setInsVault} placeholder="0x..." />
+              <Input label="Asset ID (max 31 characters)" value={insAsset} onChange={setInsAsset} placeholder="RWI-001" hint="e.g. RWI-001, IE-GENESIS-001, AB-001" />
+              <Input label="Ordinal inscription number (optional)" value={insOrd} onChange={setInsOrd} placeholder="68743291 or leave blank" type="number" hint="Leave blank for series pieces without a linked Ordinal" />
+              <Input label="cbBTC to spend (sats) — 7% fee, rest becomes IEOK in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
+                hint={btcPrice > 0 && insCbbtc ? `≈ ${fmtUsd(satsToUsd(Number(insCbbtc), btcPrice))} USD` : `Your cbBTC balance: ${fmtSats(cbbtcBal)}`} />
+              {insPrev && (
+                <Preview rows={[
+                  { label: "7% fee — distributed to all IEOK holders", value: insPrev.fee.toLocaleString() + " sats" },
+                  { label: "IEOK sealed in vault (1 sat = 1 IEOK)", value: insPrev.tokens.toLocaleString() + " IEOK" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.tokens, btcPrice)) : ""), blue: true },
+                ]} />
+              )}
               <BigBtn onClick={inscribe} disabled={!connected}>Inscribe Vault</BigBtn>
               <Status state={insS} msg={insM} />
             </Panel>
@@ -993,21 +693,14 @@ export default function Home() {
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
                 When you see a linked Bitcoin Ordinal has moved on ordinals.com — enter its inscription number to record the alert permanently on Base.
               </p>
-              <Input
-                label="Ordinal inscription number"
-                value={repOrd}
-                onChange={setRepOrd}
-                placeholder="68743291"
-                type="number"
-                hint="Verify on ordinals.com before reporting — this is permanent and cannot be undone"
-              />
+              <Input label="Ordinal inscription number" value={repOrd} onChange={setRepOrd} placeholder="68743291" type="number" hint="Verify on ordinals.com before reporting — this is permanent and cannot be undone" />
               <BigBtn onClick={reportOrdinalMoved} variant="outline" disabled={!connected}>Report Ordinal Moved</BigBtn>
               <Status state={repS} msg={repM} />
             </Panel>
           </div>
         )}
 
-        {/* ── VAULT ── */}
+        {/* VAULT */}
         {tab === "vault" && (
           <Panel title="Vault Registry — On-Chain Tamper Seal">
             <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
@@ -1018,40 +711,23 @@ export default function Home() {
             <Status state={vS} msg={vM} />
 
             {vResult && (
-              <div style={{
-                marginTop: 20,
-                padding: mobile ? 20 : 28,
-                border: `2px solid ${!vResult.registered ? C.border : (vResult.swept || vResult.ordinalMoved) ? C.red : C.green}`,
-                borderRadius: 12,
-                background: !vResult.registered ? C.panel : (vResult.swept || vResult.ordinalMoved) ? C.redBg : C.greenBg,
-              }}>
+              <div style={{ marginTop: 20, padding: mobile ? 20 : 28, border: `2px solid ${!vResult.registered ? C.border : (vResult.swept || vResult.ordinalMoved) ? C.red : C.green}`, borderRadius: 12, background: !vResult.registered ? C.panel : (vResult.swept || vResult.ordinalMoved) ? C.redBg : C.greenBg }}>
 
-                {/* PRIMARY STATUS */}
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 18 : 22, fontWeight: 700, marginBottom: 16, lineHeight: 1.3 }}>
                   {!vResult.registered && <span style={{ color: C.textMuted }}>⚪ Not a Registered Vault</span>}
                   {vResult.registered && !vResult.swept && !vResult.ordinalMoved && <span style={{ color: C.green }}>🟢 Vault Intact — Never Accessed</span>}
                   {vResult.registered && vResult.swept && <span style={{ color: C.red }}>🔴 Vault Swept — IEOK Has Moved</span>}
                 </div>
 
-                {/* ORDINAL ALERT */}
                 {vResult.registered && vResult.ordinalMoved && (
                   <div style={{ marginBottom: 20, padding: "14px 18px", background: C.orangeBg, border: `1px solid ${C.orange}`, borderRadius: 8 }}>
-                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 17, fontWeight: 700, color: C.orange, marginBottom: 6 }}>
-                      ⚠️ Bitcoin Ordinal Has Moved
-                    </div>
+                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 17, fontWeight: 700, color: C.orange, marginBottom: 6 }}>⚠️ Bitcoin Ordinal Has Moved</div>
                     <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textDim, lineHeight: 1.7 }}>
-                      The Bitcoin Ordinal inscription linked to this art piece has been reported as transferred on the Bitcoin blockchain.
-                      {vResult.ordinalMovedAt !== "0" && (
-                        <span> Reported at: <strong style={{ color: C.orange }}>{fmtTs(vResult.ordinalMovedAt)}</strong></span>
-                      )}
+                      The Bitcoin Ordinal linked to this art piece has been reported as transferred.
+                      {vResult.ordinalMovedAt !== "0" && <span> Reported at: <strong style={{ color: C.orange }}>{fmtTs(vResult.ordinalMovedAt)}</strong></span>}
                     </div>
                     {Number(vResult.ordinalNumber) > 0 && (
-                      <a
-                        href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.orange, display: "block", marginTop: 8, fontWeight: 700 }}
-                      >
+                      <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.orange, display: "block", marginTop: 8, fontWeight: 700 }}>
                         Verify on Ordinals.com ↗
                       </a>
                     )}
@@ -1060,104 +736,58 @@ export default function Home() {
 
                 {vResult.registered && (
                   <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 20 }}>
-
                     <div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Vault Address</div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, wordBreak: "break-all" as const }}>{vAddr}</div>
                     </div>
-
-                    {/* IEOK BALANCE — sats primary */}
                     <div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Origin Key Balance</div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.text, fontWeight: 700 }}>
-                        {Number(vResult.balance).toLocaleString()} sats
-                      </div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>
-                        {fmtCbbtc(vResult.balance)}&nbsp;·&nbsp;{Number(vResult.balance).toLocaleString()} IEOK
-                      </div>
-                      {btcPrice > 0 && (
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>
-                          {fmtUsd(satsToUsd(Number(vResult.balance), btcPrice))} USD
-                        </div>
-                      )}
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.text, fontWeight: 700 }}>{Number(vResult.balance).toLocaleString()} sats</div>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{fmtCbbtc(vResult.balance)}&nbsp;·&nbsp;{Number(vResult.balance).toLocaleString()} IEOK</div>
+                      {btcPrice > 0 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.balance), btcPrice))} USD</div>}
                     </div>
-
-                    {/* cbBTC YIELD — sats primary */}
                     <div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>cbBTC Yield Earned</div>
                       {Number(vResult.dividends) > 0 ? (
                         <>
-                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.blue, fontWeight: 700 }}>
-                            🪙 {Number(vResult.dividends).toLocaleString()} sats
-                          </div>
-                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>
-                            {fmtCbbtc(vResult.dividends)}
-                          </div>
-                          {btcPrice > 0 && (
-                            <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>
-                              {fmtUsd(satsToUsd(Number(vResult.dividends), btcPrice))} USD
-                            </div>
-                          )}
+                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.blue, fontWeight: 700 }}>🪙 {Number(vResult.dividends).toLocaleString()} sats</div>
+                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{fmtCbbtc(vResult.dividends)}</div>
+                          {btcPrice > 0 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.dividends), btcPrice))} USD</div>}
                         </>
                       ) : (
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>
-                          No yield yet — accumulates as others buy and sell Origin Key tokens
-                        </div>
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>No yield yet — accumulates as others buy and sell</div>
                       )}
                     </div>
-
-                    {/* TOTAL REDEEMABLE */}
                     {btcPrice > 0 && (
                       <div style={{ gridColumn: "1 / -1", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "16px 20px" }}>
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.blue, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 700 }}>
-                          Total Redeemable Value
-                        </div>
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.blue, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 700 }}>Total Redeemable Value</div>
                         <div style={{ display: "flex", alignItems: "baseline", gap: 14, flexWrap: "wrap" as const }}>
-                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 24 : 30, color: C.blue, fontWeight: 700 }}>
-                            {fmtUsd(satsToUsd(Number(vResult.balance) + Number(vResult.dividends), btcPrice))} USD
-                          </div>
-                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted }}>
-                            {fmtCbbtc((Number(vResult.balance) + Number(vResult.dividends)).toString())}
-                            &nbsp;·&nbsp;
-                            {(Number(vResult.balance) + Number(vResult.dividends)).toLocaleString()} sats
-                          </div>
+                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 24 : 30, color: C.blue, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.balance) + Number(vResult.dividends), btcPrice))} USD</div>
+                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted }}>{fmtCbbtc((Number(vResult.balance) + Number(vResult.dividends)).toString())}&nbsp;·&nbsp;{(Number(vResult.balance) + Number(vResult.dividends)).toLocaleString()} sats</div>
                         </div>
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginTop: 6 }}>
-                          Origin Key tokens + accumulated cbBTC yield — redeemable by destroying the art piece
-                        </div>
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginTop: 6 }}>Origin Key tokens + accumulated cbBTC yield — redeemable by destroying the art piece</div>
                       </div>
                     )}
-
                     <div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Asset ID</div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.blue, wordBreak: "break-all" as const, fontWeight: 700 }}>{vResult.assetId}</div>
                     </div>
-
-                    {Number(vResult.ordinalNumber) > 0 && (
-                      <div>
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 600 }}>Bitcoin Ordinal</div>
-                        <a
-                          href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ display: "block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 16px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", textAlign: "center" as const, fontWeight: 700 }}
-                        >
+                    <div>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 600 }}>Bitcoin Ordinal</div>
+                      {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
+                        <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer" style={{ display: "block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 16px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", textAlign: "center" as const, fontWeight: 700 }}>
                           View Ordinal #{vResult.ordinalNumber} on Ordinals.com ↗
                         </a>
-                      </div>
-                    )}
-
+                      ) : (
+                        <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 16px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>
+                          No Ordinal linked — IEOK tokens only
+                        </div>
+                      )}
+                    </div>
                     {vResult.swept && (
                       <div style={{ gridColumn: "1 / -1", padding: "14px 18px", background: C.redBg, border: `1px solid ${C.red}`, borderRadius: 8 }}>
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.red, lineHeight: 1.7 }}>
-                          ⚠ Check the VaultSwept event on Basescan for the exact timestamp. Compare against the sale or shipping date to determine if this was legitimate redemption or the piece was compromised.
-                        </div>
-                        <a
-                          href={`${BLOCK_EXPLORER}/address/${IEOK_ADDRESS}#events`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.red, display: "block", marginTop: 8, fontWeight: 700 }}
-                        >
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.red, lineHeight: 1.7 }}>⚠ Check the VaultSwept event on Basescan for the exact timestamp.</div>
+                        <a href={`${BLOCK_EXPLORER}/address/${IEOK_ADDRESS}#events`} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.red, display: "block", marginTop: 8, fontWeight: 700 }}>
                           View VaultSwept Events on Basescan ↗
                         </a>
                       </div>
@@ -1166,25 +796,16 @@ export default function Home() {
                 )}
 
                 {!vResult.registered && (
-                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.textMuted }}>
-                    This address is not registered in the Analog Bitcoin vault registry. It is not an authenticated art piece.
-                  </div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.textMuted }}>This address is not registered in the Analog Bitcoin vault registry.</div>
                 )}
 
-                {/* RELATED LINKS — just two */}
                 <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${C.border}` }}>
                   <div style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
                     {[
-                      { label: "AnalogBitcoin.com — About this project", url: "https://analogbitcoin.com"                 },
+                      { label: "AnalogBitcoin.com — About this project", url: "https://analogbitcoin.com" },
                       { label: "View contract and events on Basescan",   url: `${BLOCK_EXPLORER}/address/${IEOK_ADDRESS}` },
                     ].map(link => (
-                      <a
-                        key={link.url}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", padding: "10px 14px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, display: "block", fontWeight: 600 }}
-                      >
+                      <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", padding: "10px 14px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, display: "block", fontWeight: 600 }}>
                         {link.label} ↗
                       </a>
                     ))}
@@ -1195,7 +816,7 @@ export default function Home() {
           </Panel>
         )}
 
-        {/* ── LEARN ── */}
+        {/* LEARN */}
         {tab === "learn" && (
           <Panel title="Learn — Video Guides">
             <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
@@ -1203,13 +824,7 @@ export default function Home() {
             </p>
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
               {VIDEOS.map((v, i) => (
-                <a
-                  key={i}
-                  href={v.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ display: "flex", gap: 14, padding: "16px 18px", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, textDecoration: "none", alignItems: "flex-start" }}
-                >
+                <a key={i} href={v.url} target="_blank" rel="noopener noreferrer" style={{ display: "flex", gap: 14, padding: "16px 18px", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, textDecoration: "none", alignItems: "flex-start" }}>
                   <div style={{ width: 40, height: 40, background: "#FF0000", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 16, color: "#FFFFFF" }}>▶</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", flexWrap: "wrap" as const, alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -1242,7 +857,7 @@ export default function Home() {
 
         {/* FOOTER */}
         <div style={{ textAlign: "center" as const, padding: "32px 0 16px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.15em", lineHeight: 2 }}>
-          NO ADMIN — NO GOVERNANCE — NOTHING CAN STOP THIS<br />
+          NO ADMIN — NO GOVERNANCE — NO INTERVENTION<br />
           IMMUTABLEEDITIONS.COM — ANALOGBITCOIN.COM
         </div>
 
