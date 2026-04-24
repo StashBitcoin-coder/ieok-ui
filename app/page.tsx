@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import { ensureBase, getBrowserProvider } from "@/lib/provider";
 import { IEOK_ADDRESS, CBBTC_ADDRESS } from "@/lib/contracts";
 
-const IEOK_ABI = [
+const OKT_ABI = [
   "function balanceOf(address) view returns (uint256)",
   "function dividendsOf(address) view returns (uint256)",
   "function totalSupply() view returns (uint256)",
@@ -46,25 +46,23 @@ type VaultResult = {
 } | null;
 
 const C = {
-  bg:        "#FFFFFF",
-  panel:     "#F5F7FA",
-  card:      "#FFFFFF",
-  input:     "#F5F7FA",
-  border:    "#E0E4EC",
-  blue:      "#0052FF",
-  blueDark:  "#0039B3",
-  text:      "#0A0B0D",
-  textDim:   "#2D3748",
-  textMuted: "#5B6278",
-  gray:      "#808080",
-  green:     "#00A878",
-  red:       "#DA3A3A",
-  orange:    "#E8913A",
-  greenBg:   "#E6F7F3",
-  redBg:     "#FDEAEA",
-  orangeBg:  "rgba(232,145,58,0.12)",
-  blueBg:    "#E8EFFE",
-  shadow:    "0 1px 3px rgba(0,0,0,0.08)",
+  bg:       "#FFFFFF",
+  panel:    "#F5F7FA",
+  card:     "#FFFFFF",
+  input:    "#F5F7FA",
+  border:   "#E0E4EC",
+  blue:     "#0052FF",
+  text:     "#0A0B0D",
+  textDim:  "#2D3748",
+  textMuted:"#5B6278",
+  green:    "#00A878",
+  red:      "#DA3A3A",
+  orange:   "#E8913A",
+  greenBg:  "#E6F7F3",
+  redBg:    "#FDEAEA",
+  orangeBg: "rgba(232,145,58,0.12)",
+  blueBg:   "#E8EFFE",
+  shadow:   "0 1px 3px rgba(0,0,0,0.08)",
 };
 
 const VAULT_REGISTRAR = "0x10DB4bf0C9e7c14f320C4e831CC85fFD8D15BE6D";
@@ -78,33 +76,16 @@ const fmtUsd    = (n: number) => "$" + n.toLocaleString(undefined, { minimumFrac
 const fmtAddr   = (v: string) => v ? v.slice(0, 6) + "..." + v.slice(-4) : "—";
 const fmtCbbtc  = (v: string) => (Number(v) / 1e8).toFixed(6) + " cbBTC";
 const fmtSats   = (v: string) => Number(v).toLocaleString() + " sats";
-const fmtTs     = (ts: string) => {
-  const n = Number(ts);
-  if (!n) return "—";
-  return new Date(n * 1000).toLocaleString();
-};
+const fmtOkt    = (v: string) => Number(v).toLocaleString() + " OKT";
+const fmtTs     = (ts: string) => { const n = Number(ts); if (!n) return "—"; return new Date(n * 1000).toLocaleString(); };
 
-function inscribePreview(sats: string) {
+function preview7(sats: string) {
   const n = Number(sats);
-  if (!n) return null;
-  const fee = Math.floor(n * 7 / 100);
-  return { fee, tokens: n - fee };
-}
-function buyPreview(sats: string) {
-  const n = Number(sats);
-  if (!n) return null;
-  const fee = Math.floor(n * 7 / 100);
-  return { fee, tokens: n - fee };
-}
-function sellPreview(tokens: string) {
-  const n = Number(tokens);
   if (!n) return null;
   const fee = Math.floor(n * 7 / 100);
   return { fee, out: n - fee };
 }
-function b32(str: string) {
-  return ethers.encodeBytes32String(str.slice(0, 31));
-}
+function b32(str: string) { return ethers.encodeBytes32String(str.slice(0, 31)); }
 
 const useIsMobile = () => {
   const [mobile, setMobile] = useState(false);
@@ -233,16 +214,17 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
 }
 
 const VIDEOS = [
-  { title: "What is IEOK — Immutable Editions Origin Key",  desc: "Introduction to the Origin Key token and how it works with physical art pieces.",  url: "https://youtube.com", tag: "START HERE", tc: C.green },
+  { title: "What is OKT — Origin Key Token",               desc: "Introduction to the Origin Key Token and how it works with physical art pieces.",  url: "https://youtube.com", tag: "START HERE", tc: C.green },
   { title: "What is Analog Bitcoin",                        desc: "The concept behind physical Bitcoin — destroy to redeem.",                           url: "https://youtube.com", tag: "CONCEPT",    tc: C.blue  },
   { title: "How to get cbBTC on Base",                      desc: "Step by step — buying Coinbase Wrapped Bitcoin and getting it into your wallet.",    url: "https://youtube.com", tag: "BEGINNERS",  tc: C.blue  },
-  { title: "How to buy Origin Key tokens",                  desc: "Buying IEOK using the exchange on Base.",                                             url: "https://youtube.com", tag: "TRADING",    tc: C.blue  },
-  { title: "How cbBTC dividends work",                      desc: "How fees are distributed to all Origin Key holders and how to withdraw.",            url: "https://youtube.com", tag: "DIVIDENDS",  tc: C.blue  },
+  { title: "How to buy Origin Key Tokens",                  desc: "Buying OKT using the exchange on Base.",                                             url: "https://youtube.com", tag: "TRADING",    tc: C.blue  },
+  { title: "How cbBTC dividends work",                      desc: "How fees are distributed to all OKT holders and how to withdraw.",                   url: "https://youtube.com", tag: "DIVIDENDS",  tc: C.blue  },
   { title: "How to verify a vault — NFC tap guide",         desc: "Tap an Analog Bitcoin NFC tag and verify vault status on chain.",                    url: "https://youtube.com", tag: "COLLECTORS", tc: C.green },
   { title: "What is an Ordinal inscription",                desc: "Understanding Bitcoin Ordinals and how they connect to physical art.",                url: "https://youtube.com", tag: "ORDINALS",   tc: "#5B6278" },
   { title: "How to redeem an Analog Bitcoin art piece",     desc: "What happens when you destroy the art and sweep the tokens.",                        url: "https://youtube.com", tag: "REDEMPTION", tc: C.red   },
 ];
 
+// ─── APPROVE HELPER — fully awaits confirmation + 1s delay for wallet sync ───
 async function ensureAllowance(
   cbbtc: ethers.Contract,
   owner: string,
@@ -256,6 +238,8 @@ async function ensureAllowance(
   const tx = await cbbtc.approve(spender, BigInt("999999999999999999"));
   setMsg("Approving cbBTC — waiting for confirmation...");
   await tx.wait();
+  // Small delay — gives Coinbase Wallet and Phantom time to sync approval state
+  await new Promise(resolve => setTimeout(resolve, 1000));
   setMsg("Approved ✓");
 }
 
@@ -265,7 +249,7 @@ export default function Home() {
   const [account, setAccount]   = useState("");
   const [chainId, setChainId]   = useState("");
   const [cbbtcBal, setCbbtcBal] = useState("0");
-  const [ieokBal, setIeokBal]   = useState("0");
+  const [oktBal, setOktBal]     = useState("0");
   const [divs, setDivs]         = useState("0");
   const [supply, setSupply]     = useState("0");
   const [btcPrice, setBtcPrice] = useState(0);
@@ -331,12 +315,12 @@ export default function Home() {
   async function load(p: ethers.BrowserProvider, user: string) {
     try {
       const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, p);
-      const ieok  = new ethers.Contract(IEOK_ADDRESS,  IEOK_ABI,  p);
-      const [cb, ib, dv, ts] = await Promise.all([
-        cbbtc.balanceOf(user), ieok.balanceOf(user),
-        ieok.dividendsOf(user), ieok.totalSupply(),
+      const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   p);
+      const [cb, ob, dv, ts] = await Promise.all([
+        cbbtc.balanceOf(user), okt.balanceOf(user),
+        okt.dividendsOf(user), okt.totalSupply(),
       ]);
-      setCbbtcBal(cb.toString()); setIeokBal(ib.toString());
+      setCbbtcBal(cb.toString()); setOktBal(ob.toString());
       setDivs(dv.toString()); setSupply(ts.toString());
     } catch (e) { console.error(e); }
   }
@@ -344,29 +328,30 @@ export default function Home() {
   async function buy() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!buyAmt)  { alert("Enter cbBTC amount");   return; }
+    if (Number(buyAmt) < 100) { alert("Minimum buy is 100 sats"); return; }
     const p = getBrowserProvider(); const s = await p.getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
-    const ieok  = new ethers.Contract(IEOK_ADDRESS,  IEOK_ABI,  s);
+    const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   s);
     setBuyS("pending"); setBuyM("Checking allowance...");
     try {
       await ensureAllowance(cbbtc, account, IEOK_ADDRESS, BigInt(buyAmt), setBuyM);
       setBuyM("Confirm purchase in your wallet...");
-      const tx = await ieok.buy(BigInt(buyAmt), BigInt(0));
+      const tx = await okt.buy(BigInt(buyAmt), BigInt(0));
       setBuyM("Confirming on chain...");
       await tx.wait();
-      setBuyS("success"); setBuyM("Purchase confirmed — Origin Key tokens received");
+      setBuyS("success"); setBuyM("Purchase confirmed — OKT tokens received");
       await load(p, account);
     } catch (e: any) { setBuyS("failed"); setBuyM(e.reason || e.message || "Buy failed"); }
   }
 
   async function sell() {
     if (!account) { alert("Connect wallet first"); return; }
-    if (!sellAmt) { alert("Enter IEOK amount");    return; }
+    if (!sellAmt) { alert("Enter OKT amount");     return; }
     const p = getBrowserProvider(); const s = await p.getSigner();
-    const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, s);
+    const okt = new ethers.Contract(IEOK_ADDRESS, OKT_ABI, s);
     setSellS("pending"); setSellM("Awaiting wallet...");
     try {
-      await (await ieok.sell(BigInt(sellAmt), BigInt(0))).wait();
+      await (await okt.sell(BigInt(sellAmt), BigInt(0))).wait();
       setSellS("success"); setSellM("Sell confirmed — cbBTC received");
       await load(p, account);
     } catch (e: any) { setSellS("failed"); setSellM(e.reason || e.message || "Sell failed"); }
@@ -375,10 +360,10 @@ export default function Home() {
   async function withdraw() {
     if (!account) { alert("Connect wallet first"); return; }
     const p = getBrowserProvider(); const s = await p.getSigner();
-    const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, s);
+    const okt = new ethers.Contract(IEOK_ADDRESS, OKT_ABI, s);
     setWdS("pending"); setWdM("Awaiting wallet...");
     try {
-      await (await ieok.withdraw()).wait();
+      await (await okt.withdraw()).wait();
       setWdS("success"); setWdM("cbBTC dividends sent to your wallet");
       await load(p, account);
     } catch (e: any) { setWdS("failed"); setWdM(e.reason || e.message || "Failed"); }
@@ -387,10 +372,10 @@ export default function Home() {
   async function transfer() {
     if (!account || !txTo || !txAmt) { alert("Fill in all fields"); return; }
     const p = getBrowserProvider(); const s = await p.getSigner();
-    const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, s);
+    const okt = new ethers.Contract(IEOK_ADDRESS, OKT_ABI, s);
     setTxS("pending"); setTxM("Awaiting wallet...");
     try {
-      await (await ieok.transfer(txTo, BigInt(txAmt))).wait();
+      await (await okt.transfer(txTo, BigInt(txAmt))).wait();
       setTxS("success"); setTxM("Transfer complete — zero fee");
       await load(p, account);
     } catch (e: any) { setTxS("failed"); setTxM(e.reason || e.message || "Failed"); }
@@ -399,15 +384,16 @@ export default function Home() {
   async function inscribe() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!insVault || !insAsset || !insCbbtc) { alert("Vault address, asset ID and cbBTC amount are required"); return; }
+    if (Number(insCbbtc) < 100) { alert("Minimum inscribe is 100 sats"); return; }
     const p = getBrowserProvider(); const s = await p.getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
-    const ieok  = new ethers.Contract(IEOK_ADDRESS,  IEOK_ABI,  s);
+    const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   s);
     setInsS("pending"); setInsM("Checking cbBTC allowance...");
     try {
       await ensureAllowance(cbbtc, account, IEOK_ADDRESS, BigInt(insCbbtc), setInsM);
       setInsM("Confirm inscription in your wallet...");
       const ordNum = insOrd ? BigInt(insOrd) : BigInt(0);
-      const tx = await ieok.inscribe(insVault, b32(insAsset), BigInt(insCbbtc), ordNum);
+      const tx = await okt.inscribe(insVault, b32(insAsset), BigInt(insCbbtc), ordNum);
       setInsM("Confirming on chain...");
       await tx.wait();
       setInsS("success"); setInsM(`Vault inscribed — ${insAsset} registered on chain`);
@@ -419,70 +405,47 @@ export default function Home() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!repOrd)  { alert("Enter ordinal number"); return; }
     const p = getBrowserProvider(); const s = await p.getSigner();
-    const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, s);
+    const okt = new ethers.Contract(IEOK_ADDRESS, OKT_ABI, s);
     setRepS("pending"); setRepM("Awaiting wallet...");
     try {
-      await (await ieok.reportOrdinalMoved(BigInt(repOrd))).wait();
+      await (await okt.reportOrdinalMoved(BigInt(repOrd))).wait();
       setRepS("success"); setRepM(`Ordinal #${repOrd} marked as moved — permanent on chain`);
     } catch (e: any) { setRepS("failed"); setRepM(e.reason || e.message || "Report failed"); }
   }
 
-  // ─── VAULT CHECK — two parallel calls ────────────────────────────────────
   async function checkVault() {
     if (!vAddr) { alert("Enter a vault address"); return; }
     setVS("pending"); setVM("Querying vault registry...");
     try {
       const provider = new ethers.JsonRpcProvider(PUBLIC_RPC);
-      const ieok = new ethers.Contract(IEOK_ADDRESS, IEOK_ABI, provider);
-
-      // Three parallel calls — vaultStatus, vaultOrdinalStatus, dividendsOf
+      const okt = new ethers.Contract(IEOK_ADDRESS, OKT_ABI, provider);
       const [core, ordinal, divAmount] = await Promise.all([
-        ieok.vaultStatus(vAddr),
-        ieok.vaultOrdinalStatus(vAddr),
-        ieok.dividendsOf(vAddr),
+        okt.vaultStatus(vAddr),
+        okt.vaultOrdinalStatus(vAddr),
+        okt.dividendsOf(vAddr),
       ]);
-
-      const [registered, swept, balance, assetId]               = core;
+      const [registered, swept, balance, assetId]                    = core;
       const [ordinalNumber, hasOrdinal, ordinalMoved, ordinalMovedAt] = ordinal;
-
-      setVResult({
-        registered, swept,
-        balance:        balance.toString(),
-        dividends:      divAmount.toString(),
-        assetId:        assetId.toString(),
-        ordinalNumber:  ordinalNumber.toString(),
-        hasOrdinal,
-        ordinalMoved,
-        ordinalMovedAt: ordinalMovedAt.toString(),
-      });
+      setVResult({ registered, swept, balance: balance.toString(), dividends: divAmount.toString(), assetId: assetId.toString(), ordinalNumber: ordinalNumber.toString(), hasOrdinal, ordinalMoved, ordinalMovedAt: ordinalMovedAt.toString() });
       setVS("idle"); setVM("");
-    } catch (e: any) {
-      setVS("failed"); setVM("Could not query — check address and try again");
-      setVResult(null);
-    }
+    } catch (e: any) { setVS("failed"); setVM("Could not query — check address and try again"); setVResult(null); }
   }
 
   useEffect(() => { fetchBtcPrice(); const iv = setInterval(fetchBtcPrice, 60000); return () => clearInterval(iv); }, []);
   useEffect(() => { if (!account) return; const iv = setInterval(() => load(getBrowserProvider(), account), 10000); return () => clearInterval(iv); }, [account]);
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const v = params.get("vault");
-    if (v) { setVAddr(v); setTab("vault"); }
-  }, []);
-  useEffect(() => {
-    if (vAddr && tab === "vault" && !autoChecked) { setAutoChecked(true); setTimeout(() => checkVault(), 300); }
-  }, [vAddr, tab]);
+  useEffect(() => { const params = new URLSearchParams(window.location.search); const v = params.get("vault"); if (v) { setVAddr(v); setTab("vault"); } }, []);
+  useEffect(() => { if (vAddr && tab === "vault" && !autoChecked) { setAutoChecked(true); setTimeout(() => checkVault(), 300); } }, [vAddr, tab]);
 
-  const bPrev     = buyPreview(buyAmt);
-  const sPrev     = sellPreview(sellAmt);
-  const insPrev   = inscribePreview(insCbbtc);
-  const cbbtcNum  = Number(cbbtcBal);
-  const ieokNum   = Number(ieokBal);
-  const divsNum   = Number(divs);
-  const supplyNum = Number(supply);
-  const cbbtcUsd  = btcPrice > 0 ? fmtUsd(satsToUsd(cbbtcNum, btcPrice)) : "";
-  const ieokUsd   = btcPrice > 0 ? fmtUsd(satsToUsd(ieokNum,  btcPrice)) : "";
-  const divsUsd   = btcPrice > 0 ? fmtUsd(satsToUsd(divsNum,  btcPrice)) : "";
+  const bPrev    = preview7(buyAmt);
+  const sPrev    = preview7(sellAmt);
+  const insPrev  = preview7(insCbbtc);
+  const cbbtcNum = Number(cbbtcBal);
+  const oktNum   = Number(oktBal);
+  const divsNum  = Number(divs);
+  const supplyNum= Number(supply);
+  const cbbtcUsd = btcPrice > 0 ? fmtUsd(satsToUsd(cbbtcNum, btcPrice)) : "";
+  const oktUsd   = btcPrice > 0 ? fmtUsd(satsToUsd(oktNum,   btcPrice)) : "";
+  const divsUsd  = btcPrice > 0 ? fmtUsd(satsToUsd(divsNum,  btcPrice)) : "";
 
   const tabs: { id: Tab; label: string; short: string }[] = [
     { id: "trade",    label: "BUY / SELL",  short: "TRADE"    },
@@ -493,7 +456,8 @@ export default function Home() {
   ];
 
   return (
-    <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif" }}>
+    // ─── FIX: overflowX hidden prevents horizontal scroll conflict on iOS ─────
+    <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif", overflowX: "hidden", WebkitOverflowScrolling: "touch" as any }}>
 
       {/* HEADER */}
       <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: mobile ? "0 12px" : "0 40px", height: mobile ? 64 : 72, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky" as const, top: 0, zIndex: 100, boxShadow: C.shadow }}>
@@ -515,12 +479,8 @@ export default function Home() {
           <div style={{ display: "flex", alignItems: "center", gap: 8, borderRight: `1px solid ${C.border}`, paddingRight: 12 }}>
             <SkeletonKey size={mobile ? 20 : 26} />
             <div style={{ textAlign: "center" as const }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.06em", lineHeight: 1, textTransform: "uppercase" as const, whiteSpace: "nowrap" as const }}>
-                Immutable Editions
-              </div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 18, fontWeight: 700, color: C.blue, lineHeight: 1.2, whiteSpace: "nowrap" as const }}>
-                Origin Key Exchange
-              </div>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.06em", lineHeight: 1, textTransform: "uppercase" as const, whiteSpace: "nowrap" as const }}>Immutable Editions</div>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 18, fontWeight: 700, color: C.blue, lineHeight: 1.2, whiteSpace: "nowrap" as const }}>Origin Key Exchange</div>
             </div>
           </div>
           {connected && !mobile && (
@@ -544,10 +504,14 @@ export default function Home() {
       {connected ? (
         <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: "1px" }}>
           <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 1, background: C.border }}>
-            <Card label="cbBTC Balance"      value={fmtSats(cbbtcBal)} sub={fmtCbbtc(cbbtcBal)} sub2={cbbtcUsd} />
-            <Card label="Origin Key Balance" value={fmtSats(ieokBal)}  sub={ieokNum.toLocaleString() + " IEOK"} sub2={ieokUsd} />
-            <Card label="Dividends"          value={fmtSats(divs)}     sub={fmtCbbtc(divs)} sub2={divsUsd} accent />
-            <Card label="Total Supply"       value={fmtSats(supply)}   sub={supplyNum.toLocaleString() + " IEOK"} />
+            {/* cbBTC — sats primary */}
+            <Card label="cbBTC Balance" value={fmtSats(cbbtcBal)} sub={fmtCbbtc(cbbtcBal)} sub2={cbbtcUsd} />
+            {/* OKT — OKT on top, sats underneath */}
+            <Card label="Origin Key Balance" value={fmtOkt(oktBal)} sub={fmtSats(oktBal)} sub2={oktUsd} />
+            {/* Dividends — sats primary */}
+            <Card label="Dividends" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent />
+            {/* Total Supply */}
+            <Card label="Total Token Supply" value={fmtOkt(supply)} sub={fmtSats(supply)} />
           </div>
         </div>
       ) : (
@@ -603,35 +567,35 @@ export default function Home() {
             </div>
 
             {mode === "buy" && (
-              <Panel title="Buy Origin Key — Fixed Price 1 Sat = 1 IEOK">
+              <Panel title="Buy OKT — Fixed Price 1 Sat = 1 OKT">
                 <FeeBadge mobile={mobile} />
                 <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
-                  Enter your cbBTC amount and tap Buy. First time buyers will see their wallet pop up twice — approve then buy. Future purchases are single tap.
+                  Enter your cbBTC amount in satoshis and tap Buy. Minimum 100 sats. First time buyers will see their wallet pop up twice — approve then buy. Future purchases are single tap.
                 </p>
-                <Input label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="10000" type="number" tag="SATS"
-                  hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "10,000 sats = 10,000 IEOK before 7% fee"} />
+                <Input label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
+                  hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 sats · 1,000 sats = 930 OKT after 7% fee"} />
                 {bPrev && (
                   <Preview rows={[
-                    { label: "7% fee — paid to all Origin Key holders", value: bPrev.fee.toLocaleString() + " sats" },
-                    { label: "Origin Key tokens you receive", value: bPrev.tokens.toLocaleString() + " IEOK" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.tokens, btcPrice)) : ""), blue: true },
+                    { label: "7% fee — paid to all OKT holders", value: bPrev.fee.toLocaleString() + " sats" },
+                    { label: "OKT you receive (1 sat = 1 OKT)", value: bPrev.out.toLocaleString() + " OKT" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
-                <BigBtn onClick={buy} disabled={!connected}>Buy Origin Key</BigBtn>
+                <BigBtn onClick={buy} disabled={!connected}>Buy OKT</BigBtn>
                 <Status state={buyS} msg={buyM} />
               </Panel>
             )}
 
             {mode === "sell" && (
-              <Panel title="Sell Origin Key — Fixed Price 1 IEOK = 1 Sat">
+              <Panel title="Sell OKT — Fixed Price 1 OKT = 1 Sat">
                 <FeeBadge mobile={mobile} />
-                <Input label="IEOK amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="9300" type="number" tag="IEOK" hint={`Your balance: ${ieokNum.toLocaleString()} IEOK`} />
+                <Input label="OKT amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
                 {sPrev && (
                   <Preview rows={[
-                    { label: "7% fee — paid to all Origin Key holders", value: sPrev.fee.toLocaleString() + " sats" },
-                    { label: "cbBTC you receive", value: sPrev.out.toLocaleString() + " sats" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(sPrev.out, btcPrice)) : ""), blue: true },
+                    { label: "7% fee — paid to all OKT holders", value: sPrev.fee.toLocaleString() + " sats" },
+                    { label: "cbBTC you receive (1 OKT = 1 sat)", value: sPrev.out.toLocaleString() + " sats" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(sPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
-                <BigBtn onClick={sell} variant="outline" disabled={!connected}>Sell for cbBTC</BigBtn>
+                <BigBtn onClick={sell} variant="outline" disabled={!connected}>Sell OKT for cbBTC</BigBtn>
                 <Status state={sellS} msg={sellM} />
               </Panel>
             )}
@@ -640,12 +604,12 @@ export default function Home() {
 
         {/* TRANSFER */}
         {tab === "transfer" && (
-          <Panel title="Transfer Origin Key — Zero Fee">
+          <Panel title="Transfer OKT — Zero Fee">
             <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
-              Send Origin Key tokens to any wallet with no fee. Dividend yield moves proportionally with the tokens.
+              Send OKT to any wallet with no fee. Dividend yield moves proportionally with the tokens.
             </p>
             <Input label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
-            <Input label="IEOK amount" value={txAmt} onChange={setTxAmt} placeholder="9300" type="number" tag="IEOK" hint={`Your balance: ${ieokNum.toLocaleString()} IEOK`} />
+            <Input label="OKT amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
             <BigBtn onClick={transfer} disabled={!connected}>Transfer — Free</BigBtn>
             <Status state={txS} msg={txM} />
           </Panel>
@@ -656,7 +620,7 @@ export default function Home() {
           <div>
             <Panel title="Inscribe Vault — Analog Bitcoin Art Piece">
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
-                You spend cbBTC — 7% goes to all IEOK holders as dividends, and the remaining 93% becomes IEOK tokens sealed inside the vault. The Ordinal number is optional — leave blank for series pieces without an Ordinal.
+                You spend cbBTC — 7% goes to all OKT holders as dividends, and the remaining 93% becomes OKT tokens sealed inside the vault. The Ordinal number is optional — leave blank for series pieces without an Ordinal.
               </p>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "16px", marginBottom: 20 }}>
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, marginBottom: 12, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.08em" }}>How It Works</div>
@@ -664,8 +628,8 @@ export default function Home() {
                   "Generate a fresh wallet in MetaMask — click Add Account",
                   "Copy that wallet address into the Vault field below",
                   "Get your Ordinal inscription number from ordinals.com (optional)",
-                  "Enter how much cbBTC you want embedded — 7% fee applies",
-                  "Hit Inscribe — cbBTC approved, fee distributed, IEOK sealed in vault",
+                  "Enter how much cbBTC you want embedded — 7% fee applies, minimum 100 sats",
+                  "Hit Inscribe — cbBTC approved, fee distributed, OKT sealed in vault",
                   "Print the private key and seal it inside the physical art",
                 ].map((s, i) => (
                   <div key={i} style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textDim, padding: "5px 0", display: "flex", gap: 12 }}>
@@ -677,12 +641,12 @@ export default function Home() {
               <Input label="Vault wallet address (sealed inside the art)" value={insVault} onChange={setInsVault} placeholder="0x..." />
               <Input label="Asset ID (max 31 characters)" value={insAsset} onChange={setInsAsset} placeholder="RWI-001" hint="e.g. RWI-001, IE-GENESIS-001, AB-001" />
               <Input label="Ordinal inscription number (optional)" value={insOrd} onChange={setInsOrd} placeholder="68743291 or leave blank" type="number" hint="Leave blank for series pieces without a linked Ordinal" />
-              <Input label="cbBTC to spend (sats) — 7% fee, rest becomes IEOK in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
-                hint={btcPrice > 0 && insCbbtc ? `≈ ${fmtUsd(satsToUsd(Number(insCbbtc), btcPrice))} USD` : `Your cbBTC balance: ${fmtSats(cbbtcBal)}`} />
+              <Input label="cbBTC to spend (sats) — 7% fee, rest becomes OKT in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
+                hint={btcPrice > 0 && insCbbtc ? `≈ ${fmtUsd(satsToUsd(Number(insCbbtc), btcPrice))} USD` : `Your cbBTC: ${fmtSats(cbbtcBal)} · Minimum 100 sats`} />
               {insPrev && (
                 <Preview rows={[
-                  { label: "7% fee — distributed to all IEOK holders", value: insPrev.fee.toLocaleString() + " sats" },
-                  { label: "IEOK sealed in vault (1 sat = 1 IEOK)", value: insPrev.tokens.toLocaleString() + " IEOK" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.tokens, btcPrice)) : ""), blue: true },
+                  { label: "7% fee — distributed to all OKT holders", value: insPrev.fee.toLocaleString() + " sats" },
+                  { label: "OKT sealed in vault (1 sat = 1 OKT)", value: insPrev.out.toLocaleString() + " OKT" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.out, btcPrice)) : ""), blue: true },
                 ]} />
               )}
               <BigBtn onClick={inscribe} disabled={!connected}>Inscribe Vault</BigBtn>
@@ -716,7 +680,7 @@ export default function Home() {
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 18 : 22, fontWeight: 700, marginBottom: 16, lineHeight: 1.3 }}>
                   {!vResult.registered && <span style={{ color: C.textMuted }}>⚪ Not a Registered Vault</span>}
                   {vResult.registered && !vResult.swept && !vResult.ordinalMoved && <span style={{ color: C.green }}>🟢 Vault Intact — Never Accessed</span>}
-                  {vResult.registered && vResult.swept && <span style={{ color: C.red }}>🔴 Vault Swept — IEOK Has Moved</span>}
+                  {vResult.registered && vResult.swept && <span style={{ color: C.red }}>🔴 Vault Swept — OKT Has Moved</span>}
                 </div>
 
                 {vResult.registered && vResult.ordinalMoved && (
@@ -742,8 +706,8 @@ export default function Home() {
                     </div>
                     <div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Origin Key Balance</div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.text, fontWeight: 700 }}>{Number(vResult.balance).toLocaleString()} sats</div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{fmtCbbtc(vResult.balance)}&nbsp;·&nbsp;{Number(vResult.balance).toLocaleString()} IEOK</div>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.text, fontWeight: 700 }}>{Number(vResult.balance).toLocaleString()} OKT</div>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{Number(vResult.balance).toLocaleString()} sats&nbsp;·&nbsp;{fmtCbbtc(vResult.balance)}</div>
                       {btcPrice > 0 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.balance), btcPrice))} USD</div>}
                     </div>
                     <div>
@@ -758,6 +722,7 @@ export default function Home() {
                         <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>No yield yet — accumulates as others buy and sell</div>
                       )}
                     </div>
+
                     {btcPrice > 0 && (
                       <div style={{ gridColumn: "1 / -1", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "16px 20px" }}>
                         <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.blue, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 700 }}>Total Redeemable Value</div>
@@ -765,13 +730,17 @@ export default function Home() {
                           <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 24 : 30, color: C.blue, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.balance) + Number(vResult.dividends), btcPrice))} USD</div>
                           <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted }}>{fmtCbbtc((Number(vResult.balance) + Number(vResult.dividends)).toString())}&nbsp;·&nbsp;{(Number(vResult.balance) + Number(vResult.dividends)).toLocaleString()} sats</div>
                         </div>
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginTop: 6 }}>Origin Key tokens + accumulated cbBTC yield — redeemable by destroying the art piece</div>
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginTop: 6 }}>
+                          OKT tokens + accumulated cbBTC yield — redeemable by destroying the art piece and acquiring the embedded SeedPod (Private Key) to the wallet holding the digital assets.
+                        </div>
                       </div>
                     )}
+
                     <div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Asset ID</div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.blue, wordBreak: "break-all" as const, fontWeight: 700 }}>{vResult.assetId}</div>
                     </div>
+
                     <div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 600 }}>Bitcoin Ordinal</div>
                       {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
@@ -780,10 +749,11 @@ export default function Home() {
                         </a>
                       ) : (
                         <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 16px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>
-                          No Ordinal linked — IEOK tokens only
+                          No Ordinal linked — OKT tokens only
                         </div>
                       )}
                     </div>
+
                     {vResult.swept && (
                       <div style={{ gridColumn: "1 / -1", padding: "14px 18px", background: C.redBg, border: `1px solid ${C.red}`, borderRadius: 8 }}>
                         <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.red, lineHeight: 1.7 }}>⚠ Check the VaultSwept event on Basescan for the exact timestamp.</div>
@@ -820,7 +790,7 @@ export default function Home() {
         {tab === "learn" && (
           <Panel title="Learn — Video Guides">
             <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
-              Everything you need to understand Origin Key, Analog Bitcoin, and how to participate.
+              Everything you need to understand Origin Key Token, Analog Bitcoin, and how to participate.
             </p>
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
               {VIDEOS.map((v, i) => (
@@ -844,7 +814,7 @@ export default function Home() {
         <div style={{ marginTop: 24, background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, padding: "16px 20px" }}>
           <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 16 }}>
             {[
-              { label: "IEOK Contract",  value: IEOK_ADDRESS,  color: C.blue      },
+              { label: "OKT Contract",   value: IEOK_ADDRESS,  color: C.blue      },
               { label: "cbBTC Contract", value: CBBTC_ADDRESS, color: C.textMuted },
             ].map(item => (
               <div key={item.label}>
