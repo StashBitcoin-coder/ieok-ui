@@ -456,11 +456,10 @@ export default function Home() {
   ];
 
   return (
-    // ─── FIX: overflowX hidden prevents horizontal scroll conflict on iOS ─────
-    <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif", overflowX: "hidden", WebkitOverflowScrolling: "touch" as any }}>
+    <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif" }}>
 
       {/* HEADER */}
-      <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: mobile ? "0 12px" : "0 40px", height: mobile ? 64 : 72, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky" as const, top: 0, zIndex: 100, boxShadow: C.shadow }}>
+      <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: mobile ? "0 12px" : "0 40px", height: mobile ? 64 : 72, display: "flex", alignItems: "center", justifyContent: "space-between", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
           <CbbtcLogo size={mobile ? 26 : 34} />
           {!mobile && (
@@ -493,6 +492,8 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      <div style={{ height: mobile ? 64 : 72 }} />
 
       {connected && !correctChain && (
         <div style={{ background: C.redBg, borderBottom: `1px solid ${C.red}`, padding: "12px 20px", textAlign: "center" as const }}>
