@@ -294,11 +294,17 @@ export default function Home() {
   const correctChain = chainId === CHAIN_ID;
 
   async function fetchBtcPrice() {
+    // Try CoinGecko first, fall back to Binance API if blocked (e.g. Brave shields)
     try {
       const res  = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
       const data = await res.json();
-      setBtcPrice(data.bitcoin.usd);
-    } catch (e) { console.error(e); }
+      if (data?.bitcoin?.usd) { setBtcPrice(data.bitcoin.usd); return; }
+    } catch (e) { /* blocked — try fallback */ }
+    try {
+      const res  = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
+      const data = await res.json();
+      if (data?.price) { setBtcPrice(parseFloat(data.price)); return; }
+    } catch (e) { /* both failed */ console.error("BTC price unavailable"); }
   }
 
   async function connect() {
@@ -456,7 +462,7 @@ export default function Home() {
   ];
 
   return (
-    <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif" }}>
+    <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif", touchAction: "pan-y", WebkitOverflowScrolling: "touch" as any, overscrollBehavior: "none" }}>
 
       {/* HEADER */}
       <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: mobile ? "0 12px" : "0 40px", height: mobile ? 64 : 72, display: "flex", alignItems: "center", justifyContent: "space-between", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
