@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { ensureBase, getBrowserProvider } from "@/lib/provider";
 import { IEOK_ADDRESS, CBBTC_ADDRESS } from "@/lib/contracts";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount, useWalletClient, usePublicClient } from "wagmi";
 
 const OKT_ABI = [
   "function balanceOf(address) view returns (uint256)",
@@ -26,10 +27,6 @@ const CBBTC_ABI = [
 ];
 
 const PUBLIC_RPC = "https://sepolia.base.org";
-
-declare global {
-  interface Window { ethereum?: any; }
-}
 
 type TxState = "idle" | "pending" | "success" | "failed";
 type Tab = "trade" | "transfer" | "vault" | "learn" | "inscribe";
@@ -248,8 +245,11 @@ async function ensureAllowance(
 export default function Home() {
   const mobile = useIsMobile();
 
-  const [account, setAccount]   = useState("");
-  const [chainId, setChainId]   = useState("");
+  // ─── Wagmi hooks replace manual connect ────────────────────────────────────
+  const { address: account, isConnected: connected, chain } = useAccount();
+  const { data: walletClient }  = useWalletClient();
+  const publicClient            = usePublicClient();
+
   const [cbbtcBal, setCbbtcBal] = useState("0");
   const [oktBal, setOktBal]     = useState("0");
   const [divs, setDivs]         = useState("0");
@@ -291,9 +291,8 @@ export default function Home() {
   const [vM, setVM]             = useState("");
   const [autoChecked, setAutoChecked] = useState(false);
 
-  const isRegistrar  = account.toLowerCase() === VAULT_REGISTRAR.toLowerCase();
-  const connected    = !!account;
-  const correctChain = chainId === CHAIN_ID;
+  const isRegistrar  = account ? accountStr.toLowerCase() === VAULT_REGISTRAR.toLowerCase() : false;
+  const correctChain = chain?.id === Number(CHAIN_ID);
 
   async function fetchBtcPrice() {
     // Try CoinGecko first, fall back to Binance API if blocked (e.g. Brave shields)
@@ -309,21 +308,11 @@ export default function Home() {
     } catch (e) { /* both failed */ console.error("BTC price unavailable"); }
   }
 
-  async function connect() {
-    if (!window.ethereum) { alert("Please open in MetaMask or Coinbase Wallet browser"); return; }
-    await ensureBase();
-    const p = getBrowserProvider();
-    const [user] = await p.send("eth_requestAccounts", []);
-    setAccount(user);
-    const net = await p.getNetwork();
-    setChainId(net.chainId.toString());
-    await load(p, user);
-  }
-
-  async function load(p: ethers.BrowserProvider, user: string) {
+  async function load(user: string) {
     try {
-      const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, p);
-      const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   p);
+      const provider = new ethers.JsonRpcProvider(PUBLIC_RPC);
+      const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, provider);
+      const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   provider);
       const [cb, ob, dv, ts] = await Promise.all([
         cbbtc.balanceOf(user), okt.balanceOf(user),
         okt.dividendsOf(user), okt.totalSupply(),
@@ -333,11 +322,20 @@ export default function Home() {
     } catch (e) { console.error(e); }
   }
 
+  // ─── Helper: get ethers signer from wagmi walletClient ──────────────────
+  function getSigner() {
+    if (!walletClient) throw new Error("Wallet not connected");
+    const { account: acc, chain: ch, transport } = walletClient;
+    const network = { chainId: ch.id, name: ch.name };
+    const provider = new ethers.BrowserProvider(transport, network);
+    return provider.getSigner(acc.address);
+  }
+
   async function buy() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!buyAmt)  { alert("Enter cbBTC amount");   return; }
     if (Number(buyAmt) < 100) { alert("Minimum buy is 100 sats"); return; }
-    const p = getBrowserProvider(); const s = await p.getSigner();
+    const s = await getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
     const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   s);
     setBuyS("pending"); setBuyM("Checking allowance...");
@@ -348,44 +346,44 @@ export default function Home() {
       setBuyM("Confirming on chain...");
       await tx.wait();
       setBuyS("success"); setBuyM("Purchase confirmed — OKT tokens received");
-      await load(p, account);
+      if (account) await load(account);
     } catch (e: any) { setBuyS("failed"); setBuyM(e.reason || e.message || "Buy failed"); }
   }
 
   async function sell() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!sellAmt) { alert("Enter OKT amount");     return; }
-    const p = getBrowserProvider(); const s = await p.getSigner();
+    const s = await getSigner();
     const okt = new ethers.Contract(IEOK_ADDRESS, OKT_ABI, s);
     setSellS("pending"); setSellM("Awaiting wallet...");
     try {
       await (await okt.sell(BigInt(sellAmt), BigInt(0))).wait();
       setSellS("success"); setSellM("Sell confirmed — cbBTC received");
-      await load(p, account);
+      if (account) await load(account);
     } catch (e: any) { setSellS("failed"); setSellM(e.reason || e.message || "Sell failed"); }
   }
 
   async function withdraw() {
     if (!account) { alert("Connect wallet first"); return; }
-    const p = getBrowserProvider(); const s = await p.getSigner();
+    const s = await getSigner();
     const okt = new ethers.Contract(IEOK_ADDRESS, OKT_ABI, s);
     setWdS("pending"); setWdM("Awaiting wallet...");
     try {
       await (await okt.withdraw()).wait();
       setWdS("success"); setWdM("cbBTC dividends sent to your wallet");
-      await load(p, account);
+      if (account) await load(account);
     } catch (e: any) { setWdS("failed"); setWdM(e.reason || e.message || "Failed"); }
   }
 
   async function transfer() {
     if (!account || !txTo || !txAmt) { alert("Fill in all fields"); return; }
-    const p = getBrowserProvider(); const s = await p.getSigner();
+    const s = await getSigner();
     const okt = new ethers.Contract(IEOK_ADDRESS, OKT_ABI, s);
     setTxS("pending"); setTxM("Awaiting wallet...");
     try {
       await (await okt.transfer(txTo, BigInt(txAmt))).wait();
       setTxS("success"); setTxM("Transfer complete — zero fee");
-      await load(p, account);
+      if (account) await load(account);
     } catch (e: any) { setTxS("failed"); setTxM(e.reason || e.message || "Failed"); }
   }
 
@@ -393,7 +391,7 @@ export default function Home() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!insVault || !insAsset || !insCbbtc) { alert("Vault address, asset ID and cbBTC amount are required"); return; }
     if (Number(insCbbtc) < 100) { alert("Minimum inscribe is 100 sats"); return; }
-    const p = getBrowserProvider(); const s = await p.getSigner();
+    const s = await getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
     const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   s);
     setInsS("pending"); setInsM("Checking cbBTC allowance...");
@@ -405,14 +403,14 @@ export default function Home() {
       setInsM("Confirming on chain...");
       await tx.wait();
       setInsS("success"); setInsM(`Vault inscribed — ${insAsset} registered on chain`);
-      await load(p, account);
+      if (account) await load(account);
     } catch (e: any) { setInsS("failed"); setInsM(e.reason || e.message || "Inscribe failed"); }
   }
 
   async function reportOrdinalMoved() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!repOrd)  { alert("Enter ordinal number"); return; }
-    const p = getBrowserProvider(); const s = await p.getSigner();
+    const s = await getSigner();
     const okt = new ethers.Contract(IEOK_ADDRESS, OKT_ABI, s);
     setRepS("pending"); setRepM("Awaiting wallet...");
     try {
@@ -440,7 +438,12 @@ export default function Home() {
   }
 
   useEffect(() => { fetchBtcPrice(); const iv = setInterval(fetchBtcPrice, 60000); return () => clearInterval(iv); }, []);
-  useEffect(() => { if (!account) return; const iv = setInterval(() => load(getBrowserProvider(), account), 10000); return () => clearInterval(iv); }, [account]);
+  useEffect(() => {
+    if (!account) return;
+    load(account);
+    const iv = setInterval(() => load(account), 10000);
+    return () => clearInterval(iv);
+  }, [account]);
   useEffect(() => { const params = new URLSearchParams(window.location.search); const v = params.get("vault"); if (v) { setVAddr(v); setTab("vault"); } }, []);
   useEffect(() => { if (vAddr && tab === "vault" && !autoChecked) { setAutoChecked(true); setTimeout(() => checkVault(), 300); } }, [vAddr, tab]);
 
@@ -454,6 +457,7 @@ export default function Home() {
   const cbbtcUsd = btcPrice > 0 ? fmtUsd(satsToUsd(cbbtcNum, btcPrice)) : "";
   const oktUsd   = btcPrice > 0 ? fmtUsd(satsToUsd(oktNum,   btcPrice)) : "";
   const divsUsd  = btcPrice > 0 ? fmtUsd(satsToUsd(divsNum,  btcPrice)) : "";
+  const accountStr = account ?? "";
 
   const tabs: { id: Tab; label: string; short: string }[] = [
     { id: "trade",    label: "BUY / SELL",  short: "TRADE"    },
@@ -490,24 +494,18 @@ export default function Home() {
               <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 18, fontWeight: 700, color: C.blue, lineHeight: 1.2, whiteSpace: "nowrap" as const }}>Origin Key Exchange</div>
             </div>
           </div>
-          {connected && !mobile && (
-            <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: correctChain ? C.green : C.red, fontWeight: 600 }}>
-              {correctChain ? `✓ ${CHAIN_LABEL}` : "⚠ WRONG NETWORK"}
-            </span>
-          )}
-          <button onClick={connect} style={{ background: connected ? C.greenBg : C.blue, color: connected ? C.green : "#FFFFFF", border: connected ? `1.5px solid ${C.green}` : "none", borderRadius: 8, padding: mobile ? "7px 10px" : "10px 20px", fontFamily: "Arial, sans-serif", fontSize: mobile ? 11 : 13, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, letterSpacing: "0.05em", WebkitTapHighlightColor: "transparent", boxShadow: connected ? "none" : C.shadow, whiteSpace: "nowrap" as const }}>
-            {connected ? fmtAddr(account) : "Connect"}
-          </button>
+
+          <ConnectButton
+            showBalance={false}
+            chainStatus="none"
+            accountStatus="address"
+          />
         </div>
       </div>
 
       <div style={{ height: mobile ? 64 : 72 }} />
 
-      {connected && !correctChain && (
-        <div style={{ background: C.redBg, borderBottom: `1px solid ${C.red}`, padding: "12px 20px", textAlign: "center" as const }}>
-          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.red, fontWeight: 600 }}>⚠ Please switch to {CHAIN_LABEL} in your wallet</span>
-        </div>
-      )}
+
 
       {/* PORTFOLIO CARDS */}
       {connected ? (
@@ -549,9 +547,9 @@ export default function Home() {
         </div>
       )}
 
-      {connected && (
+      {connected && account && (
         <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: mobile ? "8px 16px" : "8px 40px" }}>
-          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted }}>{mobile ? fmtAddr(account) : account}</span>
+          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted }}>{mobile ? fmtAddr(accountStr) : accountStr}</span>
         </div>
       )}
 
