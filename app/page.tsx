@@ -112,11 +112,13 @@ function SkeletonKey({ size = 28 }: { size?: number }) {
 
 function CbbtcLogo({ size = 20 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="14.5" fill="none" stroke="#0052FF" strokeWidth="2.5"/>
-      <text x="16" y="22" textAnchor="middle" fontSize="19" fontWeight="bold" fill="#0052FF"
-        fontFamily="Arial, sans-serif" transform="rotate(12, 16, 16)">₿</text>
-    </svg>
+    <img
+      src="/coinbase-wrapped-btc.png"
+      width={size}
+      height={size}
+      alt="cbBTC"
+      style={{ display: "block", flexShrink: 0 }}
+    />
   );
 }
 
@@ -533,7 +535,9 @@ export default function Home() {
       {connected && divsNum > 0 && (
         <div style={{ background: C.blueBg, borderBottom: `1px solid ${C.blue}`, padding: mobile ? "14px 16px" : "14px 40px", display: "flex", flexDirection: mobile ? "column" : "row" as const, alignItems: mobile ? "stretch" : "center", justifyContent: "space-between", gap: 12 }}>
           <div>
-            <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 16, color: C.blue, fontWeight: 700 }}>🪙 {fmtSats(divs)} cbBTC dividends available</span>
+            <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 16, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
+              <CbbtcLogo size={18} />{fmtSats(divs)} cbBTC dividends available
+            </span>
             {divsUsd && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginLeft: 10 }}>{divsUsd}</span>}
           </div>
           <div>
@@ -674,10 +678,22 @@ export default function Home() {
         {/* VAULT */}
         {tab === "vault" && (
           <Panel title="Vault Registry — On-Chain Tamper Seal">
-            <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
-              Tap an NFC tag on a physical Analog Bitcoin art piece to verify the piece is intact and uncompromised. No wallet required.
-            </p>
-            <Input label="Vault wallet address" value={vAddr} onChange={setVAddr} placeholder="0x..." />
+
+            {/* INPUT AND BUTTON — always visible at top */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, marginBottom: 8, fontWeight: 600 }}>Vault Wallet Address</div>
+              <div style={{ position: "relative" as const }}>
+                <input
+                  type="text"
+                  value={vAddr}
+                  onChange={e => setVAddr(e.target.value)}
+                  placeholder="0x..."
+                  style={{ width: "100%", background: C.input, border: `1.5px solid ${C.border}`, borderRadius: 8, color: C.text, fontFamily: "Arial, sans-serif", fontSize: 17, padding: "14px 16px", outline: "none", boxSizing: "border-box" as const }}
+                  onFocus={e => e.target.style.borderColor = C.blue}
+                  onBlur={e => e.target.style.borderColor = C.border}
+                />
+              </div>
+            </div>
             <BigBtn onClick={checkVault} variant="outline">Verify Vault Status</BigBtn>
             <Status state={vS} msg={vM} />
 
@@ -689,6 +705,22 @@ export default function Home() {
                   {vResult.registered && !vResult.swept && !vResult.ordinalMoved && <span style={{ color: C.green }}>🟢 Vault Intact — Never Accessed</span>}
                   {vResult.registered && vResult.swept && <span style={{ color: C.red }}>🔴 Vault Swept — OKT Has Moved</span>}
                 </div>
+
+                {/* ORDINAL LINK — centered directly under status */}
+                {vResult.registered && (
+                  <div style={{ textAlign: "center" as const, marginBottom: 20 }}>
+                    {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
+                      <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "inline-block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 24px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", fontWeight: 700 }}>
+                        View Ordinal #{vResult.ordinalNumber} on Ordinals.com ↗
+                      </a>
+                    ) : (
+                      <div style={{ display: "inline-block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 24px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>
+                        No Ordinal linked — OKT tokens only
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {vResult.registered && vResult.ordinalMoved && (
                   <div style={{ marginBottom: 20, padding: "14px 18px", background: C.orangeBg, border: `1px solid ${C.orange}`, borderRadius: 8 }}>
@@ -721,7 +753,9 @@ export default function Home() {
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>cbBTC Yield Earned</div>
                       {Number(vResult.dividends) > 0 ? (
                         <>
-                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.blue, fontWeight: 700 }}>🪙 {Number(vResult.dividends).toLocaleString()} sats</div>
+                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
+                            <CbbtcLogo size={24} />{Number(vResult.dividends).toLocaleString()} sats
+                          </div>
                           <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{fmtCbbtc(vResult.dividends)}</div>
                           {btcPrice > 0 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.dividends), btcPrice))} USD</div>}
                         </>
@@ -746,19 +780,6 @@ export default function Home() {
                     <div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Asset ID</div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.blue, wordBreak: "break-all" as const, fontWeight: 700 }}>{vResult.assetId}</div>
-                    </div>
-
-                    <div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 600 }}>Bitcoin Ordinal</div>
-                      {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
-                        <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer" style={{ display: "block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 16px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", textAlign: "center" as const, fontWeight: 700 }}>
-                          View Ordinal #{vResult.ordinalNumber} on Ordinals.com ↗
-                        </a>
-                      ) : (
-                        <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 16px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>
-                          No Ordinal linked — OKT tokens only
-                        </div>
-                      )}
                     </div>
 
                     {vResult.swept && (
