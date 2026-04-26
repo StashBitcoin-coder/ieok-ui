@@ -291,7 +291,6 @@ export default function Home() {
   const [vM, setVM]             = useState("");
   const [autoChecked, setAutoChecked] = useState(false);
 
-  const isRegistrar  = account ? accountStr.toLowerCase() === VAULT_REGISTRAR.toLowerCase() : false;
   const correctChain = chain?.id === Number(CHAIN_ID);
 
   async function fetchBtcPrice() {
@@ -457,7 +456,8 @@ export default function Home() {
   const cbbtcUsd = btcPrice > 0 ? fmtUsd(satsToUsd(cbbtcNum, btcPrice)) : "";
   const oktUsd   = btcPrice > 0 ? fmtUsd(satsToUsd(oktNum,   btcPrice)) : "";
   const divsUsd  = btcPrice > 0 ? fmtUsd(satsToUsd(divsNum,  btcPrice)) : "";
-  const accountStr = account ?? "";
+  const accountStr   = account ?? "";
+  const isRegistrar  = accountStr.toLowerCase() === VAULT_REGISTRAR.toLowerCase();
 
   const tabs: { id: Tab; label: string; short: string }[] = [
     { id: "trade",    label: "BUY / SELL",  short: "TRADE"    },
