@@ -579,7 +579,7 @@ export default function Home() {
                 Immutable Editions
               </div>
               <h1 style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 36 : 56, fontWeight: 400, color: C.text, lineHeight: 1.1, margin: "0 0 24px", letterSpacing: "-0.02em" }}>
-                Where Provenance<br/>and Interest meets<br/>
+                Where Provenance<br/>and Interest meet<br/>
                 <span style={{ color: C.blue, fontStyle: "italic" }}>Market Integrity.</span>
               </h1>
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 18, color: C.textMuted, lineHeight: 1.7, maxWidth: 600, margin: "0 auto 40px", fontWeight: 300 }}>
@@ -611,7 +611,7 @@ export default function Home() {
                 {
                   label: "Provenance",
                   title: "Real World Inscriptions",
-                  desc: "Physical art with Bitcoin Ordinal embedded SeedPod (wallet private key). NFC scan verification. Tap any piece to see its entire history — unalterable, on chain, forever.",
+                  desc: "Tokenizing physical collectables with the unquestionable Bitcoin Ordinal standard. Using the embedded SeedPod (wallet private key) and NFC scan for verification of provenance. Tap any piece to see its entire origin — unalterable, on chain, forever.",
                   site: "AnalogBitcoin.com",
                   url: "https://analogbitcoin.com",
                   tab: null,
@@ -619,7 +619,7 @@ export default function Home() {
                 {
                   label: "Interest",
                   title: "Origin Key Token",
-                  desc: "Every physical creation earns cbBTC yield while more creations come to life. Fees from every creation of physical art (and OKT trades) flow automatically to all holders — including each already (still Vaulted) creation.",
+                  desc: "Every physical creation is embedded with Origin Key Tokens at birth. Held tokens earn cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.",
                   site: "Buy OKT",
                   url: null,
                   tab: "trade",
@@ -627,7 +627,7 @@ export default function Home() {
                 {
                   label: "Market Integrity",
                   title: "The Key Exchange",
-                  desc: "A Bitcoin pegged price (1 OKT = 1 Sat), audited exchange and extreme performance on Base. No admin. No governance. No intervention. No extraction. The price is the math. The market is actual participants.",
+                  desc: "The Origin Key Token is pegged to Bitcoin (1 OKT = 1 Sat). The protocol has been audited and being deployed on Base offers extreme performance. There is no admin. No governance. No intervention. No extraction. The price is the math. The market is actual participants.",
                   site: "Verify a Piece",
                   url: null,
                   tab: "vault",
@@ -643,9 +643,9 @@ export default function Home() {
                   <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300, display: "flex", flexWrap: "wrap" as const, alignItems: "center", gap: 2 }}>
                     {i === 1 ? (
                       <>
-                        Every physical creation earns{" "}
+                        Every physical creation is embedded with Origin Key Tokens at birth. Held tokens earn{" "}
                         <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 2px" }} />
-                        {" "}cbBTC yield while more creations come to life. Fees from every creation of physical art (and OKT trades) flow automatically to all holders — including each already (still Vaulted) creation.
+                        {" "}cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.
                       </>
                     ) : p.desc}
                   </p>
