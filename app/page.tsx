@@ -29,7 +29,7 @@ const CBBTC_ABI = [
 const PUBLIC_RPC = "https://sepolia.base.org";
 
 type TxState = "idle" | "pending" | "success" | "failed";
-type Tab = "trade" | "transfer" | "vault" | "learn" | "inscribe";
+type Tab = "home" | "trade" | "transfer" | "vault" | "learn" | "inscribe";
 type VaultResult = {
   registered: boolean;
   swept: boolean;
@@ -255,7 +255,7 @@ export default function Home() {
   const [divs, setDivs]         = useState("0");
   const [supply, setSupply]     = useState("0");
   const [btcPrice, setBtcPrice] = useState(0);
-  const [tab, setTab]           = useState<Tab>("trade");
+  const [tab, setTab]           = useState<Tab>("home");
   const [mode, setMode]         = useState<"buy" | "sell">("buy");
 
   const [buyAmt, setBuyAmt]     = useState("");
@@ -436,6 +436,11 @@ export default function Home() {
     } catch (e: any) { setVS("failed"); setVM("Could not query — check address and try again"); setVResult(null); }
   }
 
+  // Option B: connected wallet → trade, new visitor → home
+  useEffect(() => {
+    if (connected) setTab(prev => prev === "home" ? "trade" : prev);
+  }, [connected]);
+
   useEffect(() => { fetchBtcPrice(); const iv = setInterval(fetchBtcPrice, 60000); return () => clearInterval(iv); }, []);
   useEffect(() => {
     if (!account) return;
@@ -460,6 +465,7 @@ export default function Home() {
   const isRegistrar  = accountStr.toLowerCase() === VAULT_REGISTRAR.toLowerCase();
 
   const tabs: { id: Tab; label: string; short: string }[] = [
+    { id: "home",     label: "HOME",        short: "HOME"     },
     { id: "trade",    label: "BUY / SELL",  short: "TRADE"    },
     { id: "transfer", label: "TRANSFER",    short: "SEND"     },
     { id: "vault",    label: "VAULT CHECK", short: "VAULT"    },
@@ -563,6 +569,134 @@ export default function Home() {
             </button>
           ))}
         </div>
+
+        {/* HOME */}
+        {tab === "home" && (
+          <div>
+            {/* HERO */}
+            <div style={{ textAlign: "center" as const, padding: mobile ? "48px 0 40px" : "64px 0 56px" }}>
+              <div style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 13 : 14, color: C.blue, letterSpacing: "0.2em", textTransform: "uppercase" as const, marginBottom: 20, fontWeight: 400 }}>
+                Immutable Editions
+              </div>
+              <h1 style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 36 : 56, fontWeight: 400, color: C.text, lineHeight: 1.1, margin: "0 0 24px", letterSpacing: "-0.02em" }}>
+                Where Provenance<br/>meets{" "}
+                <span style={{ color: C.blue, fontStyle: "italic" }}>Market Integrity.</span>
+              </h1>
+              <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 18, color: C.textMuted, lineHeight: 1.7, maxWidth: 600, margin: "0 auto 40px", fontWeight: 300 }}>
+                The collectible space has always struggled with authenticity and fair value. We built the infrastructure to fix both — permanently, on chain, with no one in control.
+              </p>
+              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
+                <button onClick={() => setTab("trade")} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
+                  Buy OKT
+                </button>
+                <button onClick={() => setTab("vault")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
+                  Verify a Piece
+                </button>
+              </div>
+            </div>
+
+            {/* DIVIDER */}
+            <div style={{ height: 1, background: C.border, margin: "0 0 56px" }} />
+
+            {/* THE PROBLEM */}
+            <div style={{ textAlign: "center" as const, marginBottom: 56 }}>
+              <p style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 20 : 28, color: C.textDim, lineHeight: 1.5, maxWidth: 700, margin: "0 auto", fontStyle: "italic", fontWeight: 400 }}>
+                "The art market runs on trust — but trust is not provenance, yield is not defined, and integrity is not enforced."
+              </p>
+            </div>
+
+            {/* THREE PILLARS */}
+            <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr 1fr", gap: mobile ? 16 : 20, marginBottom: 56 }}>
+              {[
+                {
+                  label: "Provenance",
+                  title: "Real World Inscriptions",
+                  desc: "Physical art with embedded wallets, Bitcoin Ordinal links, and NFC verification. Tap any piece to see its entire history — unalterable, on chain, forever.",
+                  site: "AnalogBitcoin.com",
+                  url: "https://analogbitcoin.com",
+                  tab: null,
+                },
+                {
+                  label: "Interest",
+                  title: "Origin Key Token",
+                  desc: "Every piece earns cbBTC yield while it hangs on the wall. Fees from every trade flow automatically to all holders — including the art itself.",
+                  site: "Buy OKT",
+                  url: null,
+                  tab: "trade",
+                },
+                {
+                  label: "Market Integrity",
+                  title: "The Key Exchange",
+                  desc: "A fixed-price, auditable exchange with no admin, no governance, and no intervention. The price is the math. The market is the contract.",
+                  site: "Verify a Piece",
+                  url: null,
+                  tab: "vault",
+                },
+              ].map((p, i) => (
+                <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: "28px 24px", boxShadow: C.shadow }}>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: C.blue, textTransform: "uppercase" as const, marginBottom: 12 }}>
+                    {p.label}
+                  </div>
+                  <div style={{ fontFamily: "Georgia, serif", fontSize: 20, color: C.text, marginBottom: 14, lineHeight: 1.2 }}>
+                    {p.title}
+                  </div>
+                  <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300 }}>
+                    {p.desc}
+                  </p>
+                  {p.url ? (
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
+                      {p.site} ↗
+                    </a>
+                  ) : (
+                    <button onClick={() => setTab(p.tab as Tab)} style={{ background: "none", border: "none", padding: 0, fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 600, cursor: "pointer" }}>
+                      {p.site} →
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* HOW IT WORKS */}
+            <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? "32px 24px" : "40px 48px", marginBottom: 56 }}>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: C.blue, textTransform: "uppercase" as const, marginBottom: 24 }}>
+                How It Works
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(5, 1fr)", gap: mobile ? 20 : 12 }}>
+                {[
+                  { n: "01", title: "Physical Art", desc: "A piece is created with a wallet private key sealed inside" },
+                  { n: "02", title: "NFC Tap", desc: "Anyone taps the tag to instantly verify authenticity on chain" },
+                  { n: "03", title: "Vault Verified", desc: "Origin Key tokens are locked in the vault, earning yield" },
+                  { n: "04", title: "OKT Earns Yield", desc: "Every trade on the exchange pays cbBTC dividends to all holders including the vault" },
+                  { n: "05", title: "Destroy to Redeem", desc: "Breaking the art reveals the SeedPod — the private key to sweep all digital assets" },
+                ].map((s, i) => (
+                  <div key={i} style={{ position: "relative" as const }}>
+                    <div style={{ fontFamily: "Georgia, serif", fontSize: 32, color: C.border, fontWeight: 400, lineHeight: 1, marginBottom: 10 }}>{s.n}</div>
+                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>{s.title}</div>
+                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, lineHeight: 1.6, fontWeight: 300 }}>{s.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* FOOTER CTA */}
+            <div style={{ textAlign: "center" as const, padding: mobile ? "32px 0 48px" : "40px 0 64px" }}>
+              <div style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 24 : 36, color: C.text, marginBottom: 16, fontStyle: "italic" }}>
+                Ready to own a piece of the future?
+              </div>
+              <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, marginBottom: 32, fontWeight: 300 }}>
+                Collect physical art that earns Bitcoin yield. Verify anything. Trust the math.
+              </p>
+              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
+                <a href="https://analogbitcoin.com" target="_blank" rel="noopener noreferrer" style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textDecoration: "none", display: "inline-block" }}>
+                  Explore Analog Bitcoin
+                </a>
+                <button onClick={() => setTab("trade")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
+                  Start Trading
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* TRADE */}
         {tab === "trade" && (
