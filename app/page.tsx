@@ -579,7 +579,7 @@ export default function Home() {
                 Immutable Editions
               </div>
               <h1 style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 36 : 56, fontWeight: 400, color: C.text, lineHeight: 1.1, margin: "0 0 24px", letterSpacing: "-0.02em" }}>
-                Where Provenance<br/>meets{" "}
+                Where Provenance<br/>and Interest meets{" "}
                 <span style={{ color: C.blue, fontStyle: "italic" }}>Market Integrity.</span>
               </h1>
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 18, color: C.textMuted, lineHeight: 1.7, maxWidth: 600, margin: "0 auto 40px", fontWeight: 300 }}>
@@ -601,7 +601,7 @@ export default function Home() {
             {/* THE PROBLEM */}
             <div style={{ textAlign: "center" as const, marginBottom: 56 }}>
               <p style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 20 : 28, color: C.textDim, lineHeight: 1.5, maxWidth: 700, margin: "0 auto", fontStyle: "italic", fontWeight: 400 }}>
-                "The art market runs on trust — but trust is not provenance, yield is not defined, and integrity is not enforced."
+                "The collectable market runs on trust — but trust is not provenance, interest is not measured accurately, and integrity is pretty much never enforced."
               </p>
             </div>
 
@@ -611,7 +611,7 @@ export default function Home() {
                 {
                   label: "Provenance",
                   title: "Real World Inscriptions",
-                  desc: "Physical art with embedded wallets, Bitcoin Ordinal links, and NFC verification. Tap any piece to see its entire history — unalterable, on chain, forever.",
+                  desc: "Physical art with Bitcoin Ordinal embedded SeedPod (wallet private key). NFC scan verification. Tap any piece to see its entire history — unalterable, on chain, forever.",
                   site: "AnalogBitcoin.com",
                   url: "https://analogbitcoin.com",
                   tab: null,
@@ -619,7 +619,7 @@ export default function Home() {
                 {
                   label: "Interest",
                   title: "Origin Key Token",
-                  desc: "Every piece earns cbBTC yield while it hangs on the wall. Fees from every trade flow automatically to all holders — including the art itself.",
+                  desc: "Every physical creation earns cbBTC yield while more creations come to life. Fees from every creation of physical art (and OKT trades) flow automatically to all holders — including each already (still Vaulted) creation.",
                   site: "Buy OKT",
                   url: null,
                   tab: "trade",
@@ -627,7 +627,7 @@ export default function Home() {
                 {
                   label: "Market Integrity",
                   title: "The Key Exchange",
-                  desc: "A fixed-price, auditable exchange with no admin, no governance, and no intervention. The price is the math. The market is the contract.",
+                  desc: "A Bitcoin pegged price (1 OKT = 1 Sat), audited exchange and extensive EVM compatibility with extreme affordability on Base. No admin. No governance. No intervention. No extraction. The price is the math. The market is the participants who understand math more than experts understand integrity.",
                   site: "Verify a Piece",
                   url: null,
                   tab: "vault",
@@ -640,8 +640,14 @@ export default function Home() {
                   <div style={{ fontFamily: "Georgia, serif", fontSize: 20, color: C.text, marginBottom: 14, lineHeight: 1.2 }}>
                     {p.title}
                   </div>
-                  <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300 }}>
-                    {p.desc}
+                  <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300, display: "flex", flexWrap: "wrap" as const, alignItems: "center", gap: 2 }}>
+                    {i === 1 ? (
+                      <>
+                        Every physical creation earns{" "}
+                        <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 2px" }} />
+                        {" "}cbBTC yield while more creations come to life. Fees from every creation of physical art (and OKT trades) flow automatically to all holders — including each already (still Vaulted) creation.
+                      </>
+                    ) : p.desc}
                   </p>
                   {p.url ? (
                     <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
@@ -663,11 +669,11 @@ export default function Home() {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(5, 1fr)", gap: mobile ? 20 : 12 }}>
                 {[
-                  { n: "01", title: "Physical Art", desc: "A piece is created with a wallet private key sealed inside" },
-                  { n: "02", title: "NFC Tap", desc: "Anyone taps the tag to instantly verify authenticity on chain" },
-                  { n: "03", title: "Vault Verified", desc: "Origin Key tokens are locked in the vault, earning yield" },
-                  { n: "04", title: "OKT Earns Yield", desc: "Every trade on the exchange pays cbBTC dividends to all holders including the vault" },
-                  { n: "05", title: "Destroy to Redeem", desc: "Breaking the art reveals the SeedPod — the private key to sweep all digital assets" },
+                  { n: "01", title: "Vault Ordinal and Origin Key Token", desc: "Both digital assets are placed in two different wallets — both sharing the same Private Key within the SeedPod." },
+                  { n: "02", title: "Physical Art", desc: "A finished physical collectable is embedded with the SeedPod (printed wallet Private Key) sealed inside, along with a programmed read-only NFC Tag." },
+                  { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Ordinal and Origin Key Tokens earning yield." },
+                  { n: "04", title: "Physical Bitcoin Interest", desc: "Every trade pays cbBTC dividends to all Immutable Editions collectable holders and Origin Key Token holders." },
+                  { n: "05", title: "Redemption (if necessary)", desc: "Destruction of the collectable can reveal the SeedPod — the Private Key — to sweep all digital assets out of the Vault." },
                 ].map((s, i) => (
                   <div key={i} style={{ position: "relative" as const }}>
                     <div style={{ fontFamily: "Georgia, serif", fontSize: 32, color: C.border, fontWeight: 400, lineHeight: 1, marginBottom: 10 }}>{s.n}</div>
@@ -809,7 +815,7 @@ export default function Home() {
 
         {/* VAULT */}
         {tab === "vault" && (
-          <Panel title="Vault Registry — On-Chain Tamper Seal">
+          <Panel title="Vault Registry — On-Chain Seal — Scan NFC or Paste Wallet Address">
 
             {/* INPUT AND BUTTON — always visible at top */}
             <div style={{ marginBottom: 20 }}>
