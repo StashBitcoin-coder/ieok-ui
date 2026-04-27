@@ -690,7 +690,7 @@ export default function Home() {
                 Ready to own a piece of the future?
               </div>
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, marginBottom: 32, fontWeight: 300 }}>
-                Collect physical art that earns Bitcoin yield. Verify anything. Trust the math.
+                Collect physical assets that represent a trustless, permissionless and unquestionable integrity.
               </p>
               <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
                 <a href="https://analogbitcoin.com" target="_blank" rel="noopener noreferrer" style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textDecoration: "none", display: "inline-block" }}>
