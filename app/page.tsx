@@ -579,7 +579,7 @@ export default function Home() {
                 Immutable Editions
               </div>
               <h1 style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 36 : 56, fontWeight: 400, color: C.text, lineHeight: 1.1, margin: "0 0 24px", letterSpacing: "-0.02em" }}>
-                Where Provenance<br/>and Interest meets{" "}
+                Where Provenance<br/>and Interest meets<br/>
                 <span style={{ color: C.blue, fontStyle: "italic" }}>Market Integrity.</span>
               </h1>
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 18, color: C.textMuted, lineHeight: 1.7, maxWidth: 600, margin: "0 auto 40px", fontWeight: 300 }}>
@@ -601,7 +601,7 @@ export default function Home() {
             {/* THE PROBLEM */}
             <div style={{ textAlign: "center" as const, marginBottom: 56 }}>
               <p style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 20 : 28, color: C.textDim, lineHeight: 1.5, maxWidth: 700, margin: "0 auto", fontStyle: "italic", fontWeight: 400 }}>
-                "The collectable market runs on trust — but trust is not provenance, interest is not measured accurately, and integrity is pretty much never enforced."
+                "The collectable market runs on trust — but trust is not provenance, interest is not measured accurately, and integrity is not always enforced."
               </p>
             </div>
 
@@ -627,7 +627,7 @@ export default function Home() {
                 {
                   label: "Market Integrity",
                   title: "The Key Exchange",
-                  desc: "A Bitcoin pegged price (1 OKT = 1 Sat), audited exchange and extensive EVM compatibility with extreme affordability on Base. No admin. No governance. No intervention. No extraction. The price is the math. The market is the participants who understand math more than experts understand integrity.",
+                  desc: "A Bitcoin pegged price (1 OKT = 1 Sat), audited exchange and extreme performance on Base. No admin. No governance. No intervention. No extraction. The price is the math. The market is actual participants.",
                   site: "Verify a Piece",
                   url: null,
                   tab: "vault",
@@ -672,8 +672,8 @@ export default function Home() {
                   { n: "01", title: "Vault Ordinal and Origin Key Token", desc: "Both digital assets are placed in two different wallets — both sharing the same Private Key within the SeedPod." },
                   { n: "02", title: "Physical Art", desc: "A finished physical collectable is embedded with the SeedPod (printed wallet Private Key) sealed inside, along with a programmed read-only NFC Tag." },
                   { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Ordinal and Origin Key Tokens earning yield." },
-                  { n: "04", title: "Physical Bitcoin Interest", desc: "Every trade pays cbBTC dividends to all Immutable Editions collectable holders and Origin Key Token holders." },
-                  { n: "05", title: "Redemption (if necessary)", desc: "Destruction of the collectable can reveal the SeedPod — the Private Key — to sweep all digital assets out of the Vault." },
+                  { n: "04", title: "Physical Bitcoin Interest", desc: "Every trade and published work pays cbBTC dividends to all Immutable Editions collectable holders and Origin Key Token holders." },
+                  { n: "05", title: "Redemption (if necessary)", desc: "Destruction of the collectable can reveal the SeedPod one can use to sweep all digital assets out of the Vault." },
                 ].map((s, i) => (
                   <div key={i} style={{ position: "relative" as const }}>
                     <div style={{ fontFamily: "Georgia, serif", fontSize: 32, color: C.border, fontWeight: 400, lineHeight: 1, marginBottom: 10 }}>{s.n}</div>
