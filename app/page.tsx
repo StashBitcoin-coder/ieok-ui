@@ -627,7 +627,7 @@ export default function Home() {
                 {
                   label: "Market Integrity",
                   title: "The Key Exchange",
-                  desc: "The Origin Key Token is pegged to Bitcoin (1 OKT = 1 Sat). The protocol has been audited and being deployed on Base offers extreme performance. There is no admin. No governance. No intervention. No extraction. The price is the math. The market is actual participants.",
+                  desc: "Being deployed on Base offers extreme performance and significant support. The Origin Key Token is pegged to Bitcoin (1 OKT = 1 Sat) so volatility in Automated Market Maker pricing IS NOT HERE to provide extractors one of their most valuable weapons. The protocol has been audited. There is no admin. No governance. No intervention. The price is the math. The market is actual participants.",
                   site: "Verify a Piece",
                   url: null,
                   tab: "vault",
