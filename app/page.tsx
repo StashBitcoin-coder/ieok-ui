@@ -642,11 +642,7 @@ export default function Home() {
                   </div>
                   <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300, display: "flex", flexWrap: "wrap" as const, alignItems: "center", gap: 2 }}>
                     {i === 1 ? (
-                      <>
-                        Every physical creation is embedded with Origin Key Tokens at birth. Held tokens earn {" "}
-                        <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 2px" }} />
-                        {" "}cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.
-                      </>
+                      <>Every physical creation is embedded with Origin Key Tokens at birth. Held tokens earn <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.</>
                     ) : p.desc}
                   </p>
                   {p.url ? (
