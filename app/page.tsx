@@ -627,7 +627,7 @@ export default function Home() {
                 {
                   label: "Market Integrity",
                   title: "The Key Exchange",
-                  desc: "Being deployed on Base offers extreme performance and significant support. The Origin Key Token is pegged to Bitcoin (1 OKT = 1 Sat) so volatility in Automated Market Maker pricing IS NOT HERE to provide extractors one of their most valuable weapons. The protocol has been audited. There is no admin. No governance. No intervention. The price is the math. The market is actual participants.",
+                  desc: "Deployed on Base for the best performance and support. The Origin Key Token is pegged to Bitcoin (1 OKT = 1 Sat). The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.",
                   site: "Verify a Piece",
                   url: null,
                   tab: "vault",
@@ -643,6 +643,8 @@ export default function Home() {
                   <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300 }}>
                     {i === 1 ? (
                       <>Every physical creation is embedded with Origin Key Tokens at birth. Held tokens earn <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.</>
+                    ) : i === 2 ? (
+                      <>Deployed on Base for the best performance and support. The Origin Key Token is pegged to Bitcoin (1 OKT = 1 Sat) so volatility in Automated Market Maker pricing <span style={{ color: "#DA3A3A", fontWeight: 700 }}>IS NOT HERE</span> to provide extractors one of their most valuable weapons. The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.</>
                     ) : p.desc}
                   </p>
                   {p.url ? (
