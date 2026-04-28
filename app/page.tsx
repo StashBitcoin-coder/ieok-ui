@@ -667,16 +667,20 @@ export default function Home() {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(5, 1fr)", gap: mobile ? 20 : 12 }}>
                 {[
-                  { n: "01", title: "Vault Ordinal and Origin Key Token", desc: "Both digital assets are placed in two different wallets — both sharing the same Private Key within the SeedPod." },
-                  { n: "02", title: "Physical Art", desc: "A finished physical collectable is embedded with the SeedPod (printed wallet Private Key) sealed inside, along with a programmed read-only NFC Tag." },
-                  { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Ordinal and Origin Key Tokens earning yield." },
-                  { n: "04", title: "Physical Bitcoin Interest", desc: "Every trade and published work pays cbBTC dividends to all Immutable Editions collectable holders and Origin Key Token holders." },
+                  { n: "01", title: "Vault the Ordinal and Origin Key Tokens", desc: "Both digital assets are placed in two different digital wallets — both sharing the same Private Key within the SeedPod." },
+                  { n: "02", title: "Physical Art", desc: "A finished physical collectable is embedded with the SeedPod (printed wallet Private Key) along with a programmed read-only NFC Tag. Sealed securely within the asset." },
+                  { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Ordinal and Origin Key Tokens along with the yield earned." },
+                  { n: "04", title: "Physical Bitcoin Interest", desc: "" },
                   { n: "05", title: "Redemption (if necessary)", desc: "Destruction of the collectable can reveal the SeedPod one can use to sweep all digital assets out of the Vault." },
                 ].map((s, i) => (
                   <div key={i} style={{ position: "relative" as const }}>
                     <div style={{ fontFamily: "Georgia, serif", fontSize: 32, color: C.border, fontWeight: 400, lineHeight: 1, marginBottom: 10 }}>{s.n}</div>
                     <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>{s.title}</div>
-                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, lineHeight: 1.6, fontWeight: 300 }}>{s.desc}</div>
+                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, lineHeight: 1.6, fontWeight: 300 }}>
+                      {i === 3 ? (
+                        <>Every published work and trade pays <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC dividends to all Immutable Editions collectable holders and Origin Key Token holders.</>
+                      ) : s.desc}
+                    </div>
                   </div>
                 ))}
               </div>
