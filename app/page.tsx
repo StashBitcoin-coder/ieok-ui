@@ -10,7 +10,8 @@ const OKT_ABI = [
   "function balanceOf(address) view returns (uint256)",
   "function dividendsOf(address) view returns (uint256)",
   "function totalSupply() view returns (uint256)",
-  "function buy(uint256 cbbtcAmount, uint256 minTokens) external",
+  "function buy(uint256 cbbtcAmount, uint256 minTokens, address referrer) external",
+  "function reinvest() external",
   "function sell(uint256 tokens, uint256 minCbbtc) external",
   "function transfer(address to, uint256 tokens) external returns (bool)",
   "function withdraw() external",
@@ -258,6 +259,7 @@ export default function Home() {
   const [tab, setTab]           = useState<Tab>("home");
   const [mode, setMode]         = useState<"buy" | "sell">("buy");
 
+  const [referrer, setReferrer] = useState<string>("0x0000000000000000000000000000000000000000");
   const [buyAmt, setBuyAmt]     = useState("");
   const [buyS, setBuyS]         = useState<TxState>("idle");
   const [buyM, setBuyM]         = useState("");
@@ -273,6 +275,8 @@ export default function Home() {
 
   const [wdS, setWdS]           = useState<TxState>("idle");
   const [wdM, setWdM]           = useState("");
+  const [rvS, setRvS]           = useState<TxState>("idle");
+  const [rvM, setRvM]           = useState("");
 
   const [insVault, setInsVault] = useState("");
   const [insAsset, setInsAsset] = useState("");
@@ -341,7 +345,7 @@ export default function Home() {
     try {
       await ensureAllowance(cbbtc, account, IEOK_ADDRESS, BigInt(buyAmt), setBuyM);
       setBuyM("Confirm purchase in your wallet...");
-      const tx = await okt.buy(BigInt(buyAmt), BigInt(0));
+      const tx = await okt.buy(BigInt(buyAmt), BigInt(0), referrer);
       setBuyM("Confirming on chain...");
       await tx.wait();
       setBuyS("success"); setBuyM("Purchase confirmed — OKT tokens received");
@@ -372,6 +376,18 @@ export default function Home() {
       setWdS("success"); setWdM("cbBTC dividends sent to your wallet");
       if (account) await load(account);
     } catch (e: any) { setWdS("failed"); setWdM(e.reason || e.message || "Failed"); }
+  }
+
+  async function reinvest() {
+    if (!account) { alert("Connect wallet first"); return; }
+    const s = await getSigner();
+    const okt = new ethers.Contract(IEOK_ADDRESS, OKT_ABI, s);
+    setRvS("pending"); setRvM("Awaiting wallet...");
+    try {
+      await (await okt.reinvest()).wait();
+      setRvS("success"); setRvM("Dividends reinvested — new OKT tokens received");
+      if (account) await load(account);
+    } catch (e: any) { setRvS("failed"); setRvM(e.reason || e.message || "Reinvest failed"); }
   }
 
   async function transfer() {
@@ -448,7 +464,13 @@ export default function Home() {
     const iv = setInterval(() => load(account), 10000);
     return () => clearInterval(iv);
   }, [account]);
-  useEffect(() => { const params = new URLSearchParams(window.location.search); const v = params.get("vault"); if (v) { setVAddr(v); setTab("vault"); } }, []);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get("vault");
+    if (v) { setVAddr(v); setTab("vault"); }
+    const ref = params.get("ref");
+    if (ref && ethers.isAddress(ref)) { setReferrer(ref); }
+  }, []);
   useEffect(() => { if (vAddr && tab === "vault" && !autoChecked) { setAutoChecked(true); setTimeout(() => checkVault(), 300); } }, [vAddr, tab]);
 
   const bPrev    = preview7(buyAmt);
@@ -545,10 +567,16 @@ export default function Home() {
             {divsUsd && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginLeft: 10 }}>{divsUsd}</span>}
           </div>
           <div>
-            <button onClick={withdraw} style={{ width: mobile ? "100%" : "auto", background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "11px 22px", fontFamily: "Arial, sans-serif", fontSize: 14, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, letterSpacing: "0.05em", WebkitTapHighlightColor: "transparent" }}>
-              Withdraw Now
-            </button>
+            <div style={{ display: "flex", gap: 8, flexDirection: mobile ? "column" : "row" as const }}>
+              <button onClick={withdraw} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "11px 22px", fontFamily: "Arial, sans-serif", fontSize: 14, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, letterSpacing: "0.05em", WebkitTapHighlightColor: "transparent" }}>
+                Withdraw
+              </button>
+              <button onClick={reinvest} style={{ background: "transparent", color: C.blue, border: `1.5px solid ${C.blue}`, borderRadius: 8, padding: "11px 22px", fontFamily: "Arial, sans-serif", fontSize: 14, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, letterSpacing: "0.05em", WebkitTapHighlightColor: "transparent" }}>
+                Reinvest
+              </button>
+            </div>
             <Status state={wdS} msg={wdM} />
+            <Status state={rvS} msg={rvM} />
           </div>
         </div>
       )}
@@ -723,6 +751,11 @@ export default function Home() {
                 <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
                   Enter your cbBTC amount in satoshis and tap Buy. Minimum 100 sats. First time buyers will see their wallet pop up twice — approve then buy. Future purchases are single tap.
                 </p>
+                {referrer !== "0x0000000000000000000000000000000000000000" && (
+                  <div style={{ background: C.greenBg, border: `1px solid ${C.green}`, borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontFamily: "Arial, sans-serif", fontSize: 13, color: C.green, fontWeight: 600 }}>
+                    ✓ Referred by {referrer.slice(0,6)}...{referrer.slice(-4)} — 2.5% referral fee applies on first buy
+                  </div>
+                )}
                 <Input label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
                   hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 sats · 1,000 sats = 930 OKT after 7% fee"} />
                 {bPrev && (
