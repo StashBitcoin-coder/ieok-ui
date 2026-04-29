@@ -751,26 +751,26 @@ export default function Home() {
 
                 {/* REFERRAL LINK — shown when wallet connected */}
                 {connected && accountStr && (
-                  <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "14px 16px", marginBottom: 20 }}>
-                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 8 }}>
-                      Your Referral Link
-                    </div>
+                  <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 12px", marginBottom: 16 }}>
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, flex: 1, wordBreak: "break-all" as const }}>
-                        {`https://thekeyexchange.io/?ref=${accountStr}`}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 600, lineHeight: 1.2 }}>Your Referral Link — earn 2.5% cbBTC per first buy</div>
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted, wordBreak: "break-all" as const, lineHeight: 1.3, marginTop: 2 }}>
+                          {`https://thekeyexchange.io/?ref=${accountStr}`}
+                        </div>
                       </div>
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
                           navigator.clipboard.writeText(`https://thekeyexchange.io/?ref=${accountStr}`);
-                          alert("Referral link copied!");
+                          const btn = e.currentTarget;
+                          btn.textContent = "Copied ✓";
+                          btn.style.background = C.green;
+                          setTimeout(() => { btn.textContent = "Copy"; btn.style.background = C.blue; }, 2000);
                         }}
-                        style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "8px 14px", fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" as const }}
+                        style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "6px 12px", fontFamily: "Arial, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" as const, transition: "background 0.2s" }}
                       >
-                        Copy Link
+                        Copy
                       </button>
-                    </div>
-                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, marginTop: 8 }}>
-                      Share this link — earn 2.5% cbBTC on every first buy you refer
                     </div>
                   </div>
                 )}
