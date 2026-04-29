@@ -10,7 +10,7 @@ const OKT_ABI = [
   "function balanceOf(address) view returns (uint256)",
   "function dividendsOf(address) view returns (uint256)",
   "function totalSupply() view returns (uint256)",
-  "function buy(uint256 cbbtcAmount, uint256 minTokens, address referrer) external",
+  "function buy(uint256 cbbtcAmount, uint256 minTokens) external",
   "function reinvest() external",
   "function sell(uint256 tokens, uint256 minCbbtc) external",
   "function transfer(address to, uint256 tokens) external returns (bool)",
@@ -259,7 +259,6 @@ export default function Home() {
   const [tab, setTab]           = useState<Tab>("home");
   const [mode, setMode]         = useState<"buy" | "sell">("buy");
 
-  const [referrer, setReferrer] = useState<string>("0x0000000000000000000000000000000000000000");
   const [buyAmt, setBuyAmt]     = useState("");
   const [buyS, setBuyS]         = useState<TxState>("idle");
   const [buyM, setBuyM]         = useState("");
@@ -345,7 +344,7 @@ export default function Home() {
     try {
       await ensureAllowance(cbbtc, account, IEOK_ADDRESS, BigInt(buyAmt), setBuyM);
       setBuyM("Confirm purchase in your wallet...");
-      const tx = await okt.buy(BigInt(buyAmt), BigInt(0), referrer);
+      const tx = await okt.buy(BigInt(buyAmt), BigInt(0));
       setBuyM("Confirming on chain...");
       await tx.wait();
       setBuyS("success"); setBuyM("Purchase confirmed — OKT tokens received");
@@ -468,8 +467,6 @@ export default function Home() {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("vault");
     if (v) { setVAddr(v); setTab("vault"); }
-    const ref = params.get("ref");
-    if (ref && ethers.isAddress(ref)) { setReferrer(ref); }
   }, []);
   useEffect(() => { if (vAddr && tab === "vault" && !autoChecked) { setAutoChecked(true); setTimeout(() => checkVault(), 300); } }, [vAddr, tab]);
 
@@ -749,40 +746,10 @@ export default function Home() {
               <Panel title="Buy OKT — Fixed Price 1 Sat = 1 OKT">
                 <FeeBadge mobile={mobile} />
 
-                {/* REFERRAL LINK — shown when wallet connected */}
-                {connected && accountStr && (
-                  <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 12px", marginBottom: 16 }}>
-                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 600, lineHeight: 1.2 }}>Your Referral Link — earn 2.5% cbBTC per first buy</div>
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted, wordBreak: "break-all" as const, lineHeight: 1.3, marginTop: 2 }}>
-                          {`https://thekeyexchange.io/?ref=${accountStr}`}
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          navigator.clipboard.writeText(`https://thekeyexchange.io/?ref=${accountStr}`);
-                          const btn = e.currentTarget;
-                          btn.textContent = "Copied ✓";
-                          btn.style.background = C.green;
-                          setTimeout(() => { btn.textContent = "Copy"; btn.style.background = C.blue; }, 2000);
-                        }}
-                        style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "6px 12px", fontFamily: "Arial, sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" as const, transition: "background 0.2s" }}
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  </div>
-                )}
 
                 <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
                   Enter your cbBTC amount in satoshis and tap Buy. Minimum 100 sats. First time buyers will see their wallet pop up twice — approve then buy. Future purchases are single tap.
                 </p>
-                {referrer !== "0x0000000000000000000000000000000000000000" && (
-                  <div style={{ background: C.greenBg, border: `1px solid ${C.green}`, borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontFamily: "Arial, sans-serif", fontSize: 13, color: C.green, fontWeight: 600 }}>
-                    ✓ Referred by {referrer.slice(0,6)}...{referrer.slice(-4)} — 2.5% referral fee applies on first buy
-                  </div>
-                )}
                 <Input label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
                   hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 sats · 1,000 sats = 930 OKT after 7% fee"} />
                 {bPrev && (
