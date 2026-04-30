@@ -259,7 +259,10 @@ export default function Home() {
   const [tab, setTab]           = useState<Tab>("home");
   const [mode, setMode]         = useState<"buy" | "sell">("buy");
 
-  const [buyAmt, setBuyAmt]     = useState("");
+  const [isApproved, setIsApproved] = useState(false);
+  const [appS, setAppS]           = useState<TxState>("idle");
+  const [appM, setAppM]           = useState("");
+  const [buyAmt, setBuyAmt]       = useState("");
   const [buyS, setBuyS]         = useState<TxState>("idle");
   const [buyM, setBuyM]         = useState("");
 
@@ -297,17 +300,23 @@ export default function Home() {
   const correctChain = chain?.id === Number(CHAIN_ID);
 
   async function fetchBtcPrice() {
-    // Try CoinGecko first, fall back to Binance API if blocked (e.g. Brave shields)
+    // Try CoinGecko → Binance → Kraken in order
     try {
       const res  = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
       const data = await res.json();
       if (data?.bitcoin?.usd) { setBtcPrice(data.bitcoin.usd); return; }
-    } catch (e) { /* blocked — try fallback */ }
+    } catch (e) { /* try next */ }
     try {
       const res  = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
       const data = await res.json();
       if (data?.price) { setBtcPrice(parseFloat(data.price)); return; }
-    } catch (e) { /* both failed */ console.error("BTC price unavailable"); }
+    } catch (e) { /* try next */ }
+    try {
+      const res  = await fetch("https://api.kraken.com/0/public/Ticker?pair=XBTUSD");
+      const data = await res.json();
+      const price = data?.result?.XXBTZUSD?.c?.[0];
+      if (price) { setBtcPrice(parseFloat(price)); return; }
+    } catch (e) { console.error("BTC price unavailable — all sources failed"); }
   }
 
   async function load(user: string) {
@@ -333,6 +342,22 @@ export default function Home() {
     return provider.getSigner(acc.address);
   }
 
+  async function approveCbbtc() {
+    if (!account) { alert("Connect wallet first"); return; }
+    if (!buyAmt)  { alert("Enter cbBTC amount first"); return; }
+    const s = await getSigner();
+    const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
+    setAppS("pending"); setAppM("Confirm approval in your wallet...");
+    try {
+      const tx = await cbbtc.approve(IEOK_ADDRESS, BigInt("999999999999999999"));
+      setAppM("Approving — waiting for confirmation...");
+      await tx.wait();
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setIsApproved(true);
+      setAppS("success"); setAppM("cbBTC approved ✓ — now tap Buy OKT");
+    } catch (e: any) { setAppS("failed"); setAppM(e.reason || e.message || "Approval failed"); }
+  }
+
   async function buy() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!buyAmt)  { alert("Enter cbBTC amount");   return; }
@@ -340,10 +365,8 @@ export default function Home() {
     const s = await getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
     const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   s);
-    setBuyS("pending"); setBuyM("Checking allowance...");
+    setBuyS("pending"); setBuyM("Confirm purchase in your wallet...");
     try {
-      await ensureAllowance(cbbtc, account, IEOK_ADDRESS, BigInt(buyAmt), setBuyM);
-      setBuyM("Confirm purchase in your wallet...");
       const tx = await okt.buy(BigInt(buyAmt), BigInt(0));
       setBuyM("Confirming on chain...");
       await tx.wait();
@@ -460,6 +483,16 @@ export default function Home() {
   useEffect(() => {
     if (!account) return;
     load(account);
+    // Check if already approved
+    const checkAllowance = async () => {
+      try {
+        const provider = new ethers.JsonRpcProvider(PUBLIC_RPC);
+        const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, provider);
+        const allowance = await cbbtc.allowance(account, IEOK_ADDRESS);
+        setIsApproved(allowance > BigInt(0));
+      } catch (e) { console.error(e); }
+    };
+    checkAllowance();
     const iv = setInterval(() => load(account), 10000);
     return () => clearInterval(iv);
   }, [account]);
@@ -758,8 +791,33 @@ export default function Home() {
                     { label: "OKT you receive (1 sat = 1 OKT)", value: bPrev.out.toLocaleString() + " OKT" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
-                <BigBtn onClick={buy} disabled={!connected}>Buy OKT</BigBtn>
-                <Status state={buyS} msg={buyM} />
+                {/* APPROVE + BUY FLOW */}
+                {connected && !isApproved && (
+                  <>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 16px", marginBottom: 12 }}>
+                      <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" />
+                      <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 600 }}>
+                        First time — approve cbBTC before buying
+                      </span>
+                    </div>
+                    <BigBtn onClick={approveCbbtc} disabled={!connected}>
+                      <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                        <img src="/coinbase-wrapped-btc.png" width={16} height={16} alt="cbBTC" style={{ display: "inline" }} />
+                        Approve cbBTC
+                      </span>
+                    </BigBtn>
+                    <Status state={appS} msg={appM} />
+                  </>
+                )}
+                {connected && isApproved && (
+                  <>
+                    <BigBtn onClick={buy}>Buy OKT</BigBtn>
+                    <Status state={buyS} msg={buyM} />
+                  </>
+                )}
+                {!connected && (
+                  <BigBtn onClick={buy} disabled={true}>Buy OKT</BigBtn>
+                )}
               </Panel>
             )}
 
