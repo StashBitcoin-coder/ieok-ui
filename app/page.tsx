@@ -637,11 +637,14 @@ export default function Home() {
         </div>
       )}
 
-      {connected && account && (
-        <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: mobile ? "8px 16px" : "8px 40px" }}>
-          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted }}>{mobile ? fmtAddr(accountStr) : accountStr}</span>
-        </div>
-      )}
+      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: mobile ? "8px 16px" : "8px 40px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" as const }}>
+        <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 10 : 11, color: C.textMuted, fontStyle: "italic", flex: 1 }}>
+          OKT is a Deterministic Automatic Operations (DAO) Vault — a self-governing protocol where every buy, sell, and dividend is executed by simple and immutable mathematics. No one can intervene or stop it.
+        </span>
+        {connected && account && (
+          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, flexShrink: 0 }}>{mobile ? fmtAddr(accountStr) : accountStr}</span>
+        )}
+      </div>
 
       <div style={{ maxWidth: 880, margin: "0 auto", padding: mobile ? "20px 12px" : "32px 24px" }}>
 
