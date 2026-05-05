@@ -383,7 +383,7 @@ export default function Home() {
     setSellS("pending"); setSellM("Awaiting wallet...");
     try {
       await (await okt.sell(BigInt(sellAmt), BigInt(0))).wait();
-      setSellS("success"); setSellM("Sell confirmed — cbBTC received");
+      setSellS("success"); setSellM("Sold — cbBTC added to your withdrawable balance. Tap Withdraw to claim.");
       if (account) await load(account);
     } catch (e: any) { setSellS("failed"); setSellM(e.reason || e.message || "Sell failed"); }
   }
@@ -574,7 +574,7 @@ export default function Home() {
             {/* OKT — OKT on top, sats underneath */}
             <Card label="Origin Key Balance" value={fmtOkt(oktBal)} sub={fmtSats(oktBal)} sub2={oktUsd} />
             {/* Dividends — sats primary */}
-            <Card label="Dividends" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent />
+            <Card label="Dividends + Sale Proceeds" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent />
             {/* Total Supply */}
             <Card label="Total Token Supply" value={fmtOkt(supply)} sub={fmtSats(supply)} />
           </div>
@@ -822,8 +822,13 @@ export default function Home() {
             )}
 
             {mode === "sell" && (
-              <Panel title="Sell OKT — Fixed Price 1 OKT = 1 Sat">
+              <Panel title="Sell OKT — Proceeds Available to Withdraw">
                 <FeeBadge mobile={mobile} />
+                <div style={{ background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 16px", marginBottom: 20 }}>
+                  <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 600 }}>
+                    ℹ️ When you sell, your cbBTC is held in the contract and added to your withdrawable balance. Tap Withdraw to receive it in your wallet.
+                  </span>
+                </div>
                 <Input label="OKT amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
                 {sPrev && (
                   <Preview rows={[
