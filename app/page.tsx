@@ -372,7 +372,19 @@ export default function Home() {
       await tx.wait();
       setBuyS("success"); setBuyM("Purchase confirmed — OKT tokens received");
       if (account) await load(account);
-    } catch (e: any) { setBuyS("failed"); setBuyM(e.reason || e.message || "Buy failed"); }
+    } catch (e: any) {
+      setBuyS("failed");
+      const msg = e.reason || e.message || "";
+      if (msg.includes("Minimum 100 sats")) {
+        setBuyM("Minimum purchase is 100 sats.");
+      } else if (msg.includes("user rejected") || msg.includes("User denied")) {
+        setBuyM("Transaction cancelled.");
+      } else if (msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
+        setBuyM("Transaction failed — make sure you have enough cbBTC and try again.");
+      } else {
+        setBuyM("Buy failed — check your cbBTC balance and try again.");
+      }
+    }
   }
 
   async function sell() {
@@ -385,7 +397,21 @@ export default function Home() {
       await (await okt.sell(BigInt(sellAmt), BigInt(0))).wait();
       setSellS("success"); setSellM("Sold — cbBTC added to your withdrawable balance. Tap Withdraw to claim.");
       if (account) await load(account);
-    } catch (e: any) { setSellS("failed"); setSellM(e.reason || e.message || "Sell failed"); }
+    } catch (e: any) {
+      setSellS("failed");
+      const msg = e.reason || e.message || "";
+      if (msg.includes("Cannot sell entire supply") || msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
+        setSellM("Cannot sell — at least 1 OKT must remain in total supply. Try a smaller amount.");
+      } else if (msg.includes("Insufficient balance")) {
+        setSellM("You don't have enough OKT to sell that amount.");
+      } else if (msg.includes("Slippage")) {
+        setSellM("Price moved — try again or reduce your amount.");
+      } else if (msg.includes("user rejected") || msg.includes("User denied")) {
+        setSellM("Transaction cancelled.");
+      } else {
+        setSellM("Sell failed — check your balance and try again.");
+      }
+    }
   }
 
   async function withdraw() {
