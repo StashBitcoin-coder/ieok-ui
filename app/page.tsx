@@ -670,13 +670,13 @@ export default function Home() {
         <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: "1px" }}>
           <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 1, background: C.border }}>
             {/* cbBTC — sats primary */}
-            <Card label="cbBTC Balance" value={fmtSats(cbbtcBal)} sub={fmtCbbtc(cbbtcBal)} sub2={cbbtcUsd} />
+            <Card label="cbBTC Balance" value={fmtSats(cbbtcBal)} sub={fmtCbbtc(cbbtcBal)} sub2={cbbtcUsd} theme={C} />
             {/* OKT — OKT on top, sats underneath */}
-            <Card label="Origin Key Balance" value={fmtOkt(oktBal)} sub={fmtSats(oktBal)} sub2={oktUsd} />
+            <Card label="Origin Key Balance" value={fmtOkt(oktBal)} sub={fmtSats(oktBal)} sub2={oktUsd} theme={C} />
             {/* Dividends — sats primary */}
             <Card label="Dividends" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent theme={C} />
             {/* Total Supply */}
-            <Card label="Total Token Supply" value={fmtOkt(supply)} sub={fmtSats(supply)} />
+            <Card label="Total Token Supply" value={fmtOkt(supply)} sub={fmtSats(supply)} theme={C} />
           </div>
         </div>
       ) : (
