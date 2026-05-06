@@ -76,8 +76,8 @@ const DARK = {
   green:    "#00A878",
   red:      "#DA3A3A",
   orange:   "#E8913A",
-  greenBg:  "rgba(0,168,120,0.15)",
-  redBg:    "rgba(218,58,58,0.15)",
+  greenBg:  "rgba(0,168,120,0.2)",
+  redBg:    "rgba(218,58,58,0.2)",
   orangeBg: "rgba(232,145,58,0.12)",
   blueBg:   "rgba(0,82,255,0.15)",
   shadow:   "0 1px 3px rgba(0,0,0,0.4)",
@@ -94,7 +94,7 @@ const fmtUsd    = (n: number) => "$" + n.toLocaleString(undefined, { minimumFrac
 const fmtAddr   = (v: string) => v ? v.slice(0, 6) + "..." + v.slice(-4) : "—";
 const fmtCbbtc  = (v: string) => (Number(v) / 1e8).toFixed(6) + " cbBTC";
 const fmtSats   = (v: string) => Number(v).toLocaleString() + " sats";
-const fmtOkt    = (v: string) => Number(v).toLocaleString() + " OKT";
+const fmtOKey    = (v: string) => Number(v).toLocaleString() + " OKey";
 const fmtTs     = (ts: string) => { const n = Number(ts); if (!n) return "—"; return new Date(n * 1000).toLocaleString(); };
 
 function preview7(sats: string) {
@@ -268,10 +268,10 @@ function Panel({ title, children, theme }: { title: string; children: React.Reac
 }
 
 const VIDEOS = [
-  { title: "What is OKT — Origin Key Token",               desc: "Introduction to the Origin Key Token and how it works with physical art pieces.",  url: "https://youtube.com", tag: "START HERE", tc: "#00A878" },
+  { title: "What is OKT — Origin Key",               desc: "Introduction to the Origin Key and how it works with physical art pieces.",  url: "https://youtube.com", tag: "START HERE", tc: "#00A878" },
   { title: "What is Analog Bitcoin",                        desc: "The concept behind physical Bitcoin — destroy to redeem.",                           url: "https://youtube.com", tag: "CONCEPT",    tc: "#0052FF" },
   { title: "How to get cbBTC on Base",                      desc: "Step by step — buying Coinbase Wrapped Bitcoin and getting it into your wallet.",    url: "https://youtube.com", tag: "BEGINNERS",  tc: "#0052FF" },
-  { title: "How to buy Origin Key Tokens",                  desc: "Buying OKT using the exchange on Base.",                                             url: "https://youtube.com", tag: "TRADING",    tc: "#0052FF" },
+  { title: "How to buy Origin Keys",                  desc: "Buying OKT using the exchange on Base.",                                             url: "https://youtube.com", tag: "TRADING",    tc: "#0052FF" },
   { title: "How cbBTC dividends work",                      desc: "How fees are distributed to all OKT holders and how to withdraw.",                   url: "https://youtube.com", tag: "DIVIDENDS",  tc: "#0052FF" },
   { title: "How to verify a vault — NFC tap guide",         desc: "Tap an Analog Bitcoin NFC tag and verify vault status on chain.",                    url: "https://youtube.com", tag: "COLLECTORS", tc: "#00A878" },
   { title: "What is an Ordinal inscription",                desc: "Understanding Bitcoin Ordinals and how they connect to physical art.",                url: "https://youtube.com", tag: "ORDINALS",   tc: "#5B6278" },
@@ -611,7 +611,7 @@ export default function Home() {
 
   const tabs: { id: Tab; label: string; short: string }[] = [
     { id: "home",     label: "HOME",        short: "HOME"     },
-    { id: "trade",    label: "BUY / SELL",  short: "TRADE"    },
+    { id: "trade",    label: "ACQUIRE / SELL",  short: "ACQUIRE"    },
     { id: "transfer", label: "TRANSFER",    short: "SEND"     },
     { id: "vault",    label: "VAULT CHECK", short: "VAULT"    },
     { id: "learn",    label: "LEARN",       short: "LEARN"    },
@@ -672,11 +672,11 @@ export default function Home() {
             {/* cbBTC — sats primary */}
             <Card label="cbBTC Balance" value={fmtSats(cbbtcBal)} sub={fmtCbbtc(cbbtcBal)} sub2={cbbtcUsd} theme={C} />
             {/* OKT — OKT on top, sats underneath */}
-            <Card label="Origin Key Balance" value={fmtOkt(oktBal)} sub={fmtSats(oktBal)} sub2={oktUsd} theme={C} />
+            <Card label="Keys Held" value={fmtOKey(oktBal)} sub={fmtSats(oktBal)} sub2={oktUsd} theme={C} />
             {/* Dividends — sats primary */}
             <Card label="Dividends" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent theme={C} />
             {/* Total Supply */}
-            <Card label="Total Token Supply" value={fmtOkt(supply)} sub={fmtSats(supply)} theme={C} />
+            <Card label="Total Key Supply" value={fmtOKey(supply)} sub={fmtSats(supply)} theme={C} />
           </div>
         </div>
       ) : (
@@ -714,7 +714,7 @@ export default function Home() {
       <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: mobile ? "10px 16px" : "10px 40px" }}>
         <div style={{ textAlign: "center" as const, marginBottom: connected && account ? 6 : 0 }}>
           <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 15, fontWeight: 700, color: C.textDim, marginBottom: 2 }}>
-            OKT is a Deterministic Automatic Operations (DAO) Vault
+            Deterministic Automatic Operation (DAO) Contract
           </div>
           <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 10 : 11, color: C.textMuted, fontStyle: "italic" }}>
             A self-governing protocol where every buy, sell, and dividend is executed by simple and immutable mathematics. No one can intervene or stop it.
@@ -786,8 +786,8 @@ export default function Home() {
                 },
                 {
                   label: "Interest",
-                  title: "Origin Key Token",
-                  desc: "Every physical creation is embedded with Origin Key Tokens at birth. Held tokens earn cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.",
+                  title: "Origin Key",
+                  desc: "Every physical creation is embedded with Origin Keys at birth. Held tokens earn cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.",
                   site: "Buy OKT",
                   url: null,
                   tab: "trade",
@@ -795,7 +795,7 @@ export default function Home() {
                 {
                   label: "Market Integrity",
                   title: "The Key Exchange",
-                  desc: "Deployed on Base for the best performance and support. The Origin Key Token is pegged to Bitcoin (1 OKT = 1 Sat). The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.",
+                  desc: "Deployed on Base for the best performance and support. The Origin Key is pegged to Bitcoin (1 OKT = 1 Sat). The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.",
                   site: "Verify a Piece",
                   url: null,
                   tab: "vault",
@@ -810,9 +810,9 @@ export default function Home() {
                   </div>
                   <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300 }}>
                     {i === 1 ? (
-                      <>Every physical creation is embedded with Origin Key Tokens at birth. Held tokens earn <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.</>
+                      <>Every physical creation is embedded with Origin Keys at birth. Held tokens earn <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.</>
                     ) : i === 2 ? (
-                      <>Deployed on Base for the best performance and support. The Origin Key Token is pegged to Bitcoin (1 OKT = 1 Sat) so volatility in Automated Market Maker pricing <span style={{ color: "#DA3A3A", fontWeight: 700 }}>IS NOT HERE</span> to provide extractors one of their most valuable weapons. The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.</>
+                      <>Deployed on Base for the best performance and support. The Origin Key is pegged to Bitcoin (1 OKT = 1 Sat) so volatility in Automated Market Maker pricing <span style={{ color: "#DA3A3A", fontWeight: 700 }}>IS NOT HERE</span> to provide extractors one of their most valuable weapons. The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.</>
                     ) : p.desc}
                   </p>
                   {p.url ? (
@@ -835,9 +835,9 @@ export default function Home() {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(5, 1fr)", gap: mobile ? 20 : 12 }}>
                 {[
-                  { n: "01", title: "Vault the Ordinal and Origin Key Tokens", desc: "Both digital assets are placed in two different digital wallets — both sharing the same Private Key within the SeedPod." },
+                  { n: "01", title: "Vault the Ordinal and Origin Keys", desc: "Both digital assets are placed in two different digital wallets — both sharing the same Private Key within the SeedPod." },
                   { n: "02", title: "Physical Art", desc: "A finished physical collectable is embedded with the SeedPod (printed wallet Private Key) along with a programmed read-only NFC Tag. Sealed securely within the asset." },
-                  { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Ordinal and Origin Key Tokens along with the yield earned." },
+                  { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Ordinal and Origin Keys along with the yield earned." },
                   { n: "04", title: "Physical Bitcoin Interest", desc: "" },
                   { n: "05", title: "Redemption (if necessary)", desc: "Destruction of the collectable can reveal the SeedPod one can use to sweep all digital assets out of the Vault." },
                 ].map((s, i) => (
@@ -846,7 +846,7 @@ export default function Home() {
                     <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>{s.title}</div>
                     <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, lineHeight: 1.6, fontWeight: 300 }}>
                       {i === 3 ? (
-                        <>Every published work and trade pays <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC dividends to all Immutable Editions collectable holders and Origin Key Token holders.</>
+                        <>Every published work and trade pays <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC dividends to all Immutable Editions collectable holders and Origin Key holders.</>
                       ) : s.desc}
                     </div>
                   </div>
@@ -886,7 +886,7 @@ export default function Home() {
             </div>
 
             {mode === "buy" && (
-              <Panel title="Buy OKT — Fixed Price 1 Sat = 1 OKT" theme={C}>
+              <Panel title="Acquire Origin Keys — Fixed Price 1 Sat = 1 OKey" theme={C}>
                 <FeeBadge mobile={mobile} theme={C} />
 
 
@@ -898,7 +898,7 @@ export default function Home() {
                 {bPrev && (
                   <Preview theme={C} rows={[
                     { label: "7% fee — paid to all OKT holders", value: bPrev.fee.toLocaleString() + " sats" },
-                    { label: "OKT you receive (1 sat = 1 OKT)", value: bPrev.out.toLocaleString() + " OKT" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.out, btcPrice)) : ""), blue: true },
+                    { label: "OKT you receive (1 sat = 1 OKT)", value: bPrev.out.toLocaleString() + " OKey" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
                 {/* APPROVE + BUY FLOW */}
@@ -921,18 +921,18 @@ export default function Home() {
                 )}
                 {connected && isApproved && (
                   <>
-                    <BigBtn onClick={buy}>Buy OKT</BigBtn>
+                    <BigBtn onClick={buy}>Acquire Origin Keys</BigBtn>
                     <Status state={buyS} msg={buyM} theme={C} />
                   </>
                 )}
                 {!connected && (
-                  <BigBtn onClick={buy} disabled={true}>Buy OKT</BigBtn>
+                  <BigBtn onClick={buy} disabled={true}>Acquire Origin Keys</BigBtn>
                 )}
               </Panel>
             )}
 
             {mode === "sell" && (
-              <Panel title="Sell OKT — Proceeds Available to Withdraw" theme={C}>
+              <Panel title="Sell Origin Keys — Proceeds Available to Withdraw" theme={C}>
                 <FeeBadge mobile={mobile} theme={C} />
                 <Input theme={C} label="OKT amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
                 {sPrev && (
@@ -951,7 +951,7 @@ export default function Home() {
                   } else {
                     sell();
                   }
-                }} variant="outline" disabled={!connected}>Sell OKT for cbBTC</BigBtn>
+                }} variant="outline" disabled={!connected}>Sell Origin Keys for cbBTC</BigBtn>
 
                 {/* SELL WARNING POPUP */}
                 {showSellWarning && (
@@ -1027,7 +1027,7 @@ export default function Home() {
               {insPrev && (
                 <Preview theme={C} rows={[
                   { label: "7% fee — distributed to all OKT holders", value: insPrev.fee.toLocaleString() + " sats" },
-                  { label: "OKT sealed in vault (1 sat = 1 OKT)", value: insPrev.out.toLocaleString() + " OKT" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.out, btcPrice)) : ""), blue: true },
+                  { label: "OKT sealed in vault (1 sat = 1 OKT)", value: insPrev.out.toLocaleString() + " OKey" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.out, btcPrice)) : ""), blue: true },
                 ]} />
               )}
               <BigBtn onClick={inscribe} theme={C} disabled={!connected}>Inscribe Vault</BigBtn>
@@ -1188,7 +1188,7 @@ export default function Home() {
         {tab === "learn" && (
           <Panel title="Learn — Video Guides" theme={C}>
             <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
-              Everything you need to understand Origin Key Token, Analog Bitcoin, and how to participate.
+              Everything you need to understand Origin Key, Analog Bitcoin, and how to participate.
             </p>
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
               {VIDEOS.map((v, i) => (
