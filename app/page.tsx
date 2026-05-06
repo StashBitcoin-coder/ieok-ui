@@ -99,11 +99,16 @@ const useIsMobile = () => {
 function SkeletonKey({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="4.5" stroke="#808080" strokeWidth="2" fill="none"/>
-      <circle cx="8" cy="8" r="1.5" fill="#808080"/>
-      <path d="M8 12.5L8 21" stroke="#808080" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M6 16L8 16" stroke="#808080" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M6 19L8 19" stroke="#808080" strokeWidth="2" strokeLinecap="round"/>
+      {/* Bow - smaller, more traditional oval */}
+      <ellipse cx="8" cy="6.5" rx="3" ry="3.5" stroke="#808080" strokeWidth="1.8" fill="none"/>
+      {/* Keyhole in bow */}
+      <circle cx="8" cy="6" r="1" fill="#808080"/>
+      {/* Shaft */}
+      <line x1="8" y1="10" x2="8" y2="21" stroke="#808080" strokeWidth="1.8" strokeLinecap="round"/>
+      {/* Teeth - right side, traditional skeleton key */}
+      <line x1="8" y1="14" x2="11" y2="14" stroke="#808080" strokeWidth="1.8" strokeLinecap="round"/>
+      <line x1="8" y1="17" x2="10" y2="17" stroke="#808080" strokeWidth="1.8" strokeLinecap="round"/>
+      <line x1="8" y1="20" x2="11" y2="20" stroke="#808080" strokeWidth="1.8" strokeLinecap="round"/>
     </svg>
   );
 }
@@ -166,7 +171,7 @@ function Input({ label, value, onChange, placeholder, type = "text", hint, tag }
       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, marginBottom: 8, fontWeight: 600 }}>{label}</div>
       <div style={{ position: "relative" as const }}>
         <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-          style={{ width: "100%", background: C.input, border: `1.5px solid ${C.border}`, borderRadius: 8, color: C.text, fontFamily: "Arial, sans-serif", fontSize: 17, padding: tag ? "14px 80px 14px 16px" : "14px 16px", outline: "none", boxSizing: "border-box" as const, WebkitAppearance: "none" as const }}
+          style={{ width: "100%", background: C.input, border: `2px solid ${C.text}`, borderRadius: 8, color: C.text, fontFamily: "Arial, sans-serif", fontSize: 17, padding: tag ? "14px 80px 14px 16px" : "14px 16px", outline: "none", boxSizing: "border-box" as const, WebkitAppearance: "none" as const }}
           onFocus={e => e.target.style.borderColor = C.blue}
           onBlur={e => e.target.style.borderColor = C.border}
         />
@@ -267,6 +272,7 @@ export default function Home() {
   const [buyM, setBuyM]         = useState("");
 
   const [sellAmt, setSellAmt]   = useState("");
+  const [showSellWarning, setShowSellWarning] = useState(false);
   const [sellS, setSellS]       = useState<TxState>("idle");
   const [sellM, setSellM]       = useState("");
 
@@ -395,7 +401,7 @@ export default function Home() {
     setSellS("pending"); setSellM("Awaiting wallet...");
     try {
       await (await okt.sell(BigInt(sellAmt), BigInt(0))).wait();
-      setSellS("success"); setSellM("Sold — cbBTC added to your withdrawable balance. Tap Withdraw to claim.");
+      setSellS("success"); setSellM("");
       if (account) await load(account);
     } catch (e: any) {
       setSellS("failed");
@@ -600,7 +606,7 @@ export default function Home() {
             {/* OKT — OKT on top, sats underneath */}
             <Card label="Origin Key Balance" value={fmtOkt(oktBal)} sub={fmtSats(oktBal)} sub2={oktUsd} />
             {/* Dividends — sats primary */}
-            <Card label="Dividends + Sale Proceeds" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent />
+            <Card label="Dividends" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent />
             {/* Total Supply */}
             <Card label="Total Token Supply" value={fmtOkt(supply)} sub={fmtSats(supply)} />
           </div>
@@ -637,12 +643,19 @@ export default function Home() {
         </div>
       )}
 
-      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: mobile ? "8px 16px" : "8px 40px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" as const }}>
-        <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 10 : 11, color: C.textMuted, fontStyle: "italic", flex: 1 }}>
-          OKT is a Deterministic Automatic Operations (DAO) Vault — a self-governing protocol where every buy, sell, and dividend is executed by simple and immutable mathematics. No one can intervene or stop it.
-        </span>
+      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: mobile ? "10px 16px" : "10px 40px" }}>
+        <div style={{ textAlign: "center" as const, marginBottom: connected && account ? 6 : 0 }}>
+          <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 15, fontWeight: 700, color: C.textDim, marginBottom: 2 }}>
+            OKT is a Deterministic Automatic Operations (DAO) Vault
+          </div>
+          <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 10 : 11, color: C.textMuted, fontStyle: "italic" }}>
+            A self-governing protocol where every buy, sell, and dividend is executed by simple and immutable mathematics. No one can intervene or stop it.
+          </div>
+        </div>
         {connected && account && (
-          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, flexShrink: 0 }}>{mobile ? fmtAddr(accountStr) : accountStr}</span>
+          <div style={{ textAlign: "center" as const, marginTop: 4 }}>
+            <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>Your Wallet Address: {mobile ? fmtAddr(accountStr) : accountStr}</span>
+          </div>
         )}
       </div>
 
@@ -810,7 +823,7 @@ export default function Home() {
 
 
                 <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
-                  Enter your cbBTC amount in satoshis and tap Buy. Minimum 100 sats. First time buyers will see their wallet pop up twice — approve then buy. Future purchases are single tap.
+                  Enter your cbBTC amount in Satoshis. Minimum 100 sats. First time buyers will see their wallet pop up twice. First to approve. Then buy. Future purchases are single tap.
                 </p>
                 <Input label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
                   hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 sats · 1,000 sats = 930 OKT after 7% fee"} />
@@ -853,11 +866,6 @@ export default function Home() {
             {mode === "sell" && (
               <Panel title="Sell OKT — Proceeds Available to Withdraw">
                 <FeeBadge mobile={mobile} />
-                <div style={{ background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 16px", marginBottom: 20 }}>
-                  <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 600 }}>
-                    ℹ️ When you sell, your cbBTC is held in the contract and added to your withdrawable balance. Tap Withdraw to receive it in your wallet.
-                  </span>
-                </div>
                 <Input label="OKT amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
                 {sPrev && (
                   <Preview rows={[
@@ -865,7 +873,42 @@ export default function Home() {
                     { label: "cbBTC you receive (1 OKT = 1 sat)", value: sPrev.out.toLocaleString() + " sats" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(sPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
-                <BigBtn onClick={sell} variant="outline" disabled={!connected}>Sell OKT for cbBTC</BigBtn>
+                <BigBtn onClick={() => {
+                  if (!sellAmt) return;
+                  const selling = Number(sellAmt);
+                  const balance = oktNum;
+                  const divs    = divsNum;
+                  if (selling >= balance && divs > 0) {
+                    setShowSellWarning(true);
+                  } else {
+                    sell();
+                  }
+                }} variant="outline" disabled={!connected}>Sell OKT for cbBTC</BigBtn>
+
+                {/* SELL WARNING POPUP */}
+                {showSellWarning && (
+                  <div style={{ position: "fixed" as const, top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+                    <div style={{ background: C.card, border: `2px solid ${C.orange}`, borderRadius: 16, padding: mobile ? 24 : 36, maxWidth: 480, width: "100%", boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.orange, marginBottom: 16 }}>
+                        ⚠️ Wait — You Have Unclaimed Dividends
+                      </div>
+                      <p style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
+                        You have <strong style={{ color: C.blue }}>{fmtSats(divs.toString())} cbBTC</strong> in unclaimed dividends. We recommend withdrawing them before selling your tokens to ensure you receive every satoshi.
+                      </p>
+                      <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 24 }}>
+                        <strong>Why this matters:</strong> Your share of yield is tied directly to your token balance. If you sell first, your earning power drops to zero. Withdraw first and you collect your cbBTC while still holding OKT — continuing to earn on every transaction until the moment you sell.
+                      </p>
+                      <div style={{ display: "flex", gap: 10, flexDirection: mobile ? "column" : "row" as const }}>
+                        <button onClick={() => { setShowSellWarning(false); }} style={{ flex: 1, background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px", fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                          ← Withdraw First (Recommended)
+                        </button>
+                        <button onClick={() => { setShowSellWarning(false); sell(); }} style={{ flex: 1, background: "transparent", color: C.red, border: `2px solid ${C.red}`, borderRadius: 8, padding: "14px", fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                          Sell Anyway
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <Status state={sellS} msg={sellM} />
               </Panel>
             )}
