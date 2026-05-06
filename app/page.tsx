@@ -167,12 +167,13 @@ function CbbtcLogo({ size = 20 }: { size?: number }) {
   );
 }
 
-function Status({ state, msg }: { state: TxState; msg: string }) {
+function Status({ state, msg, theme }: { state: TxState; msg: string; theme?: typeof LIGHT }) {
   if (state === "idle" || !msg) return null;
+  const T = theme || LIGHT;
   const cfg = {
-    pending: { bg: C.blueBg,  border: C.blue,  color: C.blue,  icon: "⏳" },
-    success: { bg: C.greenBg, border: C.green,  color: C.green, icon: "✓"  },
-    failed:  { bg: C.redBg,   border: C.red,    color: C.red,   icon: "✗"  },
+    pending: { bg: T.blueBg,  border: T.blue,  color: T.blue,  icon: "⏳" },
+    success: { bg: T.greenBg, border: T.green,  color: T.green, icon: "✓"  },
+    failed:  { bg: T.redBg,   border: T.red,    color: T.red,   icon: "✗"  },
     idle:    { bg: "",         border: "",        color: "",       icon: ""   },
   }[state];
   return (
@@ -182,24 +183,26 @@ function Status({ state, msg }: { state: TxState; msg: string }) {
   );
 }
 
-function FeeBadge({ mobile }: { mobile: boolean }) {
+function FeeBadge({ mobile, theme }: { mobile: boolean; theme?: typeof LIGHT }) {
+  const T = theme || LIGHT;
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: mobile ? "10px 14px" : "12px 18px", marginBottom: 24 }}>
-      <span style={{ fontFamily: "Arial, sans-serif", fontSize: 18, color: C.blue }}>◈</span>
-      <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, color: C.blue, fontWeight: 600 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, background: T.blueBg, border: `1px solid ${T.blue}`, borderRadius: 8, padding: mobile ? "10px 14px" : "12px 18px", marginBottom: 24 }}>
+      <span style={{ fontFamily: "Arial, sans-serif", fontSize: 18, color: T.blue }}>◈</span>
+      <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, color: T.blue, fontWeight: 600 }}>
         7% fee on every buy and sell — distributed instantly to all Origin Key holders as cbBTC dividends
       </span>
     </div>
   );
 }
 
-function Card({ label, value, sub, sub2, accent }: { label: string; value: string; sub?: string; sub2?: string; accent?: boolean }) {
+function Card({ label, value, sub, sub2, accent, theme }: { label: string; value: string; sub?: string; sub2?: string; accent?: boolean; theme?: typeof LIGHT }) {
+  const T = theme || LIGHT;
   return (
-    <div style={{ background: C.card, border: `1px solid ${accent ? C.blue : C.border}`, borderTop: `3px solid ${accent ? C.blue : C.border}`, borderRadius: "0 0 8px 8px", padding: "20px", flex: 1, minWidth: 0, boxShadow: C.shadow }}>
-      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, marginBottom: 10, fontWeight: 600 }}>{label}</div>
-      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: accent ? C.blue : C.text, lineHeight: 1, wordBreak: "break-all" as const }}>{value}</div>
-      {sub  && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 6 }}>{sub}</div>}
-      {sub2 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.green, marginTop: 3, fontWeight: 600 }}>{sub2}</div>}
+    <div style={{ background: T.card, border: `1px solid ${accent ? T.blue : T.border}`, borderTop: `3px solid ${accent ? T.blue : T.border}`, borderRadius: "0 0 8px 8px", padding: "20px", flex: 1, minWidth: 0, boxShadow: T.shadow }}>
+      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, letterSpacing: "0.1em", color: T.textMuted, textTransform: "uppercase" as const, marginBottom: 10, fontWeight: 600 }}>{label}</div>
+      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: accent ? T.blue : T.text, lineHeight: 1, wordBreak: "break-all" as const }}>{value}</div>
+      {sub  && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: T.textMuted, marginTop: 6 }}>{sub}</div>}
+      {sub2 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: T.green, marginTop: 3, fontWeight: 600 }}>{sub2}</div>}
     </div>
   );
 }
@@ -224,15 +227,16 @@ function Input({ label, value, onChange, placeholder, type = "text", hint, tag }
   );
 }
 
-function Preview({ rows }: { rows: { label: string; value: string; blue?: boolean }[] }) {
+function Preview({ rows, theme }: { rows: { label: string; value: string; blue?: boolean }[]; theme?: typeof LIGHT }) {
+  const T = theme || LIGHT;
   return (
-    <div style={{ background: C.blueBg, border: `1px solid ${C.border}`, borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
+    <div style={{ background: T.blueBg, border: `1px solid ${T.border}`, borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
       {rows.map((r, i) => (
         <div key={i}>
-          {i > 0 && i === rows.length - 1 && <div style={{ height: 1, background: C.border, margin: "10px 0" }} />}
+          {i > 0 && i === rows.length - 1 && <div style={{ height: 1, background: T.border, margin: "10px 0" }} />}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0", gap: 12 }}>
-            <span style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>{r.label}</span>
-            <span style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: r.blue ? C.blue : C.textDim, fontWeight: r.blue ? 700 : 400, flexShrink: 0 }}>{r.value}</span>
+            <span style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: T.textMuted }}>{r.label}</span>
+            <span style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: r.blue ? T.blue : T.textDim, fontWeight: r.blue ? 700 : 400, flexShrink: 0 }}>{r.value}</span>
           </div>
         </div>
       ))}
@@ -240,21 +244,23 @@ function Preview({ rows }: { rows: { label: string; value: string; blue?: boolea
   );
 }
 
-function BigBtn({ onClick, children, variant = "blue", disabled = false }: {
-  onClick: () => void; children: React.ReactNode; variant?: "blue" | "outline"; disabled?: boolean;
+function BigBtn({ onClick, children, variant = "blue", disabled = false, theme }: {
+  onClick: () => void; children: React.ReactNode; variant?: "blue" | "outline"; disabled?: boolean; theme?: typeof LIGHT;
 }) {
-  const v = { blue: { bg: C.blue, color: "#FFFFFF", border: "none" }, outline: { bg: "transparent", color: C.blue, border: `2px solid ${C.blue}` } }[variant];
+  const T = theme || LIGHT;
+  const v = { blue: { bg: T.blue, color: "#FFFFFF", border: "none" }, outline: { bg: "transparent", color: T.blue, border: `2px solid ${T.blue}` } }[variant];
   return (
-    <button onClick={onClick} disabled={disabled} style={{ width: "100%", background: v.bg, color: v.color, border: v.border, borderRadius: 8, padding: "16px", fontFamily: "Arial, sans-serif", fontSize: 15, letterSpacing: "0.05em", textTransform: "uppercase" as const, cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.4 : 1, marginBottom: 4, fontWeight: 700, WebkitTapHighlightColor: "transparent", boxShadow: disabled ? "none" : C.shadow }}>
+    <button onClick={onClick} disabled={disabled} style={{ width: "100%", background: v.bg, color: v.color, border: v.border, borderRadius: 8, padding: "16px", fontFamily: "Arial, sans-serif", fontSize: 15, letterSpacing: "0.05em", textTransform: "uppercase" as const, cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.4 : 1, marginBottom: 4, fontWeight: 700, WebkitTapHighlightColor: "transparent", boxShadow: disabled ? "none" : T.shadow }}>
       {children}
     </button>
   );
 }
 
-function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+function Panel({ title, children, theme }: { title: string; children: React.ReactNode; theme?: typeof LIGHT }) {
+  const T = theme || LIGHT;
   return (
-    <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "24px", marginBottom: 16, boxShadow: C.shadow }}>
-      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: C.blue, marginBottom: 20, fontWeight: 700 }}>{title}</div>
+    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: "24px", marginBottom: 16, boxShadow: T.shadow }}>
+      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: T.blue, marginBottom: 20, fontWeight: 700 }}>{title}</div>
       {children}
     </div>
   );
@@ -667,7 +673,7 @@ export default function Home() {
             {/* OKT — OKT on top, sats underneath */}
             <Card label="Origin Key Balance" value={fmtOkt(oktBal)} sub={fmtSats(oktBal)} sub2={oktUsd} />
             {/* Dividends — sats primary */}
-            <Card label="Dividends" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent />
+            <Card label="Dividends" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent theme={C} />
             {/* Total Supply */}
             <Card label="Total Token Supply" value={fmtOkt(supply)} sub={fmtSats(supply)} />
           </div>
@@ -698,8 +704,8 @@ export default function Home() {
                 Reinvest
               </button>
             </div>
-            <Status state={wdS} msg={wdM} />
-            <Status state={rvS} msg={rvM} />
+            <Status state={wdS} msg={wdM} theme={C} />
+            <Status state={rvS} msg={rvM} theme={C} />
           </div>
         </div>
       )}
@@ -879,17 +885,17 @@ export default function Home() {
             </div>
 
             {mode === "buy" && (
-              <Panel title="Buy OKT — Fixed Price 1 Sat = 1 OKT">
-                <FeeBadge mobile={mobile} />
+              <Panel title="Buy OKT — Fixed Price 1 Sat = 1 OKT" theme={C}>
+                <FeeBadge mobile={mobile} theme={C} />
 
 
                 <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
                   Enter your cbBTC amount in Satoshis. Minimum 100 sats. First time buyers will see their wallet pop up twice. First to approve. Then buy. Future purchases are single tap.
                 </p>
-                <Input label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
+                <Input theme={C} label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
                   hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 sats · 1,000 sats = 930 OKT after 7% fee"} />
                 {bPrev && (
-                  <Preview rows={[
+                  <Preview theme={C} rows={[
                     { label: "7% fee — paid to all OKT holders", value: bPrev.fee.toLocaleString() + " sats" },
                     { label: "OKT you receive (1 sat = 1 OKT)", value: bPrev.out.toLocaleString() + " OKT" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
@@ -903,19 +909,19 @@ export default function Home() {
                         First time — approve cbBTC before buying
                       </span>
                     </div>
-                    <BigBtn onClick={approveCbbtc} disabled={!connected}>
+                    <BigBtn onClick={approveCbbtc} theme={C} disabled={!connected}>
                       <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                         <img src="/coinbase-wrapped-btc.png" width={16} height={16} alt="cbBTC" style={{ display: "inline" }} />
                         Approve cbBTC
                       </span>
                     </BigBtn>
-                    <Status state={appS} msg={appM} />
+                    <Status state={appS} msg={appM} theme={C} />
                   </>
                 )}
                 {connected && isApproved && (
                   <>
                     <BigBtn onClick={buy}>Buy OKT</BigBtn>
-                    <Status state={buyS} msg={buyM} />
+                    <Status state={buyS} msg={buyM} theme={C} />
                   </>
                 )}
                 {!connected && (
@@ -925,11 +931,11 @@ export default function Home() {
             )}
 
             {mode === "sell" && (
-              <Panel title="Sell OKT — Proceeds Available to Withdraw">
-                <FeeBadge mobile={mobile} />
-                <Input label="OKT amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
+              <Panel title="Sell OKT — Proceeds Available to Withdraw" theme={C}>
+                <FeeBadge mobile={mobile} theme={C} />
+                <Input theme={C} label="OKT amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
                 {sPrev && (
-                  <Preview rows={[
+                  <Preview theme={C} rows={[
                     { label: "7% fee — paid to all OKT holders", value: sPrev.fee.toLocaleString() + " sats" },
                     { label: "cbBTC you receive (1 OKT = 1 sat)", value: sPrev.out.toLocaleString() + " sats" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(sPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
@@ -970,7 +976,7 @@ export default function Home() {
                     </div>
                   </div>
                 )}
-                <Status state={sellS} msg={sellM} />
+                <Status state={sellS} msg={sellM} theme={C} />
               </Panel>
             )}
           </div>
@@ -978,21 +984,21 @@ export default function Home() {
 
         {/* TRANSFER */}
         {tab === "transfer" && (
-          <Panel title="Transfer OKT — Zero Fee">
+          <Panel title="Transfer OKT — Zero Fee" theme={C}>
             <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
               Send OKT to any wallet with no fee. Dividend yield moves proportionally with the tokens.
             </p>
-            <Input label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
-            <Input label="OKT amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
-            <BigBtn onClick={transfer} disabled={!connected}>Transfer — Free</BigBtn>
-            <Status state={txS} msg={txM} />
+            <Input theme={C} label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
+            <Input theme={C} label="OKT amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
+            <BigBtn onClick={transfer} theme={C} disabled={!connected}>Transfer — Free</BigBtn>
+            <Status state={txS} msg={txM} theme={C} />
           </Panel>
         )}
 
         {/* INSCRIBE */}
         {tab === "inscribe" && isRegistrar && (
           <div>
-            <Panel title="Inscribe Vault — Analog Bitcoin Art Piece">
+            <Panel title="Inscribe Vault — Analog Bitcoin Art Piece" theme={C}>
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
                 You spend cbBTC — 7% goes to all OKT holders as dividends, and the remaining 93% becomes OKT tokens sealed inside the vault. The Ordinal number is optional — leave blank for series pieces without an Ordinal.
               </p>
@@ -1012,28 +1018,28 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <Input label="Vault wallet address (sealed inside the art)" value={insVault} onChange={setInsVault} placeholder="0x..." />
-              <Input label="Asset ID (max 31 characters)" value={insAsset} onChange={setInsAsset} placeholder="RWI-001" hint="e.g. RWI-001, IE-GENESIS-001, AB-001" />
-              <Input label="Ordinal inscription number (optional)" value={insOrd} onChange={setInsOrd} placeholder="68743291 or leave blank" type="number" hint="Leave blank for series pieces without a linked Ordinal" />
-              <Input label="cbBTC to spend (sats) — 7% fee, rest becomes OKT in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
+              <Input theme={C} label="Vault wallet address (sealed inside the art)" value={insVault} onChange={setInsVault} placeholder="0x..." />
+              <Input theme={C} label="Asset ID (max 31 characters)" value={insAsset} onChange={setInsAsset} placeholder="RWI-001" hint="e.g. RWI-001, IE-GENESIS-001, AB-001" />
+              <Input theme={C} label="Ordinal inscription number (optional)" value={insOrd} onChange={setInsOrd} placeholder="68743291 or leave blank" type="number" hint="Leave blank for series pieces without a linked Ordinal" />
+              <Input theme={C} label="cbBTC to spend (sats) — 7% fee, rest becomes OKT in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
                 hint={btcPrice > 0 && insCbbtc ? `≈ ${fmtUsd(satsToUsd(Number(insCbbtc), btcPrice))} USD` : `Your cbBTC: ${fmtSats(cbbtcBal)} · Minimum 100 sats`} />
               {insPrev && (
-                <Preview rows={[
+                <Preview theme={C} rows={[
                   { label: "7% fee — distributed to all OKT holders", value: insPrev.fee.toLocaleString() + " sats" },
                   { label: "OKT sealed in vault (1 sat = 1 OKT)", value: insPrev.out.toLocaleString() + " OKT" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.out, btcPrice)) : ""), blue: true },
                 ]} />
               )}
-              <BigBtn onClick={inscribe} disabled={!connected}>Inscribe Vault</BigBtn>
-              <Status state={insS} msg={insM} />
+              <BigBtn onClick={inscribe} theme={C} disabled={!connected}>Inscribe Vault</BigBtn>
+              <Status state={insS} msg={insM} theme={C} />
             </Panel>
 
-            <Panel title="Report Ordinal Moved — Bitcoin Alert">
+            <Panel title="Report Ordinal Moved — Bitcoin Alert" theme={C}>
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
                 When you see a linked Bitcoin Ordinal has moved on ordinals.com — enter its inscription number to record the alert permanently on Base.
               </p>
-              <Input label="Ordinal inscription number" value={repOrd} onChange={setRepOrd} placeholder="68743291" type="number" hint="Verify on ordinals.com before reporting — this is permanent and cannot be undone" />
-              <BigBtn onClick={reportOrdinalMoved} variant="outline" disabled={!connected}>Report Ordinal Moved</BigBtn>
-              <Status state={repS} msg={repM} />
+              <Input theme={C} label="Ordinal inscription number" value={repOrd} onChange={setRepOrd} placeholder="68743291" type="number" hint="Verify on ordinals.com before reporting — this is permanent and cannot be undone" />
+              <BigBtn onClick={reportOrdinalMoved} theme={C} variant="outline" disabled={!connected}>Report Ordinal Moved</BigBtn>
+              <Status state={repS} msg={repM} theme={C} />
             </Panel>
           </div>
         )}
@@ -1057,8 +1063,8 @@ export default function Home() {
                 />
               </div>
             </div>
-            <BigBtn onClick={checkVault} variant="outline">Verify Vault Status</BigBtn>
-            <Status state={vS} msg={vM} />
+            <BigBtn onClick={checkVault} theme={C} variant="outline">Verify Vault Status</BigBtn>
+            <Status state={vS} msg={vM} theme={C} />
 
             {vResult && (
               <div style={{ marginTop: 20, padding: mobile ? 20 : 28, border: `2px solid ${!vResult.registered ? C.border : (vResult.swept || vResult.ordinalMoved) ? C.red : C.green}`, borderRadius: 12, background: !vResult.registered ? C.panel : (vResult.swept || vResult.ordinalMoved) ? C.redBg : C.greenBg }}>
@@ -1179,7 +1185,7 @@ export default function Home() {
 
         {/* LEARN */}
         {tab === "learn" && (
-          <Panel title="Learn — Video Guides">
+          <Panel title="Learn — Video Guides" theme={C}>
             <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
               Everything you need to understand Origin Key Token, Analog Bitcoin, and how to participate.
             </p>
