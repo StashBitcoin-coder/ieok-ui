@@ -207,22 +207,23 @@ function Card({ label, value, sub, sub2, accent, theme }: { label: string; value
   );
 }
 
-function Input({ label, value, onChange, placeholder, type = "text", hint, tag }: {
+function Input({ label, value, onChange, placeholder, type = "text", hint, tag, theme }: {
   label: string; value: string; onChange: (v: string) => void;
-  placeholder?: string; type?: string; hint?: string; tag?: string;
+  placeholder?: string; type?: string; hint?: string; tag?: string; theme?: typeof LIGHT;
 }) {
+  const T = theme || LIGHT;
   return (
     <div style={{ marginBottom: 20 }}>
-      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, marginBottom: 8, fontWeight: 600 }}>{label}</div>
+      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: T.textDim, marginBottom: 8, fontWeight: 600 }}>{label}</div>
       <div style={{ position: "relative" as const }}>
         <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-          style={{ width: "100%", background: C.input, border: `2px solid ${C.text}`, borderRadius: 8, color: C.text, fontFamily: "Arial, sans-serif", fontSize: 17, padding: tag ? "14px 80px 14px 16px" : "14px 16px", outline: "none", boxSizing: "border-box" as const, WebkitAppearance: "none" as const }}
-          onFocus={e => e.target.style.borderColor = C.blue}
-          onBlur={e => e.target.style.borderColor = C.border}
+          style={{ width: "100%", background: T.input, border: `2px solid ${T.text}`, borderRadius: 8, color: T.text, fontFamily: "Arial, sans-serif", fontSize: 17, padding: tag ? "14px 80px 14px 16px" : "14px 16px", outline: "none", boxSizing: "border-box" as const, WebkitAppearance: "none" as const }}
+          onFocus={e => e.target.style.borderColor = T.blue}
+          onBlur={e => e.target.style.borderColor = T.text}
         />
-        {tag && <div style={{ position: "absolute" as const, right: 16, top: "50%", transform: "translateY(-50%)", fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 700 }}>{tag}</div>}
+        {tag && <div style={{ position: "absolute" as const, right: 16, top: "50%", transform: "translateY(-50%)", fontFamily: "Arial, sans-serif", fontSize: 13, color: T.blue, fontWeight: 700 }}>{tag}</div>}
       </div>
-      {hint && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginTop: 6 }}>{hint}</div>}
+      {hint && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: T.textMuted, marginTop: 6 }}>{hint}</div>}
     </div>
   );
 }
@@ -267,14 +268,14 @@ function Panel({ title, children, theme }: { title: string; children: React.Reac
 }
 
 const VIDEOS = [
-  { title: "What is OKT — Origin Key Token",               desc: "Introduction to the Origin Key Token and how it works with physical art pieces.",  url: "https://youtube.com", tag: "START HERE", tc: C.green },
-  { title: "What is Analog Bitcoin",                        desc: "The concept behind physical Bitcoin — destroy to redeem.",                           url: "https://youtube.com", tag: "CONCEPT",    tc: C.blue  },
-  { title: "How to get cbBTC on Base",                      desc: "Step by step — buying Coinbase Wrapped Bitcoin and getting it into your wallet.",    url: "https://youtube.com", tag: "BEGINNERS",  tc: C.blue  },
-  { title: "How to buy Origin Key Tokens",                  desc: "Buying OKT using the exchange on Base.",                                             url: "https://youtube.com", tag: "TRADING",    tc: C.blue  },
-  { title: "How cbBTC dividends work",                      desc: "How fees are distributed to all OKT holders and how to withdraw.",                   url: "https://youtube.com", tag: "DIVIDENDS",  tc: C.blue  },
-  { title: "How to verify a vault — NFC tap guide",         desc: "Tap an Analog Bitcoin NFC tag and verify vault status on chain.",                    url: "https://youtube.com", tag: "COLLECTORS", tc: C.green },
+  { title: "What is OKT — Origin Key Token",               desc: "Introduction to the Origin Key Token and how it works with physical art pieces.",  url: "https://youtube.com", tag: "START HERE", tc: "#00A878" },
+  { title: "What is Analog Bitcoin",                        desc: "The concept behind physical Bitcoin — destroy to redeem.",                           url: "https://youtube.com", tag: "CONCEPT",    tc: "#0052FF" },
+  { title: "How to get cbBTC on Base",                      desc: "Step by step — buying Coinbase Wrapped Bitcoin and getting it into your wallet.",    url: "https://youtube.com", tag: "BEGINNERS",  tc: "#0052FF" },
+  { title: "How to buy Origin Key Tokens",                  desc: "Buying OKT using the exchange on Base.",                                             url: "https://youtube.com", tag: "TRADING",    tc: "#0052FF" },
+  { title: "How cbBTC dividends work",                      desc: "How fees are distributed to all OKT holders and how to withdraw.",                   url: "https://youtube.com", tag: "DIVIDENDS",  tc: "#0052FF" },
+  { title: "How to verify a vault — NFC tap guide",         desc: "Tap an Analog Bitcoin NFC tag and verify vault status on chain.",                    url: "https://youtube.com", tag: "COLLECTORS", tc: "#00A878" },
   { title: "What is an Ordinal inscription",                desc: "Understanding Bitcoin Ordinals and how they connect to physical art.",                url: "https://youtube.com", tag: "ORDINALS",   tc: "#5B6278" },
-  { title: "How to redeem an Analog Bitcoin art piece",     desc: "What happens when you destroy the art and sweep the tokens.",                        url: "https://youtube.com", tag: "REDEMPTION", tc: C.red   },
+  { title: "How to redeem an Analog Bitcoin art piece",     desc: "What happens when you destroy the art and sweep the tokens.",                        url: "https://youtube.com", tag: "REDEMPTION", tc: "#DA3A3A" },
 ];
 
 // ─── APPROVE HELPER — fully awaits confirmation + 1s delay for wallet sync ───
