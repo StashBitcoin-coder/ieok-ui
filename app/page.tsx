@@ -43,7 +43,7 @@ type VaultResult = {
   ordinalMovedAt: string;
 } | null;
 
-const C = {
+const LIGHT = {
   bg:       "#FFFFFF",
   panel:    "#F5F7FA",
   card:     "#FFFFFF",
@@ -61,6 +61,26 @@ const C = {
   orangeBg: "rgba(232,145,58,0.12)",
   blueBg:   "#E8EFFE",
   shadow:   "0 1px 3px rgba(0,0,0,0.08)",
+};
+
+const DARK = {
+  bg:       "#0A0B0D",
+  panel:    "#13151A",
+  card:     "#1A1D24",
+  input:    "#13151A",
+  border:   "#2A2D35",
+  blue:     "#0052FF",
+  text:     "#F0EDE6",
+  textDim:  "#C5C0B8",
+  textMuted:"#6B7280",
+  green:    "#00A878",
+  red:      "#DA3A3A",
+  orange:   "#E8913A",
+  greenBg:  "rgba(0,168,120,0.15)",
+  redBg:    "rgba(218,58,58,0.15)",
+  orangeBg: "rgba(232,145,58,0.12)",
+  blueBg:   "rgba(0,82,255,0.15)",
+  shadow:   "0 1px 3px rgba(0,0,0,0.4)",
 };
 
 const VAULT_REGISTRAR = "0x10DB4bf0C9e7c14f320C4e831CC85fFD8D15BE6D";
@@ -96,20 +116,42 @@ const useIsMobile = () => {
   return mobile;
 };
 
-function SkeletonKey({ size = 28 }: { size?: number }) {
+function MoonIcon() {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Bow - smaller, more traditional oval */}
-      <ellipse cx="8" cy="6.5" rx="3" ry="3.5" stroke="#808080" strokeWidth="1.8" fill="none"/>
-      {/* Keyhole in bow */}
-      <circle cx="8" cy="6" r="1" fill="#808080"/>
-      {/* Shaft */}
-      <line x1="8" y1="10" x2="8" y2="21" stroke="#808080" strokeWidth="1.8" strokeLinecap="round"/>
-      {/* Teeth - right side, traditional skeleton key */}
-      <line x1="8" y1="14" x2="11" y2="14" stroke="#808080" strokeWidth="1.8" strokeLinecap="round"/>
-      <line x1="8" y1="17" x2="10" y2="17" stroke="#808080" strokeWidth="1.8" strokeLinecap="round"/>
-      <line x1="8" y1="20" x2="11" y2="20" stroke="#808080" strokeWidth="1.8" strokeLinecap="round"/>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2"/>
+      <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function SkeletonKey({ size = 28 }: { size?: number }) {
+  const ratio = 190 / 86; // height/width ratio of the key image
+  const w = size * 0.55;
+  const h = w * ratio;
+  return (
+    <img
+      src="/okp-logo.png"
+      width={w}
+      height={h}
+      alt="Origin Key"
+      style={{ display: "block", objectFit: "contain", opacity: 0.7 }}
+    />
   );
 }
 
@@ -250,6 +292,18 @@ async function ensureAllowance(
 
 export default function Home() {
   const mobile = useIsMobile();
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("okt-theme") === "dark";
+    }
+    return false;
+  });
+  const C = darkMode ? DARK : LIGHT;
+
+  useEffect(() => {
+    localStorage.setItem("okt-theme", darkMode ? "dark" : "light");
+    document.body.style.background = darkMode ? "#0A0B0D" : "#FFFFFF";
+  }, [darkMode]);
 
   // ─── Wagmi hooks replace manual connect ────────────────────────────────────
   const { address: account, isConnected: connected, chain } = useAccount();
@@ -585,6 +639,13 @@ export default function Home() {
             </div>
           </div>
 
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            style={{ background: darkMode ? "#2A2D35" : C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: mobile ? "7px 10px" : "9px 12px", cursor: "pointer", color: C.textMuted, display: "flex", alignItems: "center", gap: 4, WebkitTapHighlightColor: "transparent", flexShrink: 0 }}
+          >
+            {darkMode ? <SunIcon /> : <MoonIcon />}
+            {!mobile && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, fontWeight: 600 }}>{darkMode ? "Light" : "Dark"}</span>}
+          </button>
           <ConnectButton
             showBalance={false}
             chainStatus="none"
