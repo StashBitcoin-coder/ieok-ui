@@ -64,11 +64,11 @@ const LIGHT = {
 };
 
 const DARK = {
-  bg:       "#0A0B0D",
-  panel:    "#13151A",
-  card:     "#1A1D24",
-  input:    "#13151A",
-  border:   "#2A2D35",
+  bg:       "#1A1D24",
+  panel:    "#22262F",
+  card:     "#22262F",
+  input:    "#22262F",
+  border:   "#363B47",
   blue:     "#0052FF",
   text:     "#F0EDE6",
   textDim:  "#C5C0B8",
@@ -140,8 +140,8 @@ function SunIcon() {
   );
 }
 
-function SkeletonKey({ size = 28 }: { size?: number }) {
-  const ratio = 190 / 86; // height/width ratio of the key image
+function SkeletonKey({ size = 28, dark = false }: { size?: number; dark?: boolean }) {
+  const ratio = 190 / 86;
   const w = size * 0.55;
   const h = w * ratio;
   return (
@@ -150,7 +150,7 @@ function SkeletonKey({ size = 28 }: { size?: number }) {
       width={w}
       height={h}
       alt="Origin Key"
-      style={{ display: "block", objectFit: "contain", opacity: 0.7 }}
+      style={{ display: "block", objectFit: "contain", opacity: 0.85, filter: dark ? "invert(1)" : "none" }}
     />
   );
 }
@@ -198,7 +198,7 @@ function FeeBadge({ mobile, theme }: { mobile: boolean; theme?: typeof LIGHT }) 
 function Card({ label, value, sub, sub2, accent, theme }: { label: string; value: string; sub?: string; sub2?: string; accent?: boolean; theme?: typeof LIGHT }) {
   const T = theme || LIGHT;
   return (
-    <div style={{ background: T.card, border: `1px solid ${accent ? T.blue : T.border}`, borderTop: `3px solid ${accent ? T.blue : T.border}`, borderRadius: "0 0 8px 8px", padding: "20px", flex: 1, minWidth: 0, boxShadow: T.shadow }}>
+    <div style={{ background: T.card, border: `1px solid ${T.blue}`, borderTop: `3px solid ${T.blue}`, borderRadius: "0 0 8px 8px", padding: "12px 16px", flex: 1, minWidth: 0, boxShadow: T.shadow }}>
       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, letterSpacing: "0.1em", color: T.textMuted, textTransform: "uppercase" as const, marginBottom: 10, fontWeight: 600 }}>{label}</div>
       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: accent ? T.blue : T.text, lineHeight: 1, wordBreak: "break-all" as const }}>{value}</div>
       {sub  && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: T.textMuted, marginTop: 6 }}>{sub}</div>}
@@ -639,7 +639,7 @@ export default function Home() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, borderRight: `1px solid ${C.border}`, paddingRight: 12 }}>
-            <SkeletonKey size={mobile ? 20 : 26} />
+            <SkeletonKey size={mobile ? 20 : 26} dark={darkMode} />
             <div style={{ textAlign: "center" as const }}>
               <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.06em", lineHeight: 1, textTransform: "uppercase" as const, whiteSpace: "nowrap" as const }}>Immutable Editions</div>
               <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 18, fontWeight: 700, color: C.blue, lineHeight: 1.2, whiteSpace: "nowrap" as const }}>Origin Key Exchange</div>
@@ -681,7 +681,7 @@ export default function Home() {
         </div>
       ) : (
         <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: "32px", textAlign: "center" as const }}>
-          <div style={{ marginBottom: 12 }}><SkeletonKey size={40} /></div>
+          <div style={{ marginBottom: 12 }}><SkeletonKey size={40} dark={darkMode} /></div>
           <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: C.textMuted, fontWeight: 600 }}>Connect your wallet to see your balances</div>
           <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 6 }}>Use MetaMask or Coinbase Wallet on Base Sepolia</div>
         </div>
