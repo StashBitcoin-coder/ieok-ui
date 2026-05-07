@@ -717,7 +717,7 @@ export default function Home() {
             Deterministic Automatic Operation (DAO) Contract
           </div>
           <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 10 : 11, color: C.textMuted, fontStyle: "italic" }}>
-            A self-governing protocol where every buy, sell, and dividend is executed by simple and immutable mathematics. No one can intervene or stop it.
+            A self-governing protocol where every buy, sell, and dividend is executed by simple and immutable mathematics. Math, not votes.
           </div>
         </div>
         {connected && account && (
@@ -1047,7 +1047,7 @@ export default function Home() {
 
         {/* VAULT */}
         {tab === "vault" && (
-          <Panel title="Vault Registry — On-Chain Seal — Scan NFC or Paste Wallet Address">
+          <Panel title="Vault Registry — On-Chain Seal — Scan NFC or Paste Wallet Address" theme={C}>
 
             {/* INPUT AND BUTTON — always visible at top */}
             <div style={{ marginBottom: 20 }}>
@@ -1068,7 +1068,7 @@ export default function Home() {
             <Status state={vS} msg={vM} theme={C} />
 
             {vResult && (
-              <div style={{ marginTop: 20, padding: mobile ? 20 : 28, border: `2px solid ${!vResult.registered ? C.border : (vResult.swept || vResult.ordinalMoved) ? C.red : C.green}`, borderRadius: 12, background: !vResult.registered ? C.panel : (vResult.swept || vResult.ordinalMoved) ? C.redBg : C.greenBg }}>
+              <div style={{ marginTop: 20, padding: mobile ? 20 : 28, border: `2px solid ${!vResult.registered ? C.border : (vResult.swept || vResult.ordinalMoved) ? C.red : C.green}`, borderRadius: 12, background: !vResult.registered ? C.panel : (vResult.swept || vResult.ordinalMoved) ? C.redBg : C.greenBg, color: C.text }}>
 
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 18 : 22, fontWeight: 700, marginBottom: 16, lineHeight: 1.3 }}>
                   {!vResult.registered && <span style={{ color: C.textMuted }}>⚪ Not a Registered Vault</span>}
