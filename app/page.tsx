@@ -502,7 +502,17 @@ export default function Home() {
       await (await okt.reinvest()).wait();
       setRvS("success"); setRvM("Dividends reinvested — new OKT tokens received");
       if (account) await load(account);
-    } catch (e: any) { setRvS("failed"); setRvM(e.reason || e.message || "Reinvest failed"); }
+    } catch (e: any) {
+      setRvS("failed");
+      const msg = e.reason || e.message || "";
+      if (msg.includes("Minimum 100 sats") || msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
+        setRvM("You need at least 100 sats in dividends to reinvest. Keep earning.");
+      } else if (msg.includes("user rejected") || msg.includes("User denied")) {
+        setRvM("Transaction cancelled.");
+      } else {
+        setRvM("Reinvest failed — try again.");
+      }
+    }
   }
 
   async function transfer() {
