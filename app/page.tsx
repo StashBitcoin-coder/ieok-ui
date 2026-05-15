@@ -1115,22 +1115,40 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* ORDINAL LINK — centered directly under status */}
+                {/* ORDINAL BOX — thumbnail, view link, marketplace links */}
                 {vResult.registered && (
                   <div style={{ textAlign: "center" as const, marginBottom: 20 }}>
                     {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
-                      <div style={{ display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 8 }}>
+                      <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? 16 : 24, display: "inline-block" }}>
+                        {/* Ordinal Thumbnail */}
+                        <div style={{ marginBottom: 12 }}>
+                          <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer">
+                            <img
+                              src={`https://ordinals.com/content/${vResult.ordinalNumber}`}
+                              alt={`Ordinal #${vResult.ordinalNumber}`}
+                              style={{ width: mobile ? 160 : 200, height: mobile ? 160 : 200, borderRadius: 8, border: `1px solid ${C.border}`, objectFit: "cover" }}
+                              onError={(e: any) => { e.target.style.display = "none"; }}
+                            />
+                          </a>
+                        </div>
+
+                        {/* View on Ordinals.com */}
                         <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
-                          style={{ display: "inline-block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 24px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", fontWeight: 700 }}>
+                          style={{ display: "block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "10px 20px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", fontWeight: 700, marginBottom: 12 }}>
                           View Ordinal #{vResult.ordinalNumber} on Ordinals.com ↗
                         </a>
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const, justifyContent: "center" }}>
+
+                        {/* Marketplace links */}
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginBottom: 8 }}>
+                          Did you sweep this asset? You can list it here:
+                        </div>
+                        <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
                           <a href={`https://magiceden.io/ordinals/item-details/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
-                            style={{ display: "inline-block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
+                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
                             List on Magic Eden ↗
                           </a>
                           <a href={`https://gamma.io/ordinals/collections`} target="_blank" rel="noopener noreferrer"
-                            style={{ display: "inline-block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
+                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
                             List on Gamma ↗
                           </a>
                         </div>
