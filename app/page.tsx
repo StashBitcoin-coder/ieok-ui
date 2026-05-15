@@ -1082,21 +1082,62 @@ export default function Home() {
 
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 18 : 22, fontWeight: 700, marginBottom: 16, lineHeight: 1.3 }}>
                   {!vResult.registered && <span style={{ color: C.textMuted }}>⚪ Not a Registered Vault</span>}
-                  {vResult.registered && !vResult.swept && !vResult.ordinalMoved && <span style={{ color: C.green }}>🟢 Vault Intact — Never Accessed</span>}
-                  {vResult.registered && vResult.swept && <span style={{ color: C.red }}>🔴 Vault Swept — OKT Has Moved</span>}
+                  {vResult.registered && !vResult.swept && !vResult.ordinalMoved && <span style={{ color: C.green }}>🟢 Vault Sealed — Untouched</span>}
+                  {vResult.registered && vResult.swept && vResult.ordinalMoved && <span style={{ color: C.red }}>🔴 Fully Compromised — OKT Swept & Ordinal Moved</span>}
+                  {vResult.registered && vResult.swept && !vResult.ordinalMoved && <span style={{ color: C.red }}>🔴 Vault Swept — OKT Has Been Moved</span>}
+                  {vResult.registered && !vResult.swept && vResult.ordinalMoved && <span style={{ color: C.orange }}>⚠️ Ordinal Moved — OKT Still Sealed</span>}
                 </div>
+
+                {/* STATUS DETAIL BADGES */}
+                {vResult.registered && (
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const, marginBottom: 16 }}>
+                    {/* OKT Status Badge */}
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 6,
+                      background: vResult.swept ? C.redBg : C.greenBg,
+                      border: `1px solid ${vResult.swept ? C.red : C.green}` }}>
+                      <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700,
+                        color: vResult.swept ? C.red : C.green }}>
+                        {vResult.swept ? "⚠ OKT Swept" : "✓ OKT Sealed"}
+                      </span>
+                    </div>
+
+                    {/* Ordinal Status Badge */}
+                    {vResult.hasOrdinal && (
+                      <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 6,
+                        background: vResult.ordinalMoved ? C.orangeBg : C.greenBg,
+                        border: `1px solid ${vResult.ordinalMoved ? C.orange : C.green}` }}>
+                        <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700,
+                          color: vResult.ordinalMoved ? C.orange : C.green }}>
+                          {vResult.ordinalMoved ? "⚠ Ordinal Moved" : "✓ Ordinal In Place"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* ORDINAL LINK — centered directly under status */}
                 {vResult.registered && (
                   <div style={{ textAlign: "center" as const, marginBottom: 20 }}>
                     {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
-                      <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
-                        style={{ display: "inline-block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 24px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", fontWeight: 700 }}>
-                        View Ordinal #{vResult.ordinalNumber} on Ordinals.com ↗
-                      </a>
+                      <div style={{ display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 8 }}>
+                        <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
+                          style={{ display: "inline-block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 24px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", fontWeight: 700 }}>
+                          View Ordinal #{vResult.ordinalNumber} on Ordinals.com ↗
+                        </a>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const, justifyContent: "center" }}>
+                          <a href={`https://magiceden.io/ordinals/item-details/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
+                            style={{ display: "inline-block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
+                            List on Magic Eden ↗
+                          </a>
+                          <a href={`https://gamma.io/ordinals/collections`} target="_blank" rel="noopener noreferrer"
+                            style={{ display: "inline-block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
+                            List on Gamma ↗
+                          </a>
+                        </div>
+                      </div>
                     ) : (
                       <div style={{ display: "inline-block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 24px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>
-                        No Ordinal linked — OKT tokens only
+                        No Ordinal linked — Origin Keys only
                       </div>
                     )}
                   </div>
@@ -1125,7 +1166,7 @@ export default function Home() {
                     </div>
                     <div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Origin Key Balance</div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.text, fontWeight: 700 }}>{Number(vResult.balance).toLocaleString()} OKT</div>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.text, fontWeight: 700 }}>{Number(vResult.balance).toLocaleString()} OKey</div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{Number(vResult.balance).toLocaleString()} sats&nbsp;·&nbsp;{fmtCbbtc(vResult.balance)}</div>
                       {btcPrice > 0 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.balance), btcPrice))} USD</div>}
                     </div>
