@@ -1107,71 +1107,83 @@ export default function Home() {
             <Status state={vS} msg={vM} theme={C} />
 
             {vResult && (
-              <div style={{ marginTop: 20, padding: mobile ? 20 : 28, border: `2px solid ${!vResult.registered ? C.border : (vResult.swept || vResult.ordinalMoved) ? C.red : C.green}`, borderRadius: 12, background: !vResult.registered ? C.panel : (vResult.swept || vResult.ordinalMoved) ? C.redBg : C.greenBg, color: C.text }}>
+              <div style={{ marginTop: 20, padding: mobile ? 20 : 28, border: `2px solid ${!vResult.registered ? C.border : vResult.swept ? C.red : C.green}`, borderRadius: 12, background: !vResult.registered ? C.panel : vResult.swept ? C.redBg : C.greenBg, color: C.text }}>
 
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 18 : 22, fontWeight: 700, marginBottom: 16, lineHeight: 1.3 }}>
                   {!vResult.registered && <span style={{ color: C.textMuted }}>⚪ Not a Registered Vault</span>}
                   {vResult.registered && !vResult.swept && !vResult.ordinalMoved && <span style={{ color: C.green }}>🟢 Vault Sealed — Untouched</span>}
-                  {vResult.registered && vResult.swept && vResult.ordinalMoved && <span style={{ color: C.red }}>🔴 Fully Compromised — OKT Swept & Ordinal Moved</span>}
+                  
                   {vResult.registered && vResult.swept && !vResult.ordinalMoved && <span style={{ color: C.red }}>🔴 Vault Swept — OKT Has Been Moved</span>}
-                  {vResult.registered && !vResult.swept && vResult.ordinalMoved && <span style={{ color: C.orange }}>⚠️ Ordinal Moved — OKT Still Sealed</span>}
+                  
                 </div>
 
-                {/* STATUS DETAIL BADGES */}
+                {/* STATUS BADGE — OKT only */}
                 {vResult.registered && (
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as const, marginBottom: 16 }}>
-                    {/* OKT Status Badge */}
                     <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 6,
                       background: vResult.swept ? C.redBg : C.greenBg,
                       border: `1px solid ${vResult.swept ? C.red : C.green}` }}>
                       <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700,
                         color: vResult.swept ? C.red : C.green }}>
-                        {vResult.swept ? "⚠ OKT Swept" : "✓ OKT Sealed"}
+                        {vResult.swept ? "⚠ Origin Keys Swept" : "✓ Origin Keys Sealed"}
                       </span>
                     </div>
-
-                    {/* Ordinal Status Badge */}
-                    {vResult.hasOrdinal && (
-                      <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 6,
-                        background: vResult.ordinalMoved ? C.orangeBg : C.greenBg,
-                        border: `1px solid ${vResult.ordinalMoved ? C.orange : C.green}` }}>
-                        <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700,
-                          color: vResult.ordinalMoved ? C.orange : C.green }}>
-                          {vResult.ordinalMoved ? "⚠ Ordinal Moved" : "✓ Ordinal In Place"}
-                        </span>
-                      </div>
-                    )}
                   </div>
                 )}
 
-                {/* ORDINAL BOX — thumbnail, view link, marketplace links */}
+                {/* ORDINAL BOX — thumbnail, minted address, verify link, marketplace links */}
                 {vResult.registered && (
                   <div style={{ textAlign: "center" as const, marginBottom: 20 }}>
                     {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
                       <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? 16 : 24, display: "inline-block" }}>
-                        {/* Ordinal Preview — fetches inscription ID from Hiro API */}
+
+                        {/* Ordinal number header */}
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, fontWeight: 700, color: C.blue, marginBottom: 12 }}>
+                          🔗 Linked Ordinal #{vResult.ordinalNumber}
+                        </div>
+
+                        {/* Ordinal Preview Image */}
                         <OrdinalPreview ordinalNumber={vResult.ordinalNumber} inscriptionId={vResult.inscriptionId || ""} mobile={mobile} borderColor={C.border} />
 
-                        {/* View on Ordinals.com */}
-                        <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
-                          style={{ display: "block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "10px 20px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.blue, textDecoration: "none", fontWeight: 700, marginBottom: 12 }}>
-                          View Ordinal #{vResult.ordinalNumber} on Ordinals.com ↗
+                        {/* Minted to vault address */}
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginBottom: 4 }}>
+                          Minted to vault:
+                        </div>
+                        <div style={{ fontFamily: "monospace", fontSize: 11, color: C.textDim, wordBreak: "break-all" as const, marginBottom: 12, padding: "6px 10px", background: C.card, borderRadius: 6, border: `1px solid ${C.border}` }}>
+                          {vAddr}
+                        </div>
+
+                        {/* Verify link */}
+                        <a href={`https://ordinals.com/inscription/${vResult.inscriptionId || vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
+                          style={{ display: "block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "10px 20px", fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, textDecoration: "none", fontWeight: 700, marginBottom: 8 }}>
+                          View on Ordinals.com ↗ — verify the current owner matches this address
                         </a>
 
                         {/* Marketplace links */}
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginBottom: 8 }}>
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, marginBottom: 6, marginTop: 12 }}>
                           Did you sweep this asset? You can list it here:
                         </div>
                         <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-                          <a href={`https://magiceden.io/ordinals/item-details/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
-                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
+                          <a href={`https://magiceden.io/ordinals/item-details/${vResult.inscriptionId || vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
+                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 14px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
                             List on Magic Eden ↗
                           </a>
                           <a href={`https://gamma.io/ordinals/collections`} target="_blank" rel="noopener noreferrer"
-                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
+                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 14px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
                             List on Gamma ↗
                           </a>
                         </div>
+
+                        {/* HIDDEN ORACLE WARNING — only visible when reportOrdinalMoved is called */}
+                        {vResult.ordinalMoved && (
+                          <div style={{ marginTop: 16, padding: "12px 16px", background: C.orangeBg, border: `1px solid ${C.orange}`, borderRadius: 8 }}>
+                            <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, color: C.orange, marginBottom: 4 }}>⚠️ Ordinal Movement Reported</div>
+                            <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, lineHeight: 1.6 }}>
+                              The contract oracle has confirmed this Bitcoin Ordinal has been transferred from its original vault wallet.
+                              {vResult.ordinalMovedAt !== "0" && <span> Reported at: <strong style={{ color: C.orange }}>{fmtTs(vResult.ordinalMovedAt)}</strong></span>}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div style={{ display: "inline-block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 24px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>
@@ -1181,20 +1193,7 @@ export default function Home() {
                   </div>
                 )}
 
-                {vResult.registered && vResult.ordinalMoved && (
-                  <div style={{ marginBottom: 20, padding: "14px 18px", background: C.orangeBg, border: `1px solid ${C.orange}`, borderRadius: 8 }}>
-                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 17, fontWeight: 700, color: C.orange, marginBottom: 6 }}>⚠️ Bitcoin Ordinal Has Moved</div>
-                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textDim, lineHeight: 1.7 }}>
-                      The Bitcoin Ordinal linked to this art piece has been reported as transferred.
-                      {vResult.ordinalMovedAt !== "0" && <span> Reported at: <strong style={{ color: C.orange }}>{fmtTs(vResult.ordinalMovedAt)}</strong></span>}
-                    </div>
-                    {Number(vResult.ordinalNumber) > 0 && (
-                      <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.orange, display: "block", marginTop: 8, fontWeight: 700 }}>
-                        Verify on Ordinals.com ↗
-                      </a>
-                    )}
-                  </div>
-                )}
+
 
                 {vResult.registered && (
                   <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 20 }}>
