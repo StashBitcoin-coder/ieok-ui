@@ -1120,16 +1120,15 @@ export default function Home() {
                   <div style={{ textAlign: "center" as const, marginBottom: 20 }}>
                     {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
                       <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? 16 : 24, display: "inline-block" }}>
-                        {/* Ordinal Thumbnail */}
-                        <div style={{ marginBottom: 12 }}>
-                          <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer">
-                            <img
-                              src={`https://ordinals.com/content/${vResult.ordinalNumber}`}
-                              alt={`Ordinal #${vResult.ordinalNumber}`}
-                              style={{ width: mobile ? 160 : 200, height: mobile ? 160 : 200, borderRadius: 8, border: `1px solid ${C.border}`, objectFit: "cover" }}
-                              onError={(e: any) => { e.target.style.display = "none"; }}
-                            />
-                          </a>
+                        {/* Ordinal Preview */}
+                        <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}>
+                          <iframe
+                            src={`https://ordinals.com/preview/${vResult.ordinalNumber}`}
+                            style={{ width: mobile ? 160 : 200, height: mobile ? 160 : 200, borderRadius: 8, border: `1px solid ${C.border}`, overflow: "hidden" }}
+                            sandbox="allow-scripts"
+                            loading="lazy"
+                            title={`Ordinal #${vResult.ordinalNumber}`}
+                          />
                         </div>
 
                         {/* View on Ordinals.com */}
