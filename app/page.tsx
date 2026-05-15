@@ -144,15 +144,31 @@ function OrdinalPreview({ ordinalNumber, mobile, borderColor }: { ordinalNumber:
   const [inscriptionId, setInscriptionId] = useState<string | null>(null);
   useEffect(() => {
     if (!ordinalNumber || ordinalNumber === "0") return;
-    fetch(`https://api.hiro.so/ordinals/v1/inscriptions?number=${ordinalNumber}`)
+    // Try Xverse API (replacement for deprecated Hiro API)
+    fetch(`https://api.xverse.app/v1/ordinals/inscriptions?number=${ordinalNumber}`)
       .then(res => res.json())
       .then(data => {
-        if (data?.results?.[0]?.id) setInscriptionId(data.results[0].id);
+        const id = data?.results?.[0]?.id || data?.data?.[0]?.id;
+        if (id) setInscriptionId(id);
       })
-      .catch(() => {});
+      .catch(() => {
+        // Fallback — try ordiscan
+        fetch(`https://api.ordiscan.com/v1/inscription/${ordinalNumber}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data?.data?.inscription_id) setInscriptionId(data.data.inscription_id);
+          })
+          .catch(() => {});
+      });
   }, [ordinalNumber]);
 
-  if (!inscriptionId) return null;
+  if (!inscriptionId) return (
+    <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}>
+      <div style={{ width: mobile ? 160 : 200, height: mobile ? 160 : 200, borderRadius: 8, border: `1px solid ${borderColor}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#888", fontFamily: "Arial, sans-serif" }}>
+        Loading preview...
+      </div>
+    </div>
+  );
 
   return (
     <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}>
@@ -161,7 +177,11 @@ function OrdinalPreview({ ordinalNumber, mobile, borderColor }: { ordinalNumber:
           src={`https://ordinals.com/content/${inscriptionId}`}
           alt={`Ordinal #${ordinalNumber}`}
           style={{ width: mobile ? 160 : 200, height: mobile ? 160 : 200, borderRadius: 8, border: `1px solid ${borderColor}`, objectFit: "cover" }}
-          onError={(e: any) => { e.target.style.display = "none"; }}
+          onError={(e: any) => { 
+            e.target.onerror = null;
+            e.target.src = "";
+            e.target.style.display = "none";
+          }}
         />
       </a>
     </div>
