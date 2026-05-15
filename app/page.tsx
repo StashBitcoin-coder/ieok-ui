@@ -1139,7 +1139,7 @@ export default function Home() {
 
                         {/* Ordinal number header */}
                         <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, fontWeight: 700, color: C.blue, marginBottom: 12 }}>
-                          🔗 Linked Ordinal #{vResult.ordinalNumber}
+                          Ordinal #{vResult.ordinalNumber}
                         </div>
 
                         {/* Ordinal Preview Image */}
