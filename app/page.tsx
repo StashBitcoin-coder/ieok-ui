@@ -140,6 +140,34 @@ function SunIcon() {
   );
 }
 
+function OrdinalPreview({ ordinalNumber, mobile, borderColor }: { ordinalNumber: string; mobile: boolean; borderColor: string }) {
+  const [inscriptionId, setInscriptionId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!ordinalNumber || ordinalNumber === "0") return;
+    fetch(`https://api.hiro.so/ordinals/v1/inscriptions?number=${ordinalNumber}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data?.results?.[0]?.id) setInscriptionId(data.results[0].id);
+      })
+      .catch(() => {});
+  }, [ordinalNumber]);
+
+  if (!inscriptionId) return null;
+
+  return (
+    <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}>
+      <a href={`https://ordinals.com/inscription/${inscriptionId}`} target="_blank" rel="noopener noreferrer">
+        <img
+          src={`https://ordinals.com/content/${inscriptionId}`}
+          alt={`Ordinal #${ordinalNumber}`}
+          style={{ width: mobile ? 160 : 200, height: mobile ? 160 : 200, borderRadius: 8, border: `1px solid ${borderColor}`, objectFit: "cover" }}
+          onError={(e: any) => { e.target.style.display = "none"; }}
+        />
+      </a>
+    </div>
+  );
+}
+
 function SkeletonKey({ size = 28, dark = false }: { size?: number; dark?: boolean }) {
   const ratio = 190 / 86;
   const w = size * 0.55;
@@ -1120,16 +1148,8 @@ export default function Home() {
                   <div style={{ textAlign: "center" as const, marginBottom: 20 }}>
                     {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
                       <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? 16 : 24, display: "inline-block" }}>
-                        {/* Ordinal Preview */}
-                        <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}>
-                          <iframe
-                            src={`https://ordinals.com/preview/${vResult.ordinalNumber}`}
-                            style={{ width: mobile ? 160 : 200, height: mobile ? 160 : 200, borderRadius: 8, border: `1px solid ${C.border}`, overflow: "hidden" }}
-                            sandbox="allow-scripts"
-                            loading="lazy"
-                            title={`Ordinal #${vResult.ordinalNumber}`}
-                          />
-                        </div>
+                        {/* Ordinal Preview — fetches inscription ID from Hiro API */}
+                        <OrdinalPreview ordinalNumber={vResult.ordinalNumber} mobile={mobile} borderColor={C.border} />
 
                         {/* View on Ordinals.com */}
                         <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
