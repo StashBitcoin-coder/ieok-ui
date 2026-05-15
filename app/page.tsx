@@ -150,7 +150,7 @@ function OrdinalPreview({ ordinalNumber, inscriptionId, mobile, borderColor }: {
         <img
           src={`https://ordinals.com/content/${inscriptionId}`}
           alt={`Ordinal #${ordinalNumber}`}
-          style={{ width: mobile ? 160 : 200, height: mobile ? 160 : 200, borderRadius: 8, border: `1px solid ${borderColor}`, objectFit: "cover" }}
+          style={{ maxWidth: mobile ? 280 : 360, width: "100%", height: "auto", borderRadius: 8, border: `1px solid ${borderColor}`, objectFit: "contain" }}
           onError={(e: any) => { 
             e.target.onerror = null;
             e.target.style.display = "none";
