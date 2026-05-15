@@ -1163,14 +1163,18 @@ export default function Home() {
                         <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, marginBottom: 6, marginTop: 12 }}>
                           Did you sweep this asset? You can list it here:
                         </div>
-                        <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-                          <a href={`https://magiceden.io/ordinals/item-details/${vResult.inscriptionId || vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
-                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 14px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
-                            List on Magic Eden ↗
-                          </a>
+                        <div style={{ display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap" as const }}>
                           <a href={`https://gamma.io/ordinals/collections`} target="_blank" rel="noopener noreferrer"
-                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 14px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
-                            List on Gamma ↗
+                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 12px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
+                            Gamma ↗
+                          </a>
+                          <a href={`https://unisat.io/market`} target="_blank" rel="noopener noreferrer"
+                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 12px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
+                            UniSat ↗
+                          </a>
+                          <a href={`https://ordinalswallet.com`} target="_blank" rel="noopener noreferrer"
+                            style={{ display: "inline-block", background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 12px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, textDecoration: "none", fontWeight: 600 }}>
+                            Ordinals Wallet ↗
                           </a>
                         </div>
 
