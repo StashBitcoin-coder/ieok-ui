@@ -15,10 +15,10 @@ const OKT_ABI = [
   "function sell(uint256 tokens, uint256 minCbbtc) external",
   "function transfer(address to, uint256 tokens) external returns (bool)",
   "function withdraw() external",
-  "function inscribe(address vault, bytes32 assetId, uint256 cbbtcAmount, uint256 ordinalNumber) external",
+  "function inscribe(address vault, bytes32 assetId, uint256 cbbtcAmount, uint256 ordinalNumber, string inscriptionId) external",
   "function reportOrdinalMoved(uint256 ordinalNumber) external",
   "function vaultStatus(address vault) view returns (bool registered, bool swept, uint256 balance, bytes32 assetId)",
-  "function vaultOrdinalStatus(address vault) view returns (uint256 ordinalNumber, bool hasOrdinal, bool ordinalMoved, uint256 ordinalMovedAt)",
+  "function vaultOrdinalStatus(address vault) view returns (uint256 ordinalNumber, bool hasOrdinal, bool ordinalMoved, uint256 ordinalMovedAt, string inscriptionId)",
 ];
 
 const CBBTC_ABI = [
@@ -41,6 +41,7 @@ type VaultResult = {
   hasOrdinal: boolean;
   ordinalMoved: boolean;
   ordinalMovedAt: string;
+  inscriptionId: string;
 } | null;
 
 const LIGHT = {
@@ -140,35 +141,8 @@ function SunIcon() {
   );
 }
 
-function OrdinalPreview({ ordinalNumber, mobile, borderColor }: { ordinalNumber: string; mobile: boolean; borderColor: string }) {
-  const [inscriptionId, setInscriptionId] = useState<string | null>(null);
-  useEffect(() => {
-    if (!ordinalNumber || ordinalNumber === "0") return;
-    // Try Xverse API (replacement for deprecated Hiro API)
-    fetch(`https://api.xverse.app/v1/ordinals/inscriptions?number=${ordinalNumber}`)
-      .then(res => res.json())
-      .then(data => {
-        const id = data?.results?.[0]?.id || data?.data?.[0]?.id;
-        if (id) setInscriptionId(id);
-      })
-      .catch(() => {
-        // Fallback — try ordiscan
-        fetch(`https://api.ordiscan.com/v1/inscription/${ordinalNumber}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data?.data?.inscription_id) setInscriptionId(data.data.inscription_id);
-          })
-          .catch(() => {});
-      });
-  }, [ordinalNumber]);
-
-  if (!inscriptionId) return (
-    <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}>
-      <div style={{ width: mobile ? 160 : 200, height: mobile ? 160 : 200, borderRadius: 8, border: `1px solid ${borderColor}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#888", fontFamily: "Arial, sans-serif" }}>
-        Loading preview...
-      </div>
-    </div>
-  );
+function OrdinalPreview({ ordinalNumber, inscriptionId, mobile, borderColor }: { ordinalNumber: string; inscriptionId: string; mobile: boolean; borderColor: string }) {
+  if (!inscriptionId) return null;
 
   return (
     <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}>
@@ -179,7 +153,6 @@ function OrdinalPreview({ ordinalNumber, mobile, borderColor }: { ordinalNumber:
           style={{ width: mobile ? 160 : 200, height: mobile ? 160 : 200, borderRadius: 8, border: `1px solid ${borderColor}`, objectFit: "cover" }}
           onError={(e: any) => { 
             e.target.onerror = null;
-            e.target.src = "";
             e.target.style.display = "none";
           }}
         />
@@ -399,6 +372,7 @@ export default function Home() {
   const [insAsset, setInsAsset] = useState("");
   const [insCbbtc, setInsCbbtc] = useState("");
   const [insOrd, setInsOrd]     = useState("");
+  const [insInsId, setInsInsId]   = useState("");
   const [insS, setInsS]         = useState<TxState>("idle");
   const [insM, setInsM]         = useState("");
 
@@ -587,7 +561,7 @@ export default function Home() {
       await ensureAllowance(cbbtc, account, IEOK_ADDRESS, BigInt(insCbbtc), setInsM);
       setInsM("Confirm inscription in your wallet...");
       const ordNum = insOrd ? BigInt(insOrd) : BigInt(0);
-      const tx = await okt.inscribe(insVault, b32(insAsset), BigInt(insCbbtc), ordNum);
+      const tx = await okt.inscribe(insVault, b32(insAsset), BigInt(insCbbtc), ordNum, insInsId);
       setInsM("Confirming on chain...");
       await tx.wait();
       setInsS("success"); setInsM(`Vault inscribed — ${insAsset} registered on chain`);
@@ -619,8 +593,8 @@ export default function Home() {
         okt.dividendsOf(vAddr),
       ]);
       const [registered, swept, balance, assetId]                    = core;
-      const [ordinalNumber, hasOrdinal, ordinalMoved, ordinalMovedAt] = ordinal;
-      setVResult({ registered, swept, balance: balance.toString(), dividends: divAmount.toString(), assetId: assetId.toString(), ordinalNumber: ordinalNumber.toString(), hasOrdinal, ordinalMoved, ordinalMovedAt: ordinalMovedAt.toString() });
+      const [ordinalNumber, hasOrdinal, ordinalMoved, ordinalMovedAt, inscriptionId] = ordinal;
+      setVResult({ registered, swept, balance: balance.toString(), dividends: divAmount.toString(), assetId: assetId.toString(), ordinalNumber: ordinalNumber.toString(), hasOrdinal, ordinalMoved, ordinalMovedAt: ordinalMovedAt.toString(), inscriptionId: inscriptionId || "" });
       setVS("idle"); setVM("");
     } catch (e: any) { setVS("failed"); setVM("Could not query — check address and try again"); setVResult(null); }
   }
@@ -1080,6 +1054,13 @@ export default function Home() {
               <Input theme={C} label="Vault wallet address (sealed inside the art)" value={insVault} onChange={setInsVault} placeholder="0x..." />
               <Input theme={C} label="Asset ID (max 31 characters)" value={insAsset} onChange={setInsAsset} placeholder="RWI-001" hint="e.g. RWI-001, IE-GENESIS-001, AB-001" />
               <Input theme={C} label="Ordinal inscription number (optional)" value={insOrd} onChange={setInsOrd} placeholder="68743291 or leave blank" type="number" hint="Leave blank for series pieces without a linked Ordinal" />
+              {insOrd && Number(insOrd) > 0 ? (
+                <Input theme={C} label="Ordinal inscription ID" value={insInsId} onChange={setInsInsId} placeholder="01b0dd658974e98059a753bab23e3cdbd4c86c7b49b92c2b03f7ede01b09031ei0" hint="Paste the full inscription ID from ordinals.com/inscription/YOUR_NUMBER — this displays the ordinal image in the vault checker" />
+              ) : (
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginBottom: 20, padding: "10px 14px", background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
+                  No Ordinal — this vault will hold Origin Keys only. The vault checker will show token balance and dividends but no linked Bitcoin inscription.
+                </div>
+              )}
               <Input theme={C} label="cbBTC to spend (sats) — 7% fee, rest becomes OKT in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
                 hint={btcPrice > 0 && insCbbtc ? `≈ ${fmtUsd(satsToUsd(Number(insCbbtc), btcPrice))} USD` : `Your cbBTC: ${fmtSats(cbbtcBal)} · Minimum 100 sats`} />
               {insPrev && (
@@ -1169,7 +1150,7 @@ export default function Home() {
                     {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
                       <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? 16 : 24, display: "inline-block" }}>
                         {/* Ordinal Preview — fetches inscription ID from Hiro API */}
-                        <OrdinalPreview ordinalNumber={vResult.ordinalNumber} mobile={mobile} borderColor={C.border} />
+                        <OrdinalPreview ordinalNumber={vResult.ordinalNumber} inscriptionId={vResult.inscriptionId || ""} mobile={mobile} borderColor={C.border} />
 
                         {/* View on Ordinals.com */}
                         <a href={`https://ordinals.com/inscription/${vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
