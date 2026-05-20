@@ -30,7 +30,7 @@ const CBBTC_ABI = [
 const PUBLIC_RPC = "https://sepolia.base.org";
 
 type TxState = "idle" | "pending" | "success" | "failed";
-type Tab = "home" | "trade" | "transfer" | "vault" | "learn" | "inscribe";
+type Tab = "home" | "gallery" | "swap" | "vault" | "learn" | "inscribe";
 type VaultResult = {
   registered: boolean;
   swept: boolean;
@@ -373,6 +373,12 @@ export default function Home() {
   const [insCbbtc, setInsCbbtc] = useState("");
   const [insOrd, setInsOrd]     = useState("");
   const [insInsId, setInsInsId]   = useState("");
+  const [galArtist, setGalArtist]     = useState("");
+  const [galCollection, setGalCollection] = useState("");
+  const [galPieceName, setGalPieceName]   = useState("");
+  const [galType, setGalType]             = useState("original");
+  const [galEdition, setGalEdition]       = useState("1 of 1");
+  const [galEntry, setGalEntry]           = useState("");
   const [insS, setInsS]         = useState<TxState>("idle");
   const [insM, setInsM]         = useState("");
 
@@ -385,6 +391,16 @@ export default function Home() {
   const [vS, setVS]             = useState<TxState>("idle");
   const [vM, setVM]             = useState("");
   const [autoChecked, setAutoChecked] = useState(false);
+
+  // Gallery state
+  const [galleryData, setGalleryData] = useState<any>(null);
+  const [galleryView, setGalleryView] = useState<"artists" | "collections" | "pieces">("artists");
+  const [selectedArtist, setSelectedArtist] = useState<any>(null);
+  const [selectedCollection, setSelectedCollection] = useState<any>(null);
+  const [selectedPiece, setSelectedPiece] = useState<any>(null);
+  const [galleryPassword, setGalleryPassword] = useState("");
+  const [unlockedCollections, setUnlockedCollections] = useState<Set<string>>(new Set());
+  const [swapMode, setSwapMode] = useState<"buy" | "sell" | "transfer">("buy");
 
   const correctChain = chain?.id === Number(CHAIN_ID);
 
@@ -601,7 +617,7 @@ export default function Home() {
 
   // Option B: connected wallet → trade, new visitor → home
   useEffect(() => {
-    if (connected) setTab(prev => prev === "home" ? "trade" : prev);
+    if (connected) setTab(prev => prev === "home" ? "swap" : prev);
   }, [connected]);
 
   useEffect(() => { fetchBtcPrice(); const iv = setInterval(fetchBtcPrice, 60000); return () => clearInterval(iv); }, []);
@@ -643,8 +659,8 @@ export default function Home() {
 
   const tabs: { id: Tab; label: string; short: string }[] = [
     { id: "home",     label: "HOME",        short: "HOME"     },
-    { id: "trade",    label: "ACQUIRE / SELL",  short: "ACQUIRE"    },
-    { id: "transfer", label: "TRANSFER",    short: "SEND"     },
+    { id: "gallery",  label: "GALLERY",     short: "GALLERY"  },
+    { id: "swap",     label: "SWAP",        short: "SWAP"     },
     { id: "vault",    label: "VAULT CHECK", short: "VAULT"    },
     { id: "learn",    label: "LEARN",       short: "LEARN"    },
     ...(isRegistrar ? [{ id: "inscribe" as Tab, label: "INSCRIBE", short: "INSCRIBE" }] : []),
@@ -786,7 +802,7 @@ export default function Home() {
                 The collectible space has always struggled with authenticity and fair value. We built the infrastructure to fix both — permanently, on chain, with no one in control.
               </p>
               <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
-                <button onClick={() => setTab("trade")} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
+                <button onClick={() => setTab("swap")} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
                   Buy OKT
                 </button>
                 <button onClick={() => setTab("vault")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
@@ -898,7 +914,7 @@ export default function Home() {
                 <a href="https://analogbitcoin.com" target="_blank" rel="noopener noreferrer" style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textDecoration: "none", display: "inline-block" }}>
                   Explore Analog Bitcoin
                 </a>
-                <button onClick={() => setTab("trade")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
+                <button onClick={() => setTab("swap")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
                   Start Trading
                 </button>
               </div>
@@ -907,7 +923,199 @@ export default function Home() {
         )}
 
         {/* TRADE */}
-        {tab === "trade" && (
+        {tab === "gallery" && (
+          <>
+            {/* GALLERY NAVIGATION */}
+            {galleryView !== "artists" && (
+              <button onClick={() => {
+                if (galleryView === "pieces") { setGalleryView("collections"); setSelectedPiece(null); }
+                else { setGalleryView("artists"); setSelectedArtist(null); setSelectedCollection(null); }
+              }} style={{ background: "none", border: "none", color: C.blue, fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer", marginBottom: 16, padding: 0 }}>
+                ← Back to {galleryView === "pieces" ? "Collections" : "Artists"}
+              </button>
+            )}
+
+            {/* LEVEL 1 — ARTISTS */}
+            {galleryView === "artists" && galleryData && (
+              <>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 20 }}>Gallery</div>
+                <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 16 }}>
+                  {galleryData.artists.map((artist: any) => (
+                    <div key={artist.id} onClick={() => { setSelectedArtist(artist); setGalleryView("collections"); }}
+                      style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, cursor: "pointer", boxShadow: C.shadow, transition: "border-color 0.2s" }}
+                      onMouseEnter={(e: any) => e.currentTarget.style.borderColor = C.blue}
+                      onMouseLeave={(e: any) => e.currentTarget.style.borderColor = C.border}>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 18, fontWeight: 700, color: C.text, marginBottom: 6 }}>{artist.name}</div>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 8 }}>{artist.bio}</div>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 600 }}>{artist.collections.length} Collection{artist.collections.length !== 1 ? "s" : ""} →</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* LEVEL 2 — COLLECTIONS */}
+            {galleryView === "collections" && selectedArtist && (
+              <>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 4 }}>{selectedArtist.name}</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, marginBottom: 20 }}>{selectedArtist.bio}</div>
+                <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 16 }}>
+                  {selectedArtist.collections.map((col: any) => {
+                    const coverPiece = col.pieces.find((p: any) => p.inscriptionId) || col.pieces[0];
+                    return (
+                      <div key={col.id} onClick={() => {
+                        if (col.private && !unlockedCollections.has(col.id)) {
+                          const pw = prompt("This collection is private. Enter password:");
+                          if (pw === col.password) {
+                            setUnlockedCollections(prev => new Set([...prev, col.id]));
+                            setSelectedCollection(col);
+                            setGalleryView("pieces");
+                          } else if (pw !== null) {
+                            alert("Incorrect password.");
+                          }
+                        } else {
+                          setSelectedCollection(col);
+                          setGalleryView("pieces");
+                        }
+                      }}
+                        style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden", cursor: "pointer", boxShadow: C.shadow, transition: "border-color 0.2s" }}
+                        onMouseEnter={(e: any) => e.currentTarget.style.borderColor = C.blue}
+                        onMouseLeave={(e: any) => e.currentTarget.style.borderColor = C.border}>
+                        {coverPiece?.inscriptionId && (
+                          <img src={`https://ordinals.com/content/${coverPiece.inscriptionId}`} alt={col.name}
+                            style={{ width: "100%", height: 200, objectFit: "cover" }}
+                            onError={(e: any) => { e.target.style.display = "none"; }} />
+                        )}
+                        <div style={{ padding: 16 }}>
+                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 4 }}>{col.name}</div>
+                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 6 }}>{col.description}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 600 }}>{col.pieces.length} Piece{col.pieces.length !== 1 ? "s" : ""} →</div>
+                          {col.private && !unlockedCollections.has(col.id) && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12 }}>🔒</span>}
+                          {col.private && unlockedCollections.has(col.id) && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12 }}>🔓</span>}
+                        </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* LEVEL 3 — PIECES */}
+            {galleryView === "pieces" && selectedCollection && (
+              <>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 4 }}>{selectedCollection.name}</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, marginBottom: 20 }}>by {selectedArtist?.name} · {selectedCollection.description}</div>
+                <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 12 }}>
+                  {selectedCollection.pieces.map((piece: any, idx: number) => (
+                    <div key={idx} onClick={() => setSelectedPiece(piece)}
+                      style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, overflow: "hidden", cursor: "pointer", boxShadow: C.shadow, transition: "border-color 0.2s" }}
+                      onMouseEnter={(e: any) => e.currentTarget.style.borderColor = C.blue}
+                      onMouseLeave={(e: any) => e.currentTarget.style.borderColor = C.border}>
+                      {piece.inscriptionId ? (
+                        <img src={`https://ordinals.com/content/${piece.inscriptionId}`} alt={piece.name}
+                          style={{ width: "100%", height: mobile ? 120 : 160, objectFit: "cover" }}
+                          onError={(e: any) => { e.target.style.display = "none"; }} />
+                      ) : (
+                        <div style={{ width: "100%", height: mobile ? 120 : 160, background: C.panel, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>OKey Only</span>
+                        </div>
+                      )}
+                      <div style={{ padding: 8 }}>
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{piece.name}</div>
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted }}>{piece.type === "original" ? "Original · " + piece.edition : "Limited · " + piece.edition}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* PIECE MODAL */}
+            {selectedPiece && (
+              <div onClick={() => setSelectedPiece(null)} style={{ position: "fixed" as const, top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+                <div onClick={(e: any) => e.stopPropagation()} style={{ background: C.card, borderRadius: 16, padding: mobile ? 20 : 32, maxWidth: 480, width: "100%", maxHeight: "90vh", overflow: "auto", boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
+                  {/* Image */}
+                  {selectedPiece.inscriptionId && (
+                    <a href={`https://ordinals.com/inscription/${selectedPiece.inscriptionId}`} target="_blank" rel="noopener noreferrer">
+                      <img src={`https://ordinals.com/content/${selectedPiece.inscriptionId}`} alt={selectedPiece.name}
+                        style={{ width: "100%", height: "auto", borderRadius: 8, marginBottom: 16 }}
+                        onError={(e: any) => { e.target.style.display = "none"; }} />
+                    </a>
+                  )}
+
+                  {/* Title */}
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 4 }}>{selectedPiece.name}</div>
+
+                  {/* Type and edition */}
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 600, marginBottom: 12 }}>
+                    {selectedPiece.type === "original" ? `Original · ${selectedPiece.edition}` : `Limited Edition · ${selectedPiece.edition}`}
+                  </div>
+
+                  {/* Details */}
+                  <div style={{ display: "flex", flexDirection: "column" as const, gap: 8, marginBottom: 16 }}>
+                    {selectedPiece.ordinalNumber && selectedPiece.ordinalNumber !== "0" && (
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim }}>
+                        Ordinal #{selectedPiece.ordinalNumber}
+                      </div>
+                    )}
+                    {selectedPiece.oktAmount && (
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim }}>
+                        {Number(selectedPiece.oktAmount).toLocaleString()} OKey sealed
+                      </div>
+                    )}
+                    {selectedPiece.vault && (
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted }}>
+                        Minted to: <span style={{ fontFamily: "monospace", fontSize: 11 }}>{selectedPiece.vault}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Links */}
+                  <div style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
+                    {selectedPiece.inscriptionId && (
+                      <a href={`https://ordinals.com/inscription/${selectedPiece.inscriptionId}`} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "10px 16px", fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, textDecoration: "none", fontWeight: 700, textAlign: "center" as const }}>
+                        View on Ordinals.com ↗
+                      </a>
+                    )}
+                    {selectedPiece.vault && (
+                      <button onClick={(e: any) => { e.stopPropagation(); setSelectedPiece(null); setVAddr(selectedPiece.vault); setTab("vault"); }}
+                        style={{ display: "block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 16px", fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, fontWeight: 700, cursor: "pointer", textAlign: "center" as const, width: "100%" }}>
+                        Check Vault Status →
+                      </button>
+                    )}
+                    {selectedPiece.inscriptionId && (
+                      <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
+                        <a href={`https://gamma.io/ordinals/collections`} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize: 11, color: C.textMuted, fontFamily: "Arial, sans-serif", textDecoration: "none", fontWeight: 600 }}>Gamma ↗</a>
+                        <span style={{ color: C.textMuted }}>·</span>
+                        <a href={`https://unisat.io/market`} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize: 11, color: C.textMuted, fontFamily: "Arial, sans-serif", textDecoration: "none", fontWeight: 600 }}>UniSat ↗</a>
+                        <span style={{ color: C.textMuted }}>·</span>
+                        <a href={`https://ordinalswallet.com`} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize: 11, color: C.textMuted, fontFamily: "Arial, sans-serif", textDecoration: "none", fontWeight: 600 }}>Ordinals Wallet ↗</a>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Close button */}
+                  <button onClick={() => setSelectedPiece(null)} style={{ marginTop: 16, width: "100%", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, cursor: "pointer", fontWeight: 600 }}>Close</button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {tab === "swap" && (
+          {/* SWAP MODE TOGGLE */}
+          <div style={{ display: "flex", gap: 0, marginBottom: 20, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
+            <button onClick={() => setSwapMode("buy")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "buy" ? C.blue : C.panel, color: swapMode === "buy" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>▲ ACQUIRE</button>
+            <button onClick={() => setSwapMode("sell")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "sell" ? C.blue : C.panel, color: swapMode === "sell" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>▼ SELL</button>
+            <button onClick={() => setSwapMode("transfer")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "transfer" ? C.blue : C.panel, color: swapMode === "transfer" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>→ TRANSFER</button>
+          </div>
+
           <div>
             <div style={{ display: "flex", gap: 8, marginBottom: 20, background: C.panel, borderRadius: 10, padding: 4, border: `1px solid ${C.border}` }}>
               {(["buy", "sell"] as const).map(m => (
@@ -917,7 +1125,7 @@ export default function Home() {
               ))}
             </div>
 
-            {mode === "buy" && (
+            {swapMode === "buy" && (
               <Panel title="Acquire Origin Keys — Fixed Price 1 Sat = 1 OKey" theme={C}>
                 <FeeBadge mobile={mobile} theme={C} />
 
@@ -963,7 +1171,7 @@ export default function Home() {
               </Panel>
             )}
 
-            {mode === "sell" && (
+            {swapMode === "sell" && (
               <Panel title="Sell Origin Keys — Proceeds Available to Withdraw" theme={C}>
                 <FeeBadge mobile={mobile} theme={C} />
                 <Input theme={C} label="OKT amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
@@ -1016,7 +1224,7 @@ export default function Home() {
         )}
 
         {/* TRANSFER */}
-        {tab === "transfer" && (
+            {swapMode === "transfer" && (
           <Panel title="Transfer OKT — Zero Fee" theme={C}>
             <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
               Send OKT to any wallet with no fee. Dividend yield moves proportionally with the tokens.
@@ -1069,6 +1277,36 @@ export default function Home() {
                   { label: "OKT sealed in vault (1 sat = 1 OKT)", value: insPrev.out.toLocaleString() + " OKey" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.out, btcPrice)) : ""), blue: true },
                 ]} />
               )}
+              {/* ─── Gallery Entry ─── */}
+              <div style={{ borderTop: `1px solid ${C.border}`, marginTop: 16, paddingTop: 16, marginBottom: 16 }}>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, color: C.blue, marginBottom: 12 }}>Gallery Entry</div>
+                <Input theme={C} label="Artist name" value={galArtist} onChange={setGalArtist} placeholder="Michael Slattery" />
+                <Input theme={C} label="Collection name" value={galCollection} onChange={setGalCollection} placeholder="Curry Cards" />
+                <Input theme={C} label="Piece name" value={galPieceName} onChange={setGalPieceName} placeholder="Card #1" />
+                <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                  <button onClick={() => setGalType("original")} style={{ flex: 1, padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, border: "none", borderRadius: 6, cursor: "pointer", background: galType === "original" ? C.blue : C.panel, color: galType === "original" ? "#FFFFFF" : C.textMuted }}>Original</button>
+                  <button onClick={() => setGalType("limited")} style={{ flex: 1, padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, border: "none", borderRadius: 6, cursor: "pointer", background: galType === "limited" ? C.blue : C.panel, color: galType === "limited" ? "#FFFFFF" : C.textMuted }}>Limited Edition</button>
+                </div>
+                <Input theme={C} label="Edition" value={galEdition} onChange={setGalEdition} placeholder="1 of 1 or 3 of 10" />
+                <button onClick={() => {
+                  const entry = JSON.stringify({
+                    name: galPieceName,
+                    type: galType,
+                    edition: galEdition,
+                    ordinalNumber: insOrd || "0",
+                    inscriptionId: insInsId || "",
+                    vault: insVault,
+                    oktAmount: insCbbtc
+                  }, null, 2);
+                  setGalEntry(entry);
+                  navigator.clipboard.writeText(entry);
+                }} style={{ width: "100%", padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, background: C.panel, border: `1px solid ${C.border}`, borderRadius: 6, cursor: "pointer", color: C.textDim, marginBottom: 8 }}>
+                  Copy Gallery Entry to Clipboard
+                </button>
+                {galEntry && (
+                  <pre style={{ fontFamily: "monospace", fontSize: 10, color: C.textMuted, background: C.panel, padding: 8, borderRadius: 6, overflow: "auto", maxHeight: 120, border: `1px solid ${C.border}` }}>{galEntry}</pre>
+                )}
+              </div>
               <BigBtn onClick={inscribe} theme={C} disabled={!connected}>Inscribe Vault</BigBtn>
               <Status state={insS} msg={insM} theme={C} />
             </Panel>

@@ -1,0 +1,47 @@
+{
+  "artists": [
+    {
+      "id": "slattery",
+      "name": "Michael Slattery",
+      "bio": "Creator of Analog Bitcoin — where physical art meets digital provenance",
+      "collections": [
+        {
+          "id": "curry-cards",
+          "name": "Curry Cards",
+          "private": false,
+          "password": "",
+          "description": "160 collectible fine art trading cards created for the licensing agent to Steph Curry",
+          "pieces": [
+            {
+              "name": "Curry Card #1",
+              "type": "original",
+              "edition": "1 of 1",
+              "ordinalNumber": "92588651",
+              "inscriptionId": "01b0dd658974e98059a753bab23e3cdbd4c86c7b49b92c2b03f7ede01b09031ei0",
+              "vault": "",
+              "oktAmount": ""
+            }
+          ]
+        },
+        {
+          "id": "private-collection",
+          "name": "VIP Collection",
+          "private": true,
+          "password": "vip2026",
+          "description": "Exclusive works for select collectors",
+          "pieces": [
+            {
+              "name": "Sample VIP Piece",
+              "type": "original",
+              "edition": "1 of 1",
+              "ordinalNumber": "",
+              "inscriptionId": "",
+              "vault": "",
+              "oktAmount": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
