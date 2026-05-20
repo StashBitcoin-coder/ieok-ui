@@ -15,6 +15,15 @@
             {
               "name": "Curry Card #1",
               "type": "original",
+              {
+  "name": "from my roof",
+  "type": "original",
+  "edition": "1 of 1",
+  "ordinalNumber": "94384120",
+  "inscriptionId": "ada521e72944d1793cc554dd0e5aea912be388b9130d37911bc7e409d8c31d24i0",
+  "vault": "0x82eDC058C08e463B7C20887b45DCB11Cb1f665B1",
+  "oktAmount": "10000"
+}
               "edition": "1 of 1",
               "ordinalNumber": "92588651",
               "inscriptionId": "01b0dd658974e98059a753bab23e3cdbd4c86c7b49b92c2b03f7ede01b09031ei0",
