@@ -1111,9 +1111,9 @@ export default function Home() {
 
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 18 : 22, fontWeight: 700, marginBottom: 16, lineHeight: 1.3 }}>
                   {!vResult.registered && <span style={{ color: C.textMuted }}>⚪ Not a Registered Vault</span>}
-                  {vResult.registered && !vResult.swept && !vResult.ordinalMoved && <span style={{ color: C.green }}>🟢 Vault Sealed — Untouched</span>}
+                  {vResult.registered && !vResult.swept && <span style={{ color: C.green }}>🟢 Vault Sealed — Untouched</span>}
                   
-                  {vResult.registered && vResult.swept && !vResult.ordinalMoved && <span style={{ color: C.red }}>🔴 Vault Swept — OKT Has Been Moved</span>}
+                  {vResult.registered && vResult.swept && <span style={{ color: C.red }}>🔴 Vault Swept — Origin Keys Have Been Moved</span>}
                   
                 </div>
 
@@ -1147,7 +1147,7 @@ export default function Home() {
 
                         {/* Minted to vault address */}
                         <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginBottom: 4 }}>
-                          Minted to vault:
+                          Minted to:
                         </div>
                         <div style={{ fontFamily: "monospace", fontSize: 11, color: C.textDim, wordBreak: "break-all" as const, marginBottom: 12, padding: "6px 10px", background: C.card, borderRadius: 6, border: `1px solid ${C.border}` }}>
                           {vAddr}
@@ -1156,7 +1156,7 @@ export default function Home() {
                         {/* Verify link */}
                         <a href={`https://ordinals.com/inscription/${vResult.inscriptionId || vResult.ordinalNumber}`} target="_blank" rel="noopener noreferrer"
                           style={{ display: "block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "10px 20px", fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, textDecoration: "none", fontWeight: 700, marginBottom: 8 }}>
-                          View on Ordinals.com ↗ — verify the current owner matches this address
+                          View on Ordinals.com ↗
                         </a>
 
                         {/* Marketplace links */}
@@ -1178,16 +1178,7 @@ export default function Home() {
                           </a>
                         </div>
 
-                        {/* HIDDEN ORACLE WARNING — only visible when reportOrdinalMoved is called */}
-                        {vResult.ordinalMoved && (
-                          <div style={{ marginTop: 16, padding: "12px 16px", background: C.orangeBg, border: `1px solid ${C.orange}`, borderRadius: 8 }}>
-                            <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, color: C.orange, marginBottom: 4 }}>⚠️ Ordinal Movement Reported</div>
-                            <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, lineHeight: 1.6 }}>
-                              The contract oracle has confirmed this Bitcoin Ordinal has been transferred from its original vault wallet.
-                              {vResult.ordinalMovedAt !== "0" && <span> Reported at: <strong style={{ color: C.orange }}>{fmtTs(vResult.ordinalMovedAt)}</strong></span>}
-                            </div>
-                          </div>
-                        )}
+
                       </div>
                     ) : (
                       <div style={{ display: "inline-block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 24px", fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>
@@ -1239,10 +1230,7 @@ export default function Home() {
                       </div>
                     )}
 
-                    <div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Asset ID</div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.blue, wordBreak: "break-all" as const, fontWeight: 700 }}>{vResult.assetId}</div>
-                    </div>
+                    {/* Asset ID hidden from display — stored on chain for internal records */}
 
                     {vResult.swept && (
                       <div style={{ gridColumn: "1 / -1", padding: "14px 18px", background: C.redBg, border: `1px solid ${C.red}`, borderRadius: 8 }}>
