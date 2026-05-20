@@ -374,11 +374,16 @@ export default function Home() {
   const [insOrd, setInsOrd]     = useState("");
   const [insInsId, setInsInsId]   = useState("");
   const [galArtist, setGalArtist]     = useState("");
+  const [galBio, setGalBio]           = useState("");
   const [galCollection, setGalCollection] = useState("");
+  const [galColDesc, setGalColDesc]   = useState("");
   const [galPieceName, setGalPieceName]   = useState("");
   const [galType, setGalType]             = useState("original");
   const [galEdition, setGalEdition]       = useState("1 of 1");
+  const [galPrivate, setGalPrivate]       = useState(false);
+  const [galPassword, setGalPassword]     = useState("");
   const [galEntry, setGalEntry]           = useState("");
+  const [galShopify, setGalShopify]       = useState("");
   const [insS, setInsS]         = useState<TxState>("idle");
   const [insM, setInsM]         = useState("");
 
@@ -1086,6 +1091,12 @@ export default function Home() {
                         View on Ordinals.com ↗
                       </a>
                     )}
+                    {selectedPiece.shopifyUrl && (
+                      <a href={selectedPiece.shopifyUrl} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "block", background: C.green, borderRadius: 8, padding: "12px 16px", fontFamily: "Arial, sans-serif", fontSize: 14, color: "#FFFFFF", textDecoration: "none", fontWeight: 700, textAlign: "center" as const }}>
+                        Purchase This Piece ↗
+                      </a>
+                    )}
                     {selectedPiece.vault && (
                       <button onClick={(e: any) => { e.stopPropagation(); setSelectedPiece(null); setVAddr(selectedPiece.vault); setTab("vault"); }}
                         style={{ display: "block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 16px", fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, fontWeight: 700, cursor: "pointer", textAlign: "center" as const, width: "100%" }}>
@@ -1277,34 +1288,162 @@ export default function Home() {
                   { label: "OKT sealed in vault (1 sat = 1 OKT)", value: insPrev.out.toLocaleString() + " OKey" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.out, btcPrice)) : ""), blue: true },
                 ]} />
               )}
-              {/* ─── Gallery Entry ─── */}
+              {/* ─── Gallery Admin ─── */}
               <div style={{ borderTop: `1px solid ${C.border}`, marginTop: 16, paddingTop: 16, marginBottom: 16 }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, color: C.blue, marginBottom: 12 }}>Gallery Entry</div>
-                <Input theme={C} label="Artist name" value={galArtist} onChange={setGalArtist} placeholder="Michael Slattery" />
-                <Input theme={C} label="Collection name" value={galCollection} onChange={setGalCollection} placeholder="Curry Cards" />
-                <Input theme={C} label="Piece name" value={galPieceName} onChange={setGalPieceName} placeholder="Card #1" />
-                <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-                  <button onClick={() => setGalType("original")} style={{ flex: 1, padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, border: "none", borderRadius: 6, cursor: "pointer", background: galType === "original" ? C.blue : C.panel, color: galType === "original" ? "#FFFFFF" : C.textMuted }}>Original</button>
-                  <button onClick={() => setGalType("limited")} style={{ flex: 1, padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, border: "none", borderRadius: 6, cursor: "pointer", background: galType === "limited" ? C.blue : C.panel, color: galType === "limited" ? "#FFFFFF" : C.textMuted }}>Limited Edition</button>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, color: C.blue, marginBottom: 12 }}>Gallery Admin</div>
+
+                {/* Step 1 — Fill in gallery info */}
+                <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, color: C.textDim, marginBottom: 8 }}>Step 1 — Fill in gallery info</div>
+                  <Input theme={C} label="Artist name" value={galArtist} onChange={setGalArtist} placeholder="Michael Slattery" />
+                  <Input theme={C} label="Artist bio (only needed for new artists)" value={galBio} onChange={setGalBio} placeholder="Creator of Analog Bitcoin" />
+                  <Input theme={C} label="Collection name" value={galCollection} onChange={setGalCollection} placeholder="Curry Cards" />
+                  <Input theme={C} label="Collection description (only needed for new collections)" value={galColDesc} onChange={setGalColDesc} placeholder="160 collectible fine art trading cards" />
+                  <Input theme={C} label="Piece name" value={galPieceName} onChange={setGalPieceName} placeholder="Card #1" />
+                  <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                    <button onClick={() => setGalType("original")} style={{ flex: 1, padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, border: "none", borderRadius: 6, cursor: "pointer", background: galType === "original" ? C.blue : C.card, color: galType === "original" ? "#FFFFFF" : C.textMuted }}>Original</button>
+                    <button onClick={() => setGalType("limited")} style={{ flex: 1, padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, border: "none", borderRadius: 6, cursor: "pointer", background: galType === "limited" ? C.blue : C.card, color: galType === "limited" ? "#FFFFFF" : C.textMuted }}>Limited Edition</button>
+                  </div>
+                  <Input theme={C} label="Edition" value={galEdition} onChange={setGalEdition} placeholder="1 of 1 or 3 of 10" />
+                  <Input theme={C} label="Shopify checkout link (optional)" value={galShopify} onChange={setGalShopify} placeholder="https://yourstore.myshopify.com/cart/..." />
+                  <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                    <label style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, cursor: "pointer" }}>
+                      <input type="checkbox" checked={galPrivate} onChange={e => setGalPrivate(e.target.checked)} />
+                      Private collection
+                    </label>
+                  </div>
+                  {galPrivate && (
+                    <Input theme={C} label="Collection password" value={galPassword} onChange={setGalPassword} placeholder="vip2026" />
+                  )}
                 </div>
-                <Input theme={C} label="Edition" value={galEdition} onChange={setGalEdition} placeholder="1 of 1 or 3 of 10" />
-                <button onClick={() => {
-                  const entry = JSON.stringify({
-                    name: galPieceName,
-                    type: galType,
-                    edition: galEdition,
-                    ordinalNumber: insOrd || "0",
-                    inscriptionId: insInsId || "",
-                    vault: insVault,
-                    oktAmount: insCbbtc
-                  }, null, 2);
-                  setGalEntry(entry);
-                  navigator.clipboard.writeText(entry);
-                }} style={{ width: "100%", padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, background: C.panel, border: `1px solid ${C.border}`, borderRadius: 6, cursor: "pointer", color: C.textDim, marginBottom: 8 }}>
-                  Copy Gallery Entry to Clipboard
-                </button>
+
+                {/* Current Gallery — Delete pieces */}
+                {galleryData && galleryData.artists.length > 0 && (
+                  <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, color: C.textDim, marginBottom: 8 }}>Current Gallery Pieces</div>
+                    <div style={{ maxHeight: 200, overflow: "auto" }}>
+                      {galleryData.artists.map((artist: any) =>
+                        artist.collections.map((col: any) =>
+                          col.pieces.map((piece: any, pIdx: number) => (
+                            <div key={`${artist.id}-${col.id}-${pIdx}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 8px", borderBottom: `1px solid ${C.border}`, gap: 8 }}>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, fontWeight: 700, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{piece.name}</div>
+                                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted }}>{artist.name} · {col.name} · {piece.edition}</div>
+                              </div>
+                              <button onClick={() => {
+                                const updated = JSON.parse(JSON.stringify(galleryData));
+                                const a = updated.artists.find((x: any) => x.id === artist.id);
+                                const c = a.collections.find((x: any) => x.id === col.id);
+                                c.pieces.splice(pIdx, 1);
+                                if (c.pieces.length === 0) {
+                                  a.collections = a.collections.filter((x: any) => x.id !== col.id);
+                                }
+                                if (a.collections.length === 0) {
+                                  updated.artists = updated.artists.filter((x: any) => x.id !== artist.id);
+                                }
+                                setGalleryData(updated);
+                                const json = JSON.stringify(updated, null, 2);
+                                setGalEntry(json);
+                                navigator.clipboard.writeText(json);
+                              }} style={{ background: C.redBg, border: `1px solid ${C.red}`, borderRadius: 4, padding: "4px 8px", fontFamily: "Arial, sans-serif", fontSize: 10, color: C.red, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
+                                Delete
+                              </button>
+                            </div>
+                          ))
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 2 — Generate and copy */}
+                <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, color: C.textDim, marginBottom: 8 }}>Step 2 — Add to gallery and copy</div>
+                  <button onClick={() => {
+                    // Load current gallery data
+                    const current = galleryData ? JSON.parse(JSON.stringify(galleryData)) : { artists: [] };
+                    
+                    // Create the new piece
+                    const newPiece: any = {
+                      name: galPieceName || "Untitled",
+                      type: galType,
+                      edition: galEdition || "1 of 1",
+                      ordinalNumber: insOrd || "",
+                      inscriptionId: insInsId || "",
+                      vault: insVault || "",
+                      oktAmount: insCbbtc || "",
+                      shopifyUrl: galShopify || ""
+                    };
+
+                    // Find or create artist
+                    const artistId = (galArtist || "unknown").toLowerCase().replace(/\s+/g, "-");
+                    let artist = current.artists.find((a: any) => a.id === artistId);
+                    if (!artist) {
+                      artist = {
+                        id: artistId,
+                        name: galArtist || "Unknown",
+                        bio: galBio || "",
+                        collections: []
+                      };
+                      current.artists.push(artist);
+                    } else if (galBio) {
+                      artist.bio = galBio;
+                    }
+
+                    // Find or create collection
+                    const colId = (galCollection || "untitled").toLowerCase().replace(/\s+/g, "-");
+                    let col = artist.collections.find((c: any) => c.id === colId);
+                    if (!col) {
+                      col = {
+                        id: colId,
+                        name: galCollection || "Untitled",
+                        private: galPrivate,
+                        password: galPrivate ? galPassword : "",
+                        description: galColDesc || "",
+                        pieces: []
+                      };
+                      artist.collections.push(col);
+                    } else {
+                      if (galColDesc) col.description = galColDesc;
+                      if (galPrivate) { col.private = true; col.password = galPassword; }
+                    }
+
+                    // Add piece
+                    col.pieces.push(newPiece);
+
+                    // Generate JSON
+                    const json = JSON.stringify(current, null, 2);
+                    setGalEntry(json);
+                    navigator.clipboard.writeText(json);
+                    setGalleryData(current);
+                  }} style={{ width: "100%", padding: "14px", fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, cursor: "pointer", marginBottom: 8 }}>
+                    ✚ Add Piece to Gallery + Copy Full JSON
+                  </button>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, marginBottom: 8 }}>
+                    This adds the piece to the gallery preview above AND copies the complete gallery.json to your clipboard.
+                  </div>
+                </div>
+
+                {/* Step 3 — Paste into file */}
                 {galEntry && (
-                  <pre style={{ fontFamily: "monospace", fontSize: 10, color: C.textMuted, background: C.panel, padding: 8, borderRadius: 6, overflow: "auto", maxHeight: 120, border: `1px solid ${C.border}` }}>{galEntry}</pre>
+                  <div style={{ background: C.greenBg, border: `1px solid ${C.green}`, borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, color: C.green, marginBottom: 8 }}>✓ Copied! Now do this:</div>
+                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, lineHeight: 1.8 }}>
+                      1. Open terminal and type: <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>code /c/Users/Slattery/ieok-ui/frontend/public/gallery.json</code><br />
+                      2. Select all: <strong>Ctrl+A</strong><br />
+                      3. Paste: <strong>Ctrl+V</strong><br />
+                      4. Save: <strong>Ctrl+S</strong><br />
+                      5. Push: <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>git add . && git commit -m "Add piece" && git push</code>
+                    </div>
+                  </div>
+                )}
+
+                {/* Current gallery preview */}
+                {galEntry && (
+                  <details style={{ marginBottom: 12 }}>
+                    <summary style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, cursor: "pointer", marginBottom: 4 }}>View full gallery.json</summary>
+                    <pre style={{ fontFamily: "monospace", fontSize: 9, color: C.textMuted, background: C.panel, padding: 8, borderRadius: 6, overflow: "auto", maxHeight: 200, border: `1px solid ${C.border}` }}>{galEntry}</pre>
+                  </details>
                 )}
               </div>
               <BigBtn onClick={inscribe} theme={C} disabled={!connected}>Inscribe Vault</BigBtn>
