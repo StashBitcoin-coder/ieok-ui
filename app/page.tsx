@@ -1109,6 +1109,7 @@ export default function Home() {
         )}
 
         {tab === "swap" && (
+          <>
           {/* SWAP MODE TOGGLE */}
           <div style={{ display: "flex", gap: 0, marginBottom: 20, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
             <button onClick={() => setSwapMode("buy")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "buy" ? C.blue : C.panel, color: swapMode === "buy" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>▲ ACQUIRE</button>
@@ -1117,13 +1118,6 @@ export default function Home() {
           </div>
 
           <div>
-            <div style={{ display: "flex", gap: 8, marginBottom: 20, background: C.panel, borderRadius: 10, padding: 4, border: `1px solid ${C.border}` }}>
-              {(["buy", "sell"] as const).map(m => (
-                <button key={m} onClick={() => setMode(m)} style={{ flex: 1, padding: mobile ? "12px" : "14px", fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 16, background: mode === m ? (m === "buy" ? C.blue : C.card) : "transparent", color: mode === m ? (m === "buy" ? "#FFFFFF" : C.blue) : C.textMuted, border: mode === m && m === "sell" ? `1.5px solid ${C.blue}` : "none", borderRadius: 8, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, WebkitTapHighlightColor: "transparent", boxShadow: mode === m ? C.shadow : "none" }}>
-                  {m === "buy" ? "▲ Buy" : "▼ Sell"}
-                </button>
-              ))}
-            </div>
 
             {swapMode === "buy" && (
               <Panel title="Acquire Origin Keys — Fixed Price 1 Sat = 1 OKey" theme={C}>
@@ -1220,20 +1214,20 @@ export default function Home() {
                 <Status state={sellS} msg={sellM} theme={C} />
               </Panel>
             )}
-          </div>
-        )}
 
-        {/* TRANSFER */}
             {swapMode === "transfer" && (
-          <Panel title="Transfer OKT — Zero Fee" theme={C}>
-            <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
-              Send OKT to any wallet with no fee. Dividend yield moves proportionally with the tokens.
-            </p>
-            <Input theme={C} label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
-            <Input theme={C} label="OKT amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
-            <BigBtn onClick={transfer} theme={C} disabled={!connected}>Transfer — Free</BigBtn>
-            <Status state={txS} msg={txM} theme={C} />
-          </Panel>
+              <Panel title="Transfer Origin Keys — Zero Fee" theme={C}>
+                <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
+                  Send Origin Keys to any wallet with no fee. Dividend yield moves proportionally with the tokens.
+                </p>
+                <Input theme={C} label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
+                <Input theme={C} label="OKey amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OKey" hint={`Your balance: ${oktNum.toLocaleString()} OKey`} />
+                <BigBtn onClick={transfer} theme={C} disabled={!connected}>Transfer — Free</BigBtn>
+                <Status state={txS} msg={txM} theme={C} />
+              </Panel>
+            )}
+          </div>
+          </>
         )}
 
         {/* INSCRIBE */}
