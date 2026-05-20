@@ -622,6 +622,11 @@ export default function Home() {
   }, [connected]);
 
   useEffect(() => { fetchBtcPrice(); const iv = setInterval(fetchBtcPrice, 60000); return () => clearInterval(iv); }, []);
+
+  // Load gallery data
+  useEffect(() => {
+    fetch("/gallery.json").then(r => r.json()).then(d => setGalleryData(d)).catch(() => {});
+  }, []);
   useEffect(() => {
     if (!account) return;
     load(account);
