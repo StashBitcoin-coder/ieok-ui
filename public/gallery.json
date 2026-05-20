@@ -10,10 +10,10 @@
           "name": "First Ones",
           "private": false,
           "password": "",
-          "description": "160 collectible fine art trading cards created for the licensing agent to Steph Curry",
+          "description": "fine art trading cards licensed and created by Michael James Slattery",
           "pieces": [
             {
-              "name": "Curry Card #1",
+              "name": "TEST",
               "type": "original",
               "edition": "1 of 1",
               "ordinalNumber": "92588651",
@@ -22,7 +22,7 @@
               "oktAmount": ""
             },
             {
-              "name": "from my roof",
+              "name": "One Actual Ordinal",
               "type": "original",
               "edition": "1 of 1",
               "ordinalNumber": "94384120",
