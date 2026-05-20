@@ -577,7 +577,8 @@ export default function Home() {
       await ensureAllowance(cbbtc, account, IEOK_ADDRESS, BigInt(insCbbtc), setInsM);
       setInsM("Confirm inscription in your wallet...");
       const ordNum = insOrd ? BigInt(insOrd) : BigInt(0);
-      const tx = await okt.inscribe(insVault, b32(insAsset), BigInt(insCbbtc), ordNum, insInsId);
+      const vaultAddr = ethers.getAddress(insVault); // checksum — prevents ENS lookup
+      const tx = await okt.inscribe(vaultAddr, b32(insAsset), BigInt(insCbbtc), ordNum, insInsId);
       setInsM("Confirming on chain...");
       await tx.wait();
       setInsS("success"); setInsM(`Vault inscribed — ${insAsset} registered on chain`);
