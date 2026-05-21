@@ -692,28 +692,24 @@ export default function Home() {
     <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif", touchAction: "pan-y", WebkitOverflowScrolling: "touch" as any, overscrollBehavior: "none" }}>
 
       {/* HEADER */}
-      <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: mobile ? "0 12px" : "0 40px", height: mobile ? 64 : 72, display: "flex", alignItems: "center", justifyContent: "space-between", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-          <CbbtcLogo size={mobile ? 26 : 34} />
-          {!mobile && (
-            <div style={{ lineHeight: 1.4 }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>Origin Key tokens are denominated in cbBTC,</div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>tokenized Bitcoin issued by Coinbase.</div>
-            </div>
-          )}
-          {btcPrice > 0 && !mobile && (
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, background: C.panel, padding: "4px 10px", borderRadius: 20, border: `1px solid ${C.border}`, marginLeft: 4 }}>
+      <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: mobile ? "0 12px" : "0 24px", height: mobile ? 64 : 72, display: "flex", alignItems: "center", justifyContent: "center", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
+        {/* LEFT — BTC price (desktop only) */}
+        <div style={{ position: "absolute" as const, left: mobile ? 12 : 24, display: "flex", alignItems: "center", gap: 8 }}>
+          <CbbtcLogo size={mobile ? 20 : 24} />
+          {btcPrice > 0 && (
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>
               BTC {fmtUsd(btcPrice)}
             </div>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", paddingRight: 12 }}>
-            <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: mobile ? 22 : 32, fontWeight: 600, color: C.text, letterSpacing: "0.02em", lineHeight: 1, whiteSpace: "nowrap" as const }}>
-              IMMUTABLE EDITIONS
-            </span>
-          </div>
 
+        {/* CENTER — Immutable Editions */}
+        <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 18 : 26, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
+          Immutable Editions
+        </span>
+
+        {/* RIGHT — Dark mode + Connect */}
+        <div style={{ position: "absolute" as const, right: mobile ? 12 : 24, display: "flex", alignItems: "center", gap: 8 }}>
           <button
             onClick={() => setDarkMode(!darkMode)}
             style={{ background: darkMode ? "#2A2D35" : C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: mobile ? "7px 10px" : "9px 12px", cursor: "pointer", color: C.textMuted, display: "flex", alignItems: "center", gap: 4, WebkitTapHighlightColor: "transparent", flexShrink: 0 }}
@@ -721,13 +717,6 @@ export default function Home() {
             {darkMode ? <SunIcon /> : <MoonIcon />}
             {!mobile && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, fontWeight: 600 }}>{darkMode ? "Light" : "Dark"}</span>}
           </button>
-          {tab === "swap" && (
-            <ConnectButton
-              showBalance={false}
-              chainStatus="none"
-              accountStatus="address"
-            />
-          )}
         </div>
       </div>
 
@@ -1127,6 +1116,13 @@ export default function Home() {
           {/* CONNECT + PORTFOLIO CARDS — inside swap tab, 35% smaller */}
           {connected ? (
             <div style={{ marginBottom: 16 }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+                <ConnectButton
+                  showBalance={false}
+                  chainStatus="none"
+                  accountStatus="address"
+                />
+              </div>
               <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 1, background: C.border, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
                 <div style={{ background: C.card, padding: "8px 10px" }}>
                   <div style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>cbBTC Balance</div>
@@ -1169,8 +1165,13 @@ export default function Home() {
             </div>
           ) : (
             <div style={{ textAlign: "center" as const, padding: "20px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, fontWeight: 600 }}>Connect your wallet to see your balances</div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginTop: 4 }}>Use MetaMask or Coinbase Wallet on Base Sepolia</div>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, fontWeight: 600, marginBottom: 12 }}>Connect your wallet to see your balances</div>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginBottom: 12 }}>Use MetaMask or Coinbase Wallet on Base Sepolia</div>
+              <ConnectButton
+                showBalance={false}
+                chainStatus="none"
+                accountStatus="address"
+              />
             </div>
           )}
 
