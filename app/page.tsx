@@ -634,7 +634,7 @@ export default function Home() {
 
   // Option B: connected wallet → trade, new visitor → home
   useEffect(() => {
-    if (connected) setTab(prev => prev === "home" ? "swap" : prev);
+    // Wallet connected — don't auto-switch tabs
   }, [connected]);
 
   useEffect(() => { fetchBtcPrice(); const iv = setInterval(fetchBtcPrice, 60000); return () => clearInterval(iv); }, []);
@@ -744,7 +744,7 @@ export default function Home() {
         {/* TABS */}
         <div style={{ display: "flex", justifyContent: "center", borderBottom: `2px solid ${C.border}`, marginBottom: 24, overflowX: "auto" as const, WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const }}>
           {tabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "12px 14px" : "14px 26px", fontFamily: "Arial, sans-serif", fontSize: mobile ? 11 : 13, letterSpacing: "0.05em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `3px solid ${C.blue}` : "3px solid transparent", marginBottom: "-2px", cursor: "pointer", fontWeight: tab === t.id ? 700 : 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
+            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "12px 14px" : "14px 26px", fontFamily: "Georgia, serif", fontSize: mobile ? 11 : 13, letterSpacing: "0.08em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `3px solid ${C.blue}` : "3px solid transparent", marginBottom: "-2px", cursor: "pointer", fontWeight: tab === t.id ? 700 : 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
               {mobile ? t.short : t.label}
             </button>
           ))}
@@ -1111,7 +1111,7 @@ export default function Home() {
           <div style={{ textAlign: "center" as const, marginBottom: 24, padding: "8px 0" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
               <SkeletonKey size={36} dark={darkMode} />
-              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: mobile ? 22 : 28, fontWeight: 600, color: C.blue, letterSpacing: "0.02em" }}>ORIGIN KEY EXCHANGE</span>
+              <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Origin Key Exchange</span>
             </div>
             <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, fontWeight: 700, color: C.textDim, marginBottom: 2 }}>
               Deterministic Automatic Operation (DAO) Contract
