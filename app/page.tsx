@@ -249,7 +249,7 @@ function Input({ label, value, onChange, placeholder, type = "text", hint, tag, 
       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: T.textDim, marginBottom: 8, fontWeight: 600 }}>{label}</div>
       <div style={{ position: "relative" as const }}>
         <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-          style={{ width: "100%", background: T.input, border: `2px solid ${T.text}`, borderRadius: 8, color: T.text, fontFamily: "Arial, sans-serif", fontSize: 17, padding: tag ? "14px 80px 14px 16px" : "14px 16px", outline: "none", boxSizing: "border-box" as const, WebkitAppearance: "none" as const }}
+          style={{ width: "100%", background: T.input, border: `2px solid ${T.text}`, borderRadius: 8, color: T.text, fontFamily: "Arial, sans-serif", fontSize: 15, padding: tag ? "10px 70px 10px 12px" : "10px 12px", outline: "none", boxSizing: "border-box" as const, WebkitAppearance: "none" as const }}
           onFocus={e => e.target.style.borderColor = T.blue}
           onBlur={e => e.target.style.borderColor = T.text}
         />
@@ -283,7 +283,7 @@ function BigBtn({ onClick, children, variant = "blue", disabled = false, theme }
   const T = theme || LIGHT;
   const v = { blue: { bg: T.blue, color: "#FFFFFF", border: "none" }, outline: { bg: "transparent", color: T.blue, border: `2px solid ${T.blue}` } }[variant];
   return (
-    <button onClick={onClick} disabled={disabled} style={{ width: "100%", background: v.bg, color: v.color, border: v.border, borderRadius: 8, padding: "16px", fontFamily: "Arial, sans-serif", fontSize: 15, letterSpacing: "0.05em", textTransform: "uppercase" as const, cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.4 : 1, marginBottom: 4, fontWeight: 700, WebkitTapHighlightColor: "transparent", boxShadow: disabled ? "none" : T.shadow }}>
+    <button onClick={onClick} disabled={disabled} style={{ width: "100%", background: v.bg, color: v.color, border: v.border, borderRadius: 8, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 14, letterSpacing: "0.05em", textTransform: "uppercase" as const, cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.4 : 1, marginBottom: 4, fontWeight: 700, WebkitTapHighlightColor: "transparent", boxShadow: disabled ? "none" : T.shadow }}>
       {children}
     </button>
   );
@@ -292,7 +292,7 @@ function BigBtn({ onClick, children, variant = "blue", disabled = false, theme }
 function Panel({ title, children, theme }: { title: string; children: React.ReactNode; theme?: typeof LIGHT }) {
   const T = theme || LIGHT;
   return (
-    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 10, padding: "16px", marginBottom: 12, boxShadow: T.shadow }}>
+    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: "12px", marginBottom: 10, boxShadow: T.shadow }}>
       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: T.blue, marginBottom: 20, fontWeight: 700 }}>{title}</div>
       {children}
     </div>
@@ -720,9 +720,9 @@ export default function Home() {
         </div>
 
         {/* TABS — fixed in header */}
-        <div style={{ display: "flex", justifyContent: "center", width: "100%", borderTop: `1px solid ${C.border}`, overflowX: "auto" as const, WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const }}>
+        <div style={{ display: "flex", justifyContent: "center", width: "auto", borderTop: "none", overflowX: "auto" as const, WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const }}>
           {tabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "8px 12px" : "10px 22px", fontFamily: "Georgia, serif", fontSize: mobile ? 10 : 12, letterSpacing: "0.08em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `2px solid ${C.blue}` : "2px solid transparent", cursor: "pointer", fontWeight: tab === t.id ? 700 : 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
+            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "8px 12px" : "10px 22px", fontFamily: "Georgia, serif", fontSize: mobile ? 10 : 12, letterSpacing: "0.08em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `2px solid ${C.blue}` : "2px solid transparent", cursor: "pointer", fontWeight: 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
               {mobile ? t.short : t.label}
             </button>
           ))}
