@@ -97,7 +97,7 @@ const fmtUsd    = (n: number) => "$" + n.toLocaleString(undefined, { minimumFrac
 const fmtAddr   = (v: string) => v ? v.slice(0, 6) + "..." + v.slice(-4) : "—";
 const fmtCbbtc  = (v: string) => (Number(v) / 1e8).toFixed(6) + " cbBTC";
 const fmtSats   = (v: string) => Number(v).toLocaleString() + " sats";
-const fmtOKey    = (v: string) => Number(v).toLocaleString() + " OKey";
+const fmtOK    = (v: string) => Number(v).toLocaleString() + " OKey";
 const fmtTs     = (ts: string) => { const n = Number(ts); if (!n) return "—"; return new Date(n * 1000).toLocaleString(); };
 
 function preview7(sats: string) {
@@ -684,7 +684,7 @@ export default function Home() {
     { id: "gallery",  label: "GALLERY",     short: "GALLERY"  },
     { id: "swap",     label: "SWAP",        short: "SWAP"     },
     { id: "vault",    label: "VAULT CHECK", short: "VAULT"    },
-    { id: "learn",    label: "LEARN",       short: "LEARN"    },
+    { id: "learn",    label: "CONDUCT",     short: "CONDUCT"  },
     ...(isRegistrar ? [{ id: "inscribe" as Tab, label: "INSCRIBE", short: "INSCRIBE" }] : []),
   ];
 
@@ -735,51 +735,7 @@ export default function Home() {
 
 
 
-      {/* PORTFOLIO CARDS — SWAP TAB ONLY */}
-      {tab === "swap" && connected ? (
-        <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: "1px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 1, background: C.border }}>
-            {/* cbBTC — sats primary */}
-            <Card label="cbBTC Balance" value={fmtSats(cbbtcBal)} sub={fmtCbbtc(cbbtcBal)} sub2={cbbtcUsd} theme={C} />
-            {/* OKT — OKT on top, sats underneath */}
-            <Card label="Keys Held" value={fmtOKey(oktBal)} sub={fmtSats(oktBal)} sub2={oktUsd} theme={C} />
-            {/* Dividends — sats primary */}
-            <Card label="Proceeds" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent theme={C} />
-            {/* Total Supply */}
-            <Card label="Total Key Supply" value={fmtOKey(supply)} sub={fmtSats(supply)} theme={C} />
-          </div>
-        </div>
-      ) : tab === "swap" ? (
-        <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: "32px", textAlign: "center" as const }}>
-          <div style={{ marginBottom: 12 }}><SkeletonKey size={40} dark={darkMode} /></div>
-          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: C.textMuted, fontWeight: 600 }}>Connect your wallet to see your balances</div>
-          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 6 }}>Use MetaMask or Coinbase Wallet on Base Sepolia</div>
-        </div>
-      ) : null}
 
-      {/* PROCEEDS BANNER — SWAP TAB ONLY */}
-      {tab === "swap" && connected && divsNum > 0 && (
-        <div style={{ background: C.blueBg, borderBottom: `1px solid ${C.blue}`, padding: mobile ? "14px 16px" : "14px 40px", display: "flex", flexDirection: mobile ? "column" : "row" as const, alignItems: mobile ? "stretch" : "center", justifyContent: "space-between", gap: 12 }}>
-          <div>
-            <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 16, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
-              <CbbtcLogo size={18} />{fmtSats(divs)} cbBTC proceeds available
-            </span>
-            {divsUsd && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginLeft: 10 }}>{divsUsd}</span>}
-          </div>
-          <div>
-            <div style={{ display: "flex", gap: 8, flexDirection: mobile ? "column" : "row" as const }}>
-              <button onClick={withdraw} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "11px 22px", fontFamily: "Arial, sans-serif", fontSize: 14, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, letterSpacing: "0.05em", WebkitTapHighlightColor: "transparent" }}>
-                Withdraw
-              </button>
-              <button onClick={reinvest} style={{ background: "transparent", color: C.blue, border: `1.5px solid ${C.blue}`, borderRadius: 8, padding: "11px 22px", fontFamily: "Arial, sans-serif", fontSize: 14, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, letterSpacing: "0.05em", WebkitTapHighlightColor: "transparent" }}>
-                Repurchase
-              </button>
-            </div>
-            <Status state={wdS} msg={wdM} theme={C} />
-            <Status state={rvS} msg={rvM} theme={C} />
-          </div>
-        </div>
-      )}
 
 
 
@@ -820,8 +776,8 @@ export default function Home() {
             </div>
 
             {/* CANVA VIDEO */}
-            <div style={{ margin: "48px auto 0", maxWidth: 680, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.border}` }}>
-              <div style={{ position: "relative" as const, paddingBottom: "56.25%", height: 0 }}>
+            <div style={{ margin: "48px auto 0", maxWidth: 320, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.border}` }}>
+              <div style={{ position: "relative" as const, paddingBottom: "177.78%", height: 0 }}>
                 <iframe
                   src="https://www.canva.com/design/DAHKUQElnjQ/KEZ-IoKy9KaXVkTgCgBh0g/watch?embed"
                   style={{ position: "absolute" as const, top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
@@ -968,6 +924,13 @@ export default function Home() {
                       onMouseLeave={(e: any) => e.currentTarget.style.borderColor = C.border}>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 18, fontWeight: 700, color: C.text, marginBottom: 6 }}>{artist.name}</div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 8 }}>{artist.bio}</div>
+                      {artist.canvaEmbed && (
+                        <div style={{ borderRadius: 6, overflow: "hidden", marginBottom: 8 }}>
+                          <div style={{ position: "relative" as const, paddingBottom: artist.canvaAspect === "vertical" ? "177.78%" : "56.25%", height: 0 }}>
+                            <iframe src={artist.canvaEmbed + "?embed"} style={{ position: "absolute" as const, top: 0, left: 0, width: "100%", height: "100%", border: "none" }} loading="lazy" allowFullScreen />
+                          </div>
+                        </div>
+                      )}
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 600 }}>{artist.collections.length} Collection{artist.collections.length !== 1 ? "s" : ""} →</div>
                     </div>
                   ))}
@@ -1027,7 +990,14 @@ export default function Home() {
             {galleryView === "pieces" && selectedCollection && (
               <>
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 4 }}>{selectedCollection.name}</div>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, marginBottom: 20 }}>by {selectedArtist?.name} · {selectedCollection.description}</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, marginBottom: 12 }}>by {selectedArtist?.name} · {selectedCollection.description}</div>
+                {selectedCollection.canvaEmbed && (
+                  <div style={{ maxWidth: selectedCollection.canvaAspect === "vertical" ? 280 : 500, margin: "0 auto 20px", borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
+                    <div style={{ position: "relative" as const, paddingBottom: selectedCollection.canvaAspect === "vertical" ? "177.78%" : "56.25%", height: 0 }}>
+                      <iframe src={selectedCollection.canvaEmbed + "?embed"} style={{ position: "absolute" as const, top: 0, left: 0, width: "100%", height: "100%", border: "none" }} loading="lazy" allowFullScreen />
+                    </div>
+                  </div>
+                )}
                 <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 12 }}>
                   {selectedCollection.pieces.map((piece: any, idx: number) => (
                     <div key={idx} onClick={() => setSelectedPiece(piece)}
@@ -1040,7 +1010,7 @@ export default function Home() {
                           onError={(e: any) => { e.target.style.display = "none"; }} />
                       ) : (
                         <div style={{ width: "100%", height: mobile ? 120 : 160, background: C.panel, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>OKey Only</span>
+                          <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>Origin Keys Only</span>
                         </div>
                       )}
                       <div style={{ padding: 8 }}>
@@ -1083,7 +1053,7 @@ export default function Home() {
                     )}
                     {selectedPiece.oktAmount && (
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim }}>
-                        {Number(selectedPiece.oktAmount).toLocaleString()} OKey sealed
+                        {Number(selectedPiece.oktAmount).toLocaleString()} Origin Keys sealed
                       </div>
                     )}
                     {selectedPiece.vault && (
@@ -1146,13 +1116,63 @@ export default function Home() {
             <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, fontWeight: 700, color: C.textDim, marginBottom: 2 }}>
               Deterministic Automatic Operation (DAO) Contract
             </div>
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 10 : 11, color: C.textMuted, fontStyle: "italic", marginBottom: 6 }}>
-              A self-governing protocol where every acquisition, disposition, and proceed is executed by simple and immutable mathematics. Math, not votes.
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, color: C.textMuted, fontStyle: "italic", lineHeight: 1.6, marginBottom: 6 }}>
+              A self-governing protocol where every acquisition, disposition, and proceed is executed by simple and unquestionable mathematics. The basic tokenomics of the Origin Key Token is about accurate measurements of interest from a community of collectors, guardians and creators.
             </div>
             {connected && account && (
               <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>Your Wallet Address: {mobile ? fmtAddr(accountStr) : accountStr}</div>
             )}
           </div>
+
+          {/* CONNECT + PORTFOLIO CARDS — inside swap tab, 35% smaller */}
+          {connected ? (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 1, background: C.border, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
+                <div style={{ background: C.card, padding: "8px 10px" }}>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>cbBTC Balance</div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, color: C.text }}>{fmtSats(cbbtcBal)}</div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted }}>{fmtCbbtc(cbbtcBal)}</div>
+                  {cbbtcUsd && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.green, fontWeight: 600 }}>{cbbtcUsd}</div>}
+                </div>
+                <div style={{ background: C.card, padding: "8px 10px" }}>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>Keys Held</div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, color: C.text }}>{fmtOK(oktBal)}</div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted }}>{fmtSats(oktBal)}</div>
+                  {oktUsd && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.green, fontWeight: 600 }}>{oktUsd}</div>}
+                </div>
+                <div style={{ background: C.card, padding: "8px 10px", borderTop: `2px solid ${C.blue}` }}>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: "0.1em", color: C.blue, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>Proceeds</div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, color: C.blue }}>{fmtSats(divs)}</div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted }}>{fmtCbbtc(divs)}</div>
+                  {divsUsd && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.green, fontWeight: 600 }}>{divsUsd}</div>}
+                </div>
+                <div style={{ background: C.card, padding: "8px 10px" }}>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>Total Key Supply</div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, color: C.text }}>{fmtOK(supply)}</div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted }}>{fmtSats(supply)}</div>
+                </div>
+              </div>
+
+              {/* PROCEEDS BANNER */}
+              {divsNum > 0 && (
+                <div style={{ background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: mobile ? "10px 12px" : "10px 16px", marginTop: 12, display: "flex", flexDirection: mobile ? "column" : "row" as const, alignItems: mobile ? "stretch" : "center", justifyContent: "space-between", gap: 8 }}>
+                  <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                    <CbbtcLogo size={14} />{fmtSats(divs)} cbBTC proceeds available
+                  </span>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button onClick={withdraw} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>Claim Satoshis</button>
+                    <button onClick={reinvest} style={{ background: "transparent", color: C.blue, border: `1px solid ${C.blue}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>Repurchase</button>
+                  </div>
+                  <div><Status state={wdS} msg={wdM} theme={C} /><Status state={rvS} msg={rvM} theme={C} /></div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ textAlign: "center" as const, padding: "20px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, fontWeight: 600 }}>Connect your wallet to see your balances</div>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginTop: 4 }}>Use MetaMask or Coinbase Wallet on Base Sepolia</div>
+            </div>
+          )}
 
           {/* SWAP MODE TOGGLE */}
           <div style={{ display: "flex", gap: 0, marginBottom: 20, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
@@ -1265,7 +1285,7 @@ export default function Home() {
                   Send Origin Keys to any wallet with no fee. Dividend yield moves proportionally with the tokens.
                 </p>
                 <Input theme={C} label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
-                <Input theme={C} label="OKey amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OKey" hint={`Your balance: ${oktNum.toLocaleString()} OKey`} />
+                <Input theme={C} label="Origin Keys amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OK" hint={`Your balance: ${oktNum.toLocaleString()} OKey`} />
                 <BigBtn onClick={transfer} theme={C} disabled={!connected}>Transfer — Free</BigBtn>
                 <Status state={txS} msg={txM} theme={C} />
               </Panel>
