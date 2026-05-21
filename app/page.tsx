@@ -292,7 +292,7 @@ function BigBtn({ onClick, children, variant = "blue", disabled = false, theme }
 function Panel({ title, children, theme }: { title: string; children: React.ReactNode; theme?: typeof LIGHT }) {
   const T = theme || LIGHT;
   return (
-    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: "24px", marginBottom: 16, boxShadow: T.shadow }}>
+    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 10, padding: "16px", marginBottom: 12, boxShadow: T.shadow }}>
       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: T.blue, marginBottom: 20, fontWeight: 700 }}>{title}</div>
       {children}
     </div>
@@ -692,7 +692,7 @@ export default function Home() {
     <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif", touchAction: "pan-y", WebkitOverflowScrolling: "touch" as any, overscrollBehavior: "none" }}>
 
       {/* HEADER */}
-      <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: mobile ? "0 12px" : "0 24px", height: mobile ? 64 : 72, display: "flex", alignItems: "center", justifyContent: "center", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
+      <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: mobile ? "0 12px" : "0 24px", height: mobile ? 100 : 110, display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
         {/* LEFT — BTC price (desktop only) */}
         <div style={{ position: "absolute" as const, left: mobile ? 12 : 24, display: "flex", alignItems: "center", gap: 8 }}>
           <CbbtcLogo size={mobile ? 20 : 24} />
@@ -718,9 +718,18 @@ export default function Home() {
             {!mobile && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, fontWeight: 600 }}>{darkMode ? "Light" : "Dark"}</span>}
           </button>
         </div>
+
+        {/* TABS — fixed in header */}
+        <div style={{ display: "flex", justifyContent: "center", width: "100%", borderTop: `1px solid ${C.border}`, overflowX: "auto" as const, WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const }}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "8px 12px" : "10px 22px", fontFamily: "Georgia, serif", fontSize: mobile ? 10 : 12, letterSpacing: "0.08em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `2px solid ${C.blue}` : "2px solid transparent", cursor: "pointer", fontWeight: tab === t.id ? 700 : 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
+              {mobile ? t.short : t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div style={{ height: mobile ? 64 : 72 }} />
+      <div style={{ height: mobile ? 100 : 110 }} />
 
 
 
@@ -730,23 +739,14 @@ export default function Home() {
 
       <div style={{ maxWidth: 880, margin: "0 auto", padding: mobile ? "20px 12px" : "32px 24px" }}>
 
-        {/* TABS */}
-        <div style={{ display: "flex", justifyContent: "center", borderBottom: `2px solid ${C.border}`, marginBottom: 24, overflowX: "auto" as const, WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const }}>
-          {tabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "12px 14px" : "14px 26px", fontFamily: "Georgia, serif", fontSize: mobile ? 11 : 13, letterSpacing: "0.08em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `3px solid ${C.blue}` : "3px solid transparent", marginBottom: "-2px", cursor: "pointer", fontWeight: tab === t.id ? 700 : 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
-              {mobile ? t.short : t.label}
-            </button>
-          ))}
-        </div>
+
 
         {/* HOME */}
         {tab === "home" && (
           <div>
             {/* HERO */}
             <div style={{ textAlign: "center" as const, padding: mobile ? "48px 0 40px" : "64px 0 56px" }}>
-              <div style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 13 : 14, color: C.blue, letterSpacing: "0.2em", textTransform: "uppercase" as const, marginBottom: 20, fontWeight: 400 }}>
-                Immutable Editions
-              </div>
+
               <h1 style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 36 : 56, fontWeight: 400, color: C.text, lineHeight: 1.1, margin: "0 0 24px", letterSpacing: "-0.02em" }}>
                 Where Provenance<br/>and Interest meet<br/>
                 <span style={{ color: C.blue, fontStyle: "italic" }}>Market Integrity.</span>
@@ -754,14 +754,7 @@ export default function Home() {
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 18, color: C.textMuted, lineHeight: 1.7, maxWidth: 600, margin: "0 auto 40px", fontWeight: 300 }}>
                 The collectible space has always struggled with authenticity and fair value. We built the infrastructure to fix both — permanently, on chain, with no one in control.
               </p>
-              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
-                <button onClick={() => setTab("swap")} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
-                  Acquire Origin Keys
-                </button>
-                <button onClick={() => setTab("vault")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
-                  Verify a Piece
-                </button>
-              </div>
+
             </div>
 
             {/* CANVA VIDEO */}
@@ -1105,11 +1098,11 @@ export default function Home() {
               <SkeletonKey size={36} dark={darkMode} />
               <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Origin Key Exchange</span>
             </div>
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, fontWeight: 700, color: C.textDim, marginBottom: 2 }}>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 2 }}>
               Deterministic Automatic Operation (DAO) Contract
             </div>
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, color: C.textMuted, fontStyle: "italic", lineHeight: 1.6, marginBottom: 6 }}>
-              This protocol operates on a strict unquestionable math. The Origin Key Token's 7% fee strictly rewards active participants. Every transaction is calculated and distributed proportionately to the number of Keys in a wallet. Absolutely no brokers or influencers benefit. Only collectors and creators.
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, color: C.textMuted, lineHeight: 1.6, marginBottom: 6 }}>
+              This protocol operates on a strict unquestionable math. The Origin Key Token's 7% fee strictly rewards active participants. Every transaction is calculated and distributed proportionately to the number of Origin Keys in a wallet. Absolutely no brokers or influencers benefit. Only collectors and creators.
             </div>
             {connected && account && (
               <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>Your Wallet Address: {mobile ? fmtAddr(accountStr) : accountStr}</div>
@@ -1126,6 +1119,21 @@ export default function Home() {
                   accountStatus="address"
                 />
               </div>
+
+              {/* PROCEEDS BANNER — above balance boxes */}
+              {divsNum > 0 && (
+                <div style={{ background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: mobile ? "10px 12px" : "10px 16px", marginBottom: 8, display: "flex", flexDirection: mobile ? "column" : "row" as const, alignItems: mobile ? "stretch" : "center", justifyContent: "space-between", gap: 8 }}>
+                  <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                    <CbbtcLogo size={14} />{fmtSats(divs)} cbBTC proceeds available
+                  </span>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button onClick={withdraw} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>Claim Satoshis</button>
+                    <button onClick={reinvest} style={{ background: "transparent", color: C.blue, border: `1px solid ${C.blue}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>Repurchase</button>
+                  </div>
+                  <div><Status state={wdS} msg={wdM} theme={C} /><Status state={rvS} msg={rvM} theme={C} /></div>
+                </div>
+              )}
+
               <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 1, background: C.border, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
                 <div style={{ background: C.card, padding: "8px 10px" }}>
                   <div style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>cbBTC Balance</div>
@@ -1152,19 +1160,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* PROCEEDS BANNER */}
-              {divsNum > 0 && (
-                <div style={{ background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: mobile ? "10px 12px" : "10px 16px", marginTop: 12, display: "flex", flexDirection: mobile ? "column" : "row" as const, alignItems: mobile ? "stretch" : "center", justifyContent: "space-between", gap: 8 }}>
-                  <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
-                    <CbbtcLogo size={14} />{fmtSats(divs)} cbBTC proceeds available
-                  </span>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <button onClick={withdraw} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>Claim Satoshis</button>
-                    <button onClick={reinvest} style={{ background: "transparent", color: C.blue, border: `1px solid ${C.blue}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>Repurchase</button>
-                  </div>
-                  <div><Status state={wdS} msg={wdM} theme={C} /><Status state={rvS} msg={rvM} theme={C} /></div>
-                </div>
-              )}
+
             </div>
           ) : (
             <div style={{ textAlign: "center" as const, padding: "20px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
@@ -1179,10 +1175,10 @@ export default function Home() {
           )}
 
           {/* SWAP MODE TOGGLE */}
-          <div style={{ display: "flex", gap: 0, marginBottom: 20, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
-            <button onClick={() => setSwapMode("buy")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "buy" ? C.blue : C.panel, color: swapMode === "buy" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>▲ ACQUIRE</button>
-            <button onClick={() => setSwapMode("sell")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "sell" ? C.blue : C.panel, color: swapMode === "sell" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>▼ DISPOSE</button>
-            <button onClick={() => setSwapMode("transfer")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "transfer" ? C.blue : C.panel, color: swapMode === "transfer" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>→ TRANSFER</button>
+          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+            <button onClick={() => setSwapMode("buy")} style={{ flex: 1, padding: "12px 8px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "buy" ? C.blue : "transparent", color: swapMode === "buy" ? "#FFFFFF" : C.textMuted, border: swapMode === "buy" ? "none" : `2px solid ${C.border}`, letterSpacing: "0.05em", boxShadow: swapMode === "buy" ? C.shadow : "none" }}>▲ ACQUIRE</button>
+            <button onClick={() => setSwapMode("sell")} style={{ flex: 1, padding: "12px 8px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "sell" ? C.blue : "transparent", color: swapMode === "sell" ? "#FFFFFF" : C.textMuted, border: swapMode === "sell" ? "none" : `2px solid ${C.border}`, letterSpacing: "0.05em", boxShadow: swapMode === "sell" ? C.shadow : "none" }}>▼ DISPOSE</button>
+            <button onClick={() => setSwapMode("transfer")} style={{ flex: 1, padding: "12px 8px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "transfer" ? C.blue : "transparent", color: swapMode === "transfer" ? "#FFFFFF" : C.textMuted, border: swapMode === "transfer" ? "none" : `2px solid ${C.border}`, letterSpacing: "0.05em", boxShadow: swapMode === "transfer" ? C.shadow : "none" }}>→ TRANSFER</button>
           </div>
 
           <div>
