@@ -1,4 +1,6 @@
 "use client";
+// @ts-ignore
+import Head from "next/head";
 
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
@@ -11,7 +13,7 @@ const OKT_ABI = [
   "function dividendsOf(address) view returns (uint256)",
   "function totalSupply() view returns (uint256)",
   "function buy(uint256 cbbtcAmount, uint256 minTokens) external",
-  "function reinvest() external",
+  "function repurchase() external",
   "function sell(uint256 tokens, uint256 minCbbtc) external",
   "function transfer(address to, uint256 tokens) external returns (bool)",
   "function withdraw() external",
@@ -112,7 +114,16 @@ const useIsMobile = () => {
     const check = () => setMobile(window.innerWidth < 768);
     check();
     window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    // Inject Oswald font
+  if (typeof document !== "undefined" && !document.getElementById("oswald-font")) {
+    const link = document.createElement("link");
+    link.id = "oswald-font";
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap";
+    document.head.appendChild(link);
+  }
+
+  return () => window.removeEventListener("resize", check);
   }, []);
   return mobile;
 };
@@ -210,7 +221,7 @@ function FeeBadge({ mobile, theme }: { mobile: boolean; theme?: typeof LIGHT }) 
     <div style={{ display: "flex", alignItems: "center", gap: 10, background: T.blueBg, border: `1px solid ${T.blue}`, borderRadius: 8, padding: mobile ? "10px 14px" : "12px 18px", marginBottom: 24 }}>
       <span style={{ fontFamily: "Arial, sans-serif", fontSize: 18, color: T.blue }}>◈</span>
       <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, color: T.blue, fontWeight: 600 }}>
-        7% fee on every buy and sell — distributed instantly to all Origin Key holders as cbBTC dividends
+        7% fee on every buy and sell — distributed instantly to all Origin Key holders as cbBTC proceeds
       </span>
     </div>
   );
@@ -293,7 +304,7 @@ const VIDEOS = [
   { title: "What is Analog Bitcoin",                        desc: "The concept behind physical Bitcoin — destroy to redeem.",                           url: "https://youtube.com", tag: "CONCEPT",    tc: "#0052FF" },
   { title: "How to get cbBTC on Base",                      desc: "Step by step — buying Coinbase Wrapped Bitcoin and getting it into your wallet.",    url: "https://youtube.com", tag: "BEGINNERS",  tc: "#0052FF" },
   { title: "How to buy Origin Keys",                  desc: "Buying OKT using the exchange on Base.",                                             url: "https://youtube.com", tag: "TRADING",    tc: "#0052FF" },
-  { title: "How cbBTC dividends work",                      desc: "How fees are distributed to all OKT holders and how to withdraw.",                   url: "https://youtube.com", tag: "DIVIDENDS",  tc: "#0052FF" },
+  { title: "How cbBTC proceeds work",                      desc: "How fees are distributed to all OKT holders and how to withdraw.",                   url: "https://youtube.com", tag: "DIVIDENDS",  tc: "#0052FF" },
   { title: "How to verify a vault — NFC tap guide",         desc: "Tap an Analog Bitcoin NFC tag and verify vault status on chain.",                    url: "https://youtube.com", tag: "COLLECTORS", tc: "#00A878" },
   { title: "What is an Ordinal inscription",                desc: "Understanding Bitcoin Ordinals and how they connect to physical art.",                url: "https://youtube.com", tag: "ORDINALS",   tc: "#5B6278" },
   { title: "How to redeem an Analog Bitcoin art piece",     desc: "What happens when you destroy the art and sweep the tokens.",                        url: "https://youtube.com", tag: "REDEMPTION", tc: "#DA3A3A" },
@@ -464,7 +475,7 @@ export default function Home() {
       await tx.wait();
       await new Promise(resolve => setTimeout(resolve, 1500));
       setIsApproved(true);
-      setAppS("success"); setAppM("cbBTC approved ✓ — now tap Buy OKT");
+      setAppS("success"); setAppM("cbBTC approved ✓ — now tap Acquire Origin Keys");
     } catch (e: any) { setAppS("failed"); setAppM(e.reason || e.message || "Approval failed"); }
   }
 
@@ -531,7 +542,7 @@ export default function Home() {
     setWdS("pending"); setWdM("Awaiting wallet...");
     try {
       await (await okt.withdraw()).wait();
-      setWdS("success"); setWdM("cbBTC dividends sent to your wallet");
+      setWdS("success"); setWdM("cbBTC proceeds sent to your wallet");
       if (account) await load(account);
     } catch (e: any) { setWdS("failed"); setWdM(e.reason || e.message || "Failed"); }
   }
@@ -543,17 +554,17 @@ export default function Home() {
     setRvS("pending"); setRvM("Awaiting wallet...");
     try {
       await (await okt.reinvest()).wait();
-      setRvS("success"); setRvM("Dividends reinvested — new OKT tokens received");
+      setRvS("success"); setRvM("Dividends repurchaseed — new OKT tokens received");
       if (account) await load(account);
     } catch (e: any) {
       setRvS("failed");
       const msg = e.reason || e.message || "";
       if (msg.includes("Minimum 100 sats") || msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
-        setRvM("You need at least 100 sats in dividends to reinvest. Keep earning.");
+        setRvM("You need at least 100 sats in proceeds to repurchase. Keep earning.");
       } else if (msg.includes("user rejected") || msg.includes("User denied")) {
         setRvM("Transaction cancelled.");
       } else {
-        setRvM("Reinvest failed — try again.");
+        setRvM("Repurchase failed — try again.");
       }
     }
   }
@@ -697,12 +708,10 @@ export default function Home() {
           )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, borderRight: `1px solid ${C.border}`, paddingRight: 12 }}>
-            <SkeletonKey size={mobile ? 20 : 26} dark={darkMode} />
-            <div style={{ textAlign: "center" as const }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.06em", lineHeight: 1, textTransform: "uppercase" as const, whiteSpace: "nowrap" as const }}>Immutable Editions</div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 18, fontWeight: 700, color: C.blue, lineHeight: 1.2, whiteSpace: "nowrap" as const }}>Origin Key Exchange</div>
-            </div>
+          <div style={{ display: "flex", alignItems: "center", paddingRight: 12 }}>
+            <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: mobile ? 22 : 32, fontWeight: 600, color: C.text, letterSpacing: "0.02em", lineHeight: 1, whiteSpace: "nowrap" as const }}>
+              IMMUTABLE EDITIONS
+            </span>
           </div>
 
           <button
@@ -712,11 +721,13 @@ export default function Home() {
             {darkMode ? <SunIcon /> : <MoonIcon />}
             {!mobile && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, fontWeight: 600 }}>{darkMode ? "Light" : "Dark"}</span>}
           </button>
-          <ConnectButton
-            showBalance={false}
-            chainStatus="none"
-            accountStatus="address"
-          />
+          {tab === "swap" && (
+            <ConnectButton
+              showBalance={false}
+              chainStatus="none"
+              accountStatus="address"
+            />
+          )}
         </div>
       </div>
 
@@ -724,8 +735,8 @@ export default function Home() {
 
 
 
-      {/* PORTFOLIO CARDS */}
-      {connected ? (
+      {/* PORTFOLIO CARDS — SWAP TAB ONLY */}
+      {tab === "swap" && connected ? (
         <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: "1px" }}>
           <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 1, background: C.border }}>
             {/* cbBTC — sats primary */}
@@ -733,25 +744,25 @@ export default function Home() {
             {/* OKT — OKT on top, sats underneath */}
             <Card label="Keys Held" value={fmtOKey(oktBal)} sub={fmtSats(oktBal)} sub2={oktUsd} theme={C} />
             {/* Dividends — sats primary */}
-            <Card label="Dividends" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent theme={C} />
+            <Card label="Proceeds" value={fmtSats(divs)} sub={fmtCbbtc(divs)} sub2={divsUsd} accent theme={C} />
             {/* Total Supply */}
             <Card label="Total Key Supply" value={fmtOKey(supply)} sub={fmtSats(supply)} theme={C} />
           </div>
         </div>
-      ) : (
+      ) : tab === "swap" ? (
         <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: "32px", textAlign: "center" as const }}>
           <div style={{ marginBottom: 12 }}><SkeletonKey size={40} dark={darkMode} /></div>
           <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: C.textMuted, fontWeight: 600 }}>Connect your wallet to see your balances</div>
           <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 6 }}>Use MetaMask or Coinbase Wallet on Base Sepolia</div>
         </div>
-      )}
+      ) : null}
 
-      {/* DIVIDENDS BANNER */}
-      {connected && divsNum > 0 && (
+      {/* PROCEEDS BANNER — SWAP TAB ONLY */}
+      {tab === "swap" && connected && divsNum > 0 && (
         <div style={{ background: C.blueBg, borderBottom: `1px solid ${C.blue}`, padding: mobile ? "14px 16px" : "14px 40px", display: "flex", flexDirection: mobile ? "column" : "row" as const, alignItems: mobile ? "stretch" : "center", justifyContent: "space-between", gap: 12 }}>
           <div>
             <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 16, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
-              <CbbtcLogo size={18} />{fmtSats(divs)} cbBTC dividends available
+              <CbbtcLogo size={18} />{fmtSats(divs)} cbBTC proceeds available
             </span>
             {divsUsd && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginLeft: 10 }}>{divsUsd}</span>}
           </div>
@@ -761,7 +772,7 @@ export default function Home() {
                 Withdraw
               </button>
               <button onClick={reinvest} style={{ background: "transparent", color: C.blue, border: `1.5px solid ${C.blue}`, borderRadius: 8, padding: "11px 22px", fontFamily: "Arial, sans-serif", fontSize: 14, cursor: "pointer", textTransform: "uppercase" as const, fontWeight: 700, letterSpacing: "0.05em", WebkitTapHighlightColor: "transparent" }}>
-                Reinvest
+                Repurchase
               </button>
             </div>
             <Status state={wdS} msg={wdM} theme={C} />
@@ -770,21 +781,7 @@ export default function Home() {
         </div>
       )}
 
-      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, padding: mobile ? "10px 16px" : "10px 40px" }}>
-        <div style={{ textAlign: "center" as const, marginBottom: connected && account ? 6 : 0 }}>
-          <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 15, fontWeight: 700, color: C.textDim, marginBottom: 2 }}>
-            Deterministic Automatic Operation (DAO) Contract
-          </div>
-          <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 10 : 11, color: C.textMuted, fontStyle: "italic" }}>
-            A self-governing protocol where every buy, sell, and dividend is executed by simple and immutable mathematics. Math, not votes.
-          </div>
-        </div>
-        {connected && account && (
-          <div style={{ textAlign: "center" as const, marginTop: 4 }}>
-            <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>Your Wallet Address: {mobile ? fmtAddr(accountStr) : accountStr}</span>
-          </div>
-        )}
-      </div>
+
 
       <div style={{ maxWidth: 880, margin: "0 auto", padding: mobile ? "20px 12px" : "32px 24px" }}>
 
@@ -814,7 +811,7 @@ export default function Home() {
               </p>
               <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
                 <button onClick={() => setTab("swap")} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
-                  Buy OKT
+                  Acquire Origin Keys
                 </button>
                 <button onClick={() => setTab("vault")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
                   Verify a Piece
@@ -822,8 +819,21 @@ export default function Home() {
               </div>
             </div>
 
+            {/* CANVA VIDEO */}
+            <div style={{ margin: "48px auto 0", maxWidth: 680, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.border}` }}>
+              <div style={{ position: "relative" as const, paddingBottom: "56.25%", height: 0 }}>
+                <iframe
+                  src="https://www.canva.com/design/DAHKUQElnjQ/KEZ-IoKy9KaXVkTgCgBh0g/watch?embed"
+                  style={{ position: "absolute" as const, top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+                  loading="lazy"
+                  allowFullScreen
+                  title="Immutable Editions"
+                />
+              </div>
+            </div>
+
             {/* DIVIDER */}
-            <div style={{ height: 1, background: C.border, margin: "0 0 56px" }} />
+            <div style={{ height: 1, background: C.border, margin: "56px 0 56px" }} />
 
             {/* THE PROBLEM */}
             <div style={{ textAlign: "center" as const, marginBottom: 56 }}>
@@ -847,7 +857,7 @@ export default function Home() {
                   label: "Interest",
                   title: "Origin Key",
                   desc: "Every physical creation is embedded with Origin Keys at birth. Held tokens earn cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.",
-                  site: "Buy OKT",
+                  site: "Acquire Origin Keys",
                   url: null,
                   tab: "trade",
                 },
@@ -905,7 +915,7 @@ export default function Home() {
                     <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>{s.title}</div>
                     <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, lineHeight: 1.6, fontWeight: 300 }}>
                       {i === 3 ? (
-                        <>Every published work and trade pays <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC dividends to all Immutable Editions collectable holders and Origin Key holders.</>
+                        <>Every published work and trade pays <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC proceeds to all Immutable Editions collectable holders and Origin Key holders.</>
                       ) : s.desc}
                     </div>
                   </div>
@@ -1127,10 +1137,27 @@ export default function Home() {
 
         {tab === "swap" && (
           <>
+          {/* SWAP HEADER — Origin Key Exchange + DAO */}
+          <div style={{ textAlign: "center" as const, marginBottom: 24, padding: "8px 0" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
+              <SkeletonKey size={36} dark={darkMode} />
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: mobile ? 22 : 28, fontWeight: 600, color: C.blue, letterSpacing: "0.02em" }}>ORIGIN KEY EXCHANGE</span>
+            </div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, fontWeight: 700, color: C.textDim, marginBottom: 2 }}>
+              Deterministic Automatic Operation (DAO) Contract
+            </div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 10 : 11, color: C.textMuted, fontStyle: "italic", marginBottom: 6 }}>
+              A self-governing protocol where every acquisition, disposition, and proceed is executed by simple and immutable mathematics. Math, not votes.
+            </div>
+            {connected && account && (
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>Your Wallet Address: {mobile ? fmtAddr(accountStr) : accountStr}</div>
+            )}
+          </div>
+
           {/* SWAP MODE TOGGLE */}
           <div style={{ display: "flex", gap: 0, marginBottom: 20, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
             <button onClick={() => setSwapMode("buy")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "buy" ? C.blue : C.panel, color: swapMode === "buy" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>▲ ACQUIRE</button>
-            <button onClick={() => setSwapMode("sell")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "sell" ? C.blue : C.panel, color: swapMode === "sell" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>▼ SELL</button>
+            <button onClick={() => setSwapMode("sell")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "sell" ? C.blue : C.panel, color: swapMode === "sell" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>▼ DISPOSE</button>
             <button onClick={() => setSwapMode("transfer")} style={{ flex: 1, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", background: swapMode === "transfer" ? C.blue : C.panel, color: swapMode === "transfer" ? "#FFFFFF" : C.textMuted, letterSpacing: "0.05em" }}>→ TRANSFER</button>
           </div>
 
@@ -1183,7 +1210,7 @@ export default function Home() {
             )}
 
             {swapMode === "sell" && (
-              <Panel title="Sell Origin Keys — Proceeds Available to Withdraw" theme={C}>
+              <Panel title="Dispose Origin Keys" theme={C}>
                 <FeeBadge mobile={mobile} theme={C} />
                 <Input theme={C} label="OKT amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
                 {sPrev && (
@@ -1202,7 +1229,7 @@ export default function Home() {
                   } else {
                     sell();
                   }
-                }} variant="outline" disabled={!connected}>Sell Origin Keys for cbBTC</BigBtn>
+                }} variant="outline" disabled={!connected}>Dispose Origin Keys for cbBTC</BigBtn>
 
                 {/* SELL WARNING POPUP */}
                 {showSellWarning && (
@@ -1212,7 +1239,7 @@ export default function Home() {
                         ⚠️ Wait — You Have Unclaimed Dividends
                       </div>
                       <p style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
-                        You have <strong style={{ color: C.blue }}>{fmtSats(divs.toString())} cbBTC</strong> in unclaimed dividends. We recommend withdrawing them before selling your tokens to ensure you receive every satoshi.
+                        You have <strong style={{ color: C.blue }}>{fmtSats(divs.toString())} cbBTC</strong> in unclaimed proceeds. We recommend claiming them before selling your tokens to ensure you receive every satoshi.
                       </p>
                       <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 24 }}>
                         <strong>Why this matters:</strong> Your share of yield is tied directly to your token balance. If you sell first, your earning power drops to zero. Withdraw first and you collect your cbBTC while still holding OKT — continuing to earn on every transaction until the moment you sell.
@@ -1295,10 +1322,54 @@ export default function Home() {
                 {/* Step 1 — Fill in gallery info */}
                 <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, color: C.textDim, marginBottom: 8 }}>Step 1 — Fill in gallery info</div>
-                  <Input theme={C} label="Artist name" value={galArtist} onChange={setGalArtist} placeholder="Michael Slattery" />
-                  <Input theme={C} label="Artist bio (only needed for new artists)" value={galBio} onChange={setGalBio} placeholder="Creator of Analog Bitcoin" />
-                  <Input theme={C} label="Collection name" value={galCollection} onChange={setGalCollection} placeholder="Curry Cards" />
-                  <Input theme={C} label="Collection description (only needed for new collections)" value={galColDesc} onChange={setGalColDesc} placeholder="160 collectible fine art trading cards" />
+                  {/* Artist selector */}
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, marginBottom: 8, fontWeight: 600 }}>Artist</div>
+                    <select value={galArtist} onChange={e => {
+                      const val = e.target.value;
+                      if (val === "__new__") { setGalArtist(""); setGalBio(""); setGalCollection(""); setGalColDesc(""); }
+                      else {
+                        setGalArtist(val);
+                        const artist = galleryData?.artists.find((a: any) => a.name === val);
+                        if (artist) setGalBio(artist.bio || "");
+                      }
+                    }} style={{ width: "100%", background: C.input, border: `2px solid ${C.text}`, borderRadius: 8, color: C.text, fontFamily: "Arial, sans-serif", fontSize: 15, padding: "12px 16px", marginBottom: 8 }}>
+                      <option value="">Select artist...</option>
+                      {galleryData?.artists.map((a: any) => <option key={a.id} value={a.name}>{a.name}</option>)}
+                      <option value="__new__">+ New Artist</option>
+                    </select>
+                    {(galArtist === "" || !galleryData?.artists.find((a: any) => a.name === galArtist)) && (
+                      <>
+                        <Input theme={C} label="New artist name" value={galArtist} onChange={setGalArtist} placeholder="Michael Slattery" />
+                        <Input theme={C} label="Artist bio" value={galBio} onChange={setGalBio} placeholder="Creator of Analog Bitcoin" />
+                      </>
+                    )}
+                  </div>
+
+                  {/* Collection selector */}
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, marginBottom: 8, fontWeight: 600 }}>Collection</div>
+                    <select value={galCollection} onChange={e => {
+                      const val = e.target.value;
+                      if (val === "__new__") { setGalCollection(""); setGalColDesc(""); }
+                      else {
+                        setGalCollection(val);
+                        const artist = galleryData?.artists.find((a: any) => a.name === galArtist);
+                        const col = artist?.collections.find((c: any) => c.name === val);
+                        if (col) setGalColDesc(col.description || "");
+                      }
+                    }} style={{ width: "100%", background: C.input, border: `2px solid ${C.text}`, borderRadius: 8, color: C.text, fontFamily: "Arial, sans-serif", fontSize: 15, padding: "12px 16px", marginBottom: 8 }}>
+                      <option value="">Select collection...</option>
+                      {galleryData?.artists.find((a: any) => a.name === galArtist)?.collections.map((c: any) => <option key={c.id} value={c.name}>{c.name}</option>)}
+                      <option value="__new__">+ New Collection</option>
+                    </select>
+                    {(galCollection === "" || !galleryData?.artists.find((a: any) => a.name === galArtist)?.collections.find((c: any) => c.name === galCollection)) && (
+                      <>
+                        <Input theme={C} label="New collection name" value={galCollection} onChange={setGalCollection} placeholder="Curry Cards" />
+                        <Input theme={C} label="Collection description" value={galColDesc} onChange={setGalColDesc} placeholder="160 collectible fine art trading cards" />
+                      </>
+                    )}
+                  </div>
                   <Input theme={C} label="Piece name" value={galPieceName} onChange={setGalPieceName} placeholder="Card #1" />
                   <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
                     <button onClick={() => setGalType("original")} style={{ flex: 1, padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 12, fontWeight: 700, border: "none", borderRadius: 6, cursor: "pointer", background: galType === "original" ? C.blue : C.card, color: galType === "original" ? "#FFFFFF" : C.textMuted }}>Original</button>
