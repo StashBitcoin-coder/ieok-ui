@@ -704,7 +704,7 @@ export default function Home() {
         </div>
 
         {/* CENTER — Immutable Editions */}
-        <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 18 : 26, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
+        <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 20 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
           Immutable Editions
         </span>
 
@@ -1098,6 +1098,9 @@ export default function Home() {
           <>
           {/* SWAP HEADER — Origin Key Exchange + DAO */}
           <div style={{ textAlign: "center" as const, marginBottom: 24, padding: "8px 0" }}>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 11 : 12, color: C.textMuted, marginBottom: 12, lineHeight: 1.5 }}>
+              Origin Key tokens are denominated 1:1 in Satoshis using cbBTC, tokenized Bitcoin issued by Coinbase.
+            </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
               <SkeletonKey size={36} dark={darkMode} />
               <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Origin Key Exchange</span>
@@ -1106,7 +1109,7 @@ export default function Home() {
               Deterministic Automatic Operation (DAO) Contract
             </div>
             <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, color: C.textMuted, fontStyle: "italic", lineHeight: 1.6, marginBottom: 6 }}>
-              A self-governing protocol where every acquisition, disposition, and proceed is executed by simple and unquestionable mathematics. The basic tokenomics of the Origin Key Token is about accurate measurements of interest from a community of collectors, guardians and creators.
+              This protocol operates on a strict unquestionable math. The Origin Key Token's 7% fee strictly rewards active participants. Every transaction is calculated and distributed proportionately to the number of Keys in a wallet. Absolutely no brokers or influencers benefit. Only collectors and creators.
             </div>
             {connected && account && (
               <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>Your Wallet Address: {mobile ? fmtAddr(accountStr) : accountStr}</div>
