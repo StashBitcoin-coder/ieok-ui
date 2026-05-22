@@ -696,9 +696,9 @@ export default function Home() {
         {/* ROW 1 — cbBTC price left, dark mode right */}
         <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: mobile ? "6px 12px" : "6px 24px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <CbbtcLogo size={mobile ? 16 : 18} />
+            <CbbtcLogo size={mobile ? 20 : 22} />
             {btcPrice > 0 && (
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted }}>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted }}>
                 BTC {fmtUsd(btcPrice)}
               </div>
             )}
@@ -714,7 +714,7 @@ export default function Home() {
 
         {/* ROW 2 — IMMUTABLE EDITIONS centered */}
         <div style={{ padding: mobile ? "2px 0 4px" : "2px 0 6px" }}>
-          <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 20 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
+          <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 30, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
             Immutable Editions
           </span>
         </div>
@@ -722,7 +722,7 @@ export default function Home() {
         {/* ROW 3 — Tabs with line that fits under title */}
         <div style={{ display: "inline-flex", justifyContent: "center", borderTop: `1px solid ${C.border}`, overflowX: "auto" as const, WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const }}>
           {tabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "7px 10px" : "8px 18px", fontFamily: "Georgia, serif", fontSize: mobile ? 10 : 12, letterSpacing: "0.08em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `2px solid ${C.blue}` : "2px solid transparent", cursor: "pointer", fontWeight: 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
+            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "7px 10px" : "8px 18px", fontFamily: "Georgia, serif", fontSize: mobile ? 12 : 14, letterSpacing: "0.08em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `2px solid ${C.blue}` : "2px solid transparent", cursor: "pointer", fontWeight: 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
               {mobile ? t.short : t.label}
             </button>
           ))}
@@ -1090,7 +1090,7 @@ export default function Home() {
         {tab === "swap" && (
           <>
           {/* SWAP HEADER — Origin Key Exchange + DAO */}
-          <div style={{ textAlign: "center" as const, marginBottom: 24, padding: "8px 0" }}>
+          <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
             <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 11 : 12, color: C.textMuted, marginBottom: 12, lineHeight: 1.5 }}>
               Origin Key tokens are denominated 1:1 in Satoshis using cbBTC, tokenized Bitcoin issued by Coinbase.
             </div>
@@ -1102,9 +1102,13 @@ export default function Home() {
               Deterministic Automatic Operation (DAO) Contract
             </div>
             <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, color: C.textMuted, lineHeight: 1.6, marginBottom: 6 }}>
-              This protocol operates on a strict unquestionable math. The Origin Key Token's 7% fee strictly rewards active participants. Every transaction is calculated and distributed proportionately to the number of Origin Keys in a wallet. Absolutely no brokers or influencers benefit. Only collectors and creators.
+              This protocol operates on a strict unquestionable math. The Origin Key Token's 7% fee only goes to active participants. Every transaction is calculated and distributed proportionately to the number of Origin Keys in a wallet.
+              <br />Absolutely no brokers or influencers benefit.
+              <br />Only collectors and creators.
             </div>
           </div>
+
+          <div style={{ height: 1, background: C.border, marginBottom: 12 }} />
 
           {/* CONNECT + PORTFOLIO CARDS — inside swap tab, 35% smaller */}
           {connected ? (
