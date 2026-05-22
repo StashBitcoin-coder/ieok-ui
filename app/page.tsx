@@ -13,7 +13,7 @@ const OKT_ABI = [
   "function dividendsOf(address) view returns (uint256)",
   "function totalSupply() view returns (uint256)",
   "function buy(uint256 cbbtcAmount, uint256 minTokens) external",
-  "function repurchase() external",
+  "function reinvest() external",
   "function sell(uint256 tokens, uint256 minCbbtc) external",
   "function transfer(address to, uint256 tokens) external returns (bool)",
   "function withdraw() external",
