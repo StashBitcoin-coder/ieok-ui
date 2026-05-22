@@ -1173,7 +1173,10 @@ export default function Home() {
           ) : (
             <div style={{ textAlign: "center" as const, padding: "20px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
               <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, fontWeight: 600, marginBottom: 12 }}>Connect your wallet to see your balances</div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginBottom: 12 }}>Use MetaMask or Coinbase Wallet on Base Sepolia</div>
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginBottom: 8 }}>Use MetaMask or Coinbase Wallet on Base Sepolia</div>
+              <button onClick={() => setTab("learn")} style={{ background: "none", border: "none", fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 700, cursor: "pointer", marginBottom: 12, textDecoration: "underline" }}>
+                New here? Watch the guides →
+              </button>
               <ConnectButton
                 showBalance={false}
                 chainStatus="none"
