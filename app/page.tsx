@@ -245,11 +245,11 @@ function Input({ label, value, onChange, placeholder, type = "text", hint, tag, 
 }) {
   const T = theme || LIGHT;
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div style={{ marginBottom: 12 }}>
       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: T.textDim, marginBottom: 8, fontWeight: 600 }}>{label}</div>
       <div style={{ position: "relative" as const }}>
         <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-          style={{ width: "100%", background: T.input, border: `2px solid ${T.text}`, borderRadius: 8, color: T.text, fontFamily: "Arial, sans-serif", fontSize: 15, padding: tag ? "10px 70px 10px 12px" : "10px 12px", outline: "none", boxSizing: "border-box" as const, WebkitAppearance: "none" as const }}
+          style={{ width: "100%", background: T.input, border: `2px solid ${T.text}`, borderRadius: 8, color: T.text, fontFamily: "Arial, sans-serif", fontSize: 14, padding: tag ? "8px 65px 8px 10px" : "8px 10px", outline: "none", boxSizing: "border-box" as const, WebkitAppearance: "none" as const }}
           onFocus={e => e.target.style.borderColor = T.blue}
           onBlur={e => e.target.style.borderColor = T.text}
         />
@@ -263,7 +263,7 @@ function Input({ label, value, onChange, placeholder, type = "text", hint, tag, 
 function Preview({ rows, theme }: { rows: { label: string; value: string; blue?: boolean }[]; theme?: typeof LIGHT }) {
   const T = theme || LIGHT;
   return (
-    <div style={{ background: T.blueBg, border: `1px solid ${T.border}`, borderRadius: 8, padding: "14px 18px", marginBottom: 20 }}>
+    <div style={{ background: T.blueBg, border: `1px solid ${T.border}`, borderRadius: 8, padding: "14px 18px", marginBottom: 12 }}>
       {rows.map((r, i) => (
         <div key={i}>
           {i > 0 && i === rows.length - 1 && <div style={{ height: 1, background: T.border, margin: "10px 0" }} />}
@@ -283,7 +283,7 @@ function BigBtn({ onClick, children, variant = "blue", disabled = false, theme }
   const T = theme || LIGHT;
   const v = { blue: { bg: T.blue, color: "#FFFFFF", border: "none" }, outline: { bg: "transparent", color: T.blue, border: `2px solid ${T.blue}` } }[variant];
   return (
-    <button onClick={onClick} disabled={disabled} style={{ width: "100%", background: v.bg, color: v.color, border: v.border, borderRadius: 8, padding: "12px", fontFamily: "Arial, sans-serif", fontSize: 14, letterSpacing: "0.05em", textTransform: "uppercase" as const, cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.4 : 1, marginBottom: 4, fontWeight: 700, WebkitTapHighlightColor: "transparent", boxShadow: disabled ? "none" : T.shadow }}>
+    <button onClick={onClick} disabled={disabled} style={{ width: "100%", background: v.bg, color: v.color, border: v.border, borderRadius: 8, padding: "10px", fontFamily: "Arial, sans-serif", fontSize: 13, letterSpacing: "0.05em", textTransform: "uppercase" as const, cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.4 : 1, marginBottom: 4, fontWeight: 700, WebkitTapHighlightColor: "transparent", boxShadow: disabled ? "none" : T.shadow }}>
       {children}
     </button>
   );
@@ -292,7 +292,7 @@ function BigBtn({ onClick, children, variant = "blue", disabled = false, theme }
 function Panel({ title, children, theme }: { title: string; children: React.ReactNode; theme?: typeof LIGHT }) {
   const T = theme || LIGHT;
   return (
-    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: "12px", marginBottom: 10, boxShadow: T.shadow }}>
+    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 8, padding: "10px", marginBottom: 8, boxShadow: T.shadow }}>
       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: T.blue, marginBottom: 20, fontWeight: 700 }}>{title}</div>
       {children}
     </div>
@@ -692,44 +692,44 @@ export default function Home() {
     <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif", touchAction: "pan-y", WebkitOverflowScrolling: "touch" as any, overscrollBehavior: "none" }}>
 
       {/* HEADER */}
-      <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: mobile ? "0 12px" : "0 24px", height: mobile ? 100 : 110, display: "flex", flexDirection: "column" as const, alignItems: "center", justifyContent: "center", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
-        {/* LEFT — BTC price (desktop only) */}
-        <div style={{ position: "absolute" as const, left: mobile ? 12 : 24, display: "flex", alignItems: "center", gap: 8 }}>
-          <CbbtcLogo size={mobile ? 20 : 24} />
-          {btcPrice > 0 && (
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>
-              BTC {fmtUsd(btcPrice)}
-            </div>
-          )}
-        </div>
-
-        {/* CENTER — Immutable Editions */}
-        <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 20 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
-          Immutable Editions
-        </span>
-
-        {/* RIGHT — Dark mode + Connect */}
-        <div style={{ position: "absolute" as const, right: mobile ? 12 : 24, display: "flex", alignItems: "center", gap: 8 }}>
+      <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: 0, display: "flex", flexDirection: "column" as const, alignItems: "center", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
+        {/* ROW 1 — cbBTC price left, dark mode right */}
+        <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: mobile ? "6px 12px" : "6px 24px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <CbbtcLogo size={mobile ? 16 : 18} />
+            {btcPrice > 0 && (
+              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted }}>
+                BTC {fmtUsd(btcPrice)}
+              </div>
+            )}
+          </div>
           <button
             onClick={() => setDarkMode(!darkMode)}
-            style={{ background: darkMode ? "#2A2D35" : C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: mobile ? "7px 10px" : "9px 12px", cursor: "pointer", color: C.textMuted, display: "flex", alignItems: "center", gap: 4, WebkitTapHighlightColor: "transparent", flexShrink: 0 }}
+            style={{ background: darkMode ? "#2A2D35" : C.panel, border: `1px solid ${C.border}`, borderRadius: 6, padding: "5px 8px", cursor: "pointer", color: C.textMuted, display: "flex", alignItems: "center", gap: 4, WebkitTapHighlightColor: "transparent" }}
           >
             {darkMode ? <SunIcon /> : <MoonIcon />}
-            {!mobile && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, fontWeight: 600 }}>{darkMode ? "Light" : "Dark"}</span>}
+            {!mobile && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 10, fontWeight: 600 }}>{darkMode ? "Light" : "Dark"}</span>}
           </button>
         </div>
 
-        {/* TABS — fixed in header */}
-        <div style={{ display: "flex", justifyContent: "center", width: "auto", borderTop: "none", overflowX: "auto" as const, WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const }}>
+        {/* ROW 2 — IMMUTABLE EDITIONS centered */}
+        <div style={{ padding: mobile ? "2px 0 4px" : "2px 0 6px" }}>
+          <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 20 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
+            Immutable Editions
+          </span>
+        </div>
+
+        {/* ROW 3 — Tabs with line that fits under title */}
+        <div style={{ display: "inline-flex", justifyContent: "center", borderTop: `1px solid ${C.border}`, overflowX: "auto" as const, WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const }}>
           {tabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "8px 12px" : "10px 22px", fontFamily: "Georgia, serif", fontSize: mobile ? 10 : 12, letterSpacing: "0.08em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `2px solid ${C.blue}` : "2px solid transparent", cursor: "pointer", fontWeight: 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
+            <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "7px 10px" : "8px 18px", fontFamily: "Georgia, serif", fontSize: mobile ? 10 : 12, letterSpacing: "0.08em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `2px solid ${C.blue}` : "2px solid transparent", cursor: "pointer", fontWeight: 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
               {mobile ? t.short : t.label}
             </button>
           ))}
         </div>
       </div>
 
-      <div style={{ height: mobile ? 100 : 110 }} />
+      <div style={{ height: mobile ? 100 : 115 }} />
 
 
 
@@ -897,7 +897,7 @@ export default function Home() {
             {/* LEVEL 1 — ARTISTS */}
             {galleryView === "artists" && galleryData && (
               <>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 20 }}>Gallery</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 12 }}>Gallery</div>
                 <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 16 }}>
                   {galleryData.artists.map((artist: any) => (
                     <div key={artist.id} onClick={() => { setSelectedArtist(artist); setGalleryView("collections"); }}
@@ -924,7 +924,7 @@ export default function Home() {
             {galleryView === "collections" && selectedArtist && (
               <>
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 4 }}>{selectedArtist.name}</div>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, marginBottom: 20 }}>{selectedArtist.bio}</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, marginBottom: 12 }}>{selectedArtist.bio}</div>
                 <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 16 }}>
                   {selectedArtist.collections.map((col: any) => {
                     const coverPiece = col.pieces.find((p: any) => p.inscriptionId) || col.pieces[0];
@@ -1104,9 +1104,6 @@ export default function Home() {
             <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, color: C.textMuted, lineHeight: 1.6, marginBottom: 6 }}>
               This protocol operates on a strict unquestionable math. The Origin Key Token's 7% fee strictly rewards active participants. Every transaction is calculated and distributed proportionately to the number of Origin Keys in a wallet. Absolutely no brokers or influencers benefit. Only collectors and creators.
             </div>
-            {connected && account && (
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>Your Wallet Address: {mobile ? fmtAddr(accountStr) : accountStr}</div>
-            )}
           </div>
 
           {/* CONNECT + PORTFOLIO CARDS — inside swap tab, 35% smaller */}
@@ -1161,6 +1158,12 @@ export default function Home() {
               </div>
 
 
+              {/* Wallet address */}
+              {connected && account && (
+                <div style={{ textAlign: "center" as const, marginTop: 8, fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>
+                  Your Wallet Address: {mobile ? fmtAddr(accountStr) : accountStr}
+                </div>
+              )}
             </div>
           ) : (
             <div style={{ textAlign: "center" as const, padding: "20px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
@@ -1175,7 +1178,7 @@ export default function Home() {
           )}
 
           {/* SWAP MODE TOGGLE */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
             <button onClick={() => setSwapMode("buy")} style={{ flex: 1, padding: "12px 8px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "buy" ? C.blue : "transparent", color: swapMode === "buy" ? "#FFFFFF" : C.textMuted, border: swapMode === "buy" ? "none" : `2px solid ${C.border}`, letterSpacing: "0.05em", boxShadow: swapMode === "buy" ? C.shadow : "none" }}>▲ ACQUIRE</button>
             <button onClick={() => setSwapMode("sell")} style={{ flex: 1, padding: "12px 8px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "sell" ? C.blue : "transparent", color: swapMode === "sell" ? "#FFFFFF" : C.textMuted, border: swapMode === "sell" ? "none" : `2px solid ${C.border}`, letterSpacing: "0.05em", boxShadow: swapMode === "sell" ? C.shadow : "none" }}>▼ DISPOSE</button>
             <button onClick={() => setSwapMode("transfer")} style={{ flex: 1, padding: "12px 8px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "transfer" ? C.blue : "transparent", color: swapMode === "transfer" ? "#FFFFFF" : C.textMuted, border: swapMode === "transfer" ? "none" : `2px solid ${C.border}`, letterSpacing: "0.05em", boxShadow: swapMode === "transfer" ? C.shadow : "none" }}>→ TRANSFER</button>
@@ -1188,7 +1191,7 @@ export default function Home() {
                 <FeeBadge mobile={mobile} theme={C} />
 
 
-                <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
+                <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
                   Enter your cbBTC amount in Satoshis. Minimum 100 sats. First time buyers will see their wallet pop up twice. First to approve. Then buy. Future purchases are single tap.
                 </p>
                 <Input theme={C} label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
@@ -1281,7 +1284,7 @@ export default function Home() {
 
             {swapMode === "transfer" && (
               <Panel title="Transfer Origin Keys — Zero Fee" theme={C}>
-                <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
+                <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
                   Send Origin Keys to any wallet with no fee. Dividend yield moves proportionally with the tokens.
                 </p>
                 <Input theme={C} label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
@@ -1301,7 +1304,7 @@ export default function Home() {
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
                 You spend cbBTC — 7% goes to all OKT holders as dividends, and the remaining 93% becomes OKT tokens sealed inside the vault. The Ordinal number is optional — leave blank for series pieces without an Ordinal.
               </p>
-              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "16px", marginBottom: 20 }}>
+              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "16px", marginBottom: 12 }}>
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, marginBottom: 12, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.08em" }}>How It Works</div>
                 {[
                   "Generate a fresh wallet in MetaMask — click Add Account",
@@ -1542,7 +1545,7 @@ export default function Home() {
             </Panel>
 
             <Panel title="Report Ordinal Moved — Bitcoin Alert" theme={C}>
-              <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
+              <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
                 When you see a linked Bitcoin Ordinal has moved on ordinals.com — enter its inscription number to record the alert permanently on Base.
               </p>
               <Input theme={C} label="Ordinal inscription number" value={repOrd} onChange={setRepOrd} placeholder="68743291" type="number" hint="Verify on ordinals.com before reporting — this is permanent and cannot be undone" />
@@ -1557,7 +1560,7 @@ export default function Home() {
           <Panel title="Vault Registry — On-Chain Seal — Scan NFC or Paste Wallet Address" theme={C}>
 
             {/* INPUT AND BUTTON — always visible at top */}
-            <div style={{ marginBottom: 20 }}>
+            <div style={{ marginBottom: 12 }}>
               <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, marginBottom: 8, fontWeight: 600 }}>Vault Wallet Address</div>
               <div style={{ position: "relative" as const }}>
                 <input
@@ -1601,7 +1604,7 @@ export default function Home() {
 
                 {/* ORDINAL BOX — thumbnail, minted address, verify link, marketplace links */}
                 {vResult.registered && (
-                  <div style={{ textAlign: "center" as const, marginBottom: 20 }}>
+                  <div style={{ textAlign: "center" as const, marginBottom: 12 }}>
                     {vResult.hasOrdinal && Number(vResult.ordinalNumber) > 0 ? (
                       <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? 16 : 24, display: "inline-block" }}>
 
@@ -1735,7 +1738,7 @@ export default function Home() {
         {/* LEARN */}
         {tab === "learn" && (
           <Panel title="Learn — Video Guides" theme={C}>
-            <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
+            <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
               Everything you need to understand Origin Key, Analog Bitcoin, and how to participate.
             </p>
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
