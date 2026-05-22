@@ -341,7 +341,8 @@ export default function Home() {
 
   useEffect(() => {
     localStorage.setItem("okt-theme", darkMode ? "dark" : "light");
-    document.body.style.background = darkMode ? "#0A0B0D" : "#FFFFFF";
+    document.body.style.background = darkMode ? "#1A1D24" : "#FFFFFF";
+    document.documentElement.style.overflowY = "scroll";
   }, [darkMode]);
 
   // ─── Wagmi hooks replace manual connect ────────────────────────────────────
