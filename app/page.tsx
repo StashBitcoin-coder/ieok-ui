@@ -300,14 +300,36 @@ function Panel({ title, children, theme }: { title: string; children: React.Reac
 }
 
 const VIDEOS = [
-  { title: "What is OKT — Origin Key",               desc: "Introduction to the Origin Key and how it works with physical art pieces.",  url: "https://youtube.com", tag: "START HERE", tc: "#00A878" },
-  { title: "What is Analog Bitcoin",                        desc: "The concept behind physical Bitcoin — destroy to redeem.",                           url: "https://youtube.com", tag: "CONCEPT",    tc: "#0052FF" },
-  { title: "How to get cbBTC on Base",                      desc: "Step by step — buying Coinbase Wrapped Bitcoin and getting it into your wallet.",    url: "https://youtube.com", tag: "BEGINNERS",  tc: "#0052FF" },
-  { title: "How to buy Origin Keys",                  desc: "Buying OKT using the exchange on Base.",                                             url: "https://youtube.com", tag: "TRADING",    tc: "#0052FF" },
-  { title: "How cbBTC proceeds work",                      desc: "How fees are distributed to all OKT holders and how to withdraw.",                   url: "https://youtube.com", tag: "DIVIDENDS",  tc: "#0052FF" },
-  { title: "How to verify a vault — NFC tap guide",         desc: "Tap an Analog Bitcoin NFC tag and verify vault status on chain.",                    url: "https://youtube.com", tag: "COLLECTORS", tc: "#00A878" },
-  { title: "What is an Ordinal inscription",                desc: "Understanding Bitcoin Ordinals and how they connect to physical art.",                url: "https://youtube.com", tag: "ORDINALS",   tc: "#5B6278" },
-  { title: "How to redeem an Analog Bitcoin art piece",     desc: "What happens when you destroy the art and sweep the tokens.",                        url: "https://youtube.com", tag: "REDEMPTION", tc: "#DA3A3A" },
+  { title: "What is Immutable Editions?",
+    desc: "The collectible space has always struggled with two problems. Authenticity — fake works, fake appraisals, expert opinions that can be bought. And fair value — where interest is measured by hype, not math. Immutable Editions solves both. Every piece carries on-chain provenance through Bitcoin Ordinals — permanent, verifiable, impossible to forge. Every piece carries Origin Key tokens that measure real interest through real transactions — buys, sells, and proceeds distributed by math. Where provenance and interest meet market integrity.",
+    url: "https://youtube.com", tag: "START HERE", tc: "#00A878" },
+  { title: "How to Verify a Piece",
+    desc: "Tap the NFC chip on the art piece — or go to Vault Check and paste the wallet address. You'll see the vault status instantly — sealed or swept. If there's a linked Ordinal you'll see the actual inscription image and a link to verify on ordinals.com. Check that the owner address matches the vault address shown. If they match — the Ordinal is authentic and untouched. Below that you'll see the Origin Key balance — how many tokens are sealed inside. If proceeds are showing, the piece is actively earning from exchange activity. If the vault shows swept — someone has accessed the wallet and the provenance chain is broken.",
+    url: "https://youtube.com", tag: "VERIFY", tc: "#00A878" },
+  { title: "How Immutable Editions Use Ordinals",
+    desc: "A Bitcoin Ordinal is data permanently written into the Bitcoin blockchain. It cannot be edited. It cannot be deleted. It cannot be faked. We inscribe every original work as an Ordinal using the Dublin Core Metadata Initiative — the same indexing standard used by libraries and museums worldwide. This is not a certificate of authenticity. This is not an expert opinion. This is not a slab grade. Those can be debated. Those can be forged. An Ordinal cannot. The record is cryptographically secured, fully transparent, and proves both the creation and ownership of the asset directly from the asset itself. Traditional provenance asks you to trust someone. An Ordinal asks you to verify math. That is Real World Inscription — and it is not up for debate. Ordinals are not Origin Keys. Ordinals are the permanent provenance layer on Bitcoin. Origin Keys are the value layer on Base chain. One proves the art is real. The other measures interest.",
+    url: "https://youtube.com", tag: "ORDINALS", tc: "#0052FF" },
+  { title: "What is an Origin Key?",
+    desc: "An Origin Key is a physical art piece with a Bitcoin wallet sealed inside. That wallet holds Origin Key tokens on Base chain — and those tokens earn cbBTC proceeds from every single trade on the exchange. Origin Keys are not Ordinals. Ordinals are permanent inscriptions on Bitcoin — the provenance layer. Origin Keys are tokens on Base — the value layer. One proves the art is real. The other measures how much interest that art generates. Some pieces carry both. Some carry just Origin Keys. The art earns Bitcoin while it hangs on your wall. Destroy the art to redeem the Bitcoin. Until then — it earns.",
+    url: "https://youtube.com", tag: "CONCEPT", tc: "#0052FF" },
+  { title: "What is a DAO Contract?",
+    desc: "A regular DAO is governed by votes. People argue. People lobby. People manipulate. A DAO Contract is governed by math. Every acquisition, every disposition, every proceed is calculated automatically. No admin can change it. No vote can override it. Math, not votes.",
+    url: "https://youtube.com", tag: "DAO", tc: "#0052FF" },
+  { title: "How to Get cbBTC on Base",
+    desc: "To acquire Origin Keys you need cbBTC on Base chain. Open Coinbase. Buy Bitcoin. Go to Coinbase Wallet. Tap send. Choose Base network. Send to your wallet address. That's it — your Bitcoin is now cbBTC on Base. Ready to acquire.",
+    url: "https://youtube.com", tag: "BEGINNERS", tc: "#00A878" },
+  { title: "How to Acquire Origin Keys",
+    desc: "Go to the SWAP tab. Connect your wallet. Tap Acquire. Enter the amount in satoshis — minimum 100. First time you'll see two wallet popups — first to approve cbBTC, then to buy. After that it's one tap. Your Origin Keys appear in your balance and start earning proceeds immediately.",
+    url: "https://youtube.com", tag: "TRADING", tc: "#0052FF" },
+  { title: "How to Dispose Origin Keys",
+    desc: "Go to the SWAP tab. Tap Dispose. Enter how many Origin Keys to sell. cbBTC goes directly to your wallet. Seven percent fee gets distributed to every other holder as proceeds. Simple.",
+    url: "https://youtube.com", tag: "TRADING", tc: "#0052FF" },
+  { title: "How to Claim Proceeds",
+    desc: "Every trade on the exchange generates a seven percent fee. That fee is split proportionally to everyone holding Origin Keys. Your share shows in the Proceeds box. Tap Claim Satoshis to withdraw cbBTC to your wallet. Or tap Repurchase to convert proceeds into more Origin Keys.",
+    url: "https://youtube.com", tag: "PROCEEDS", tc: "#0052FF" },
+  { title: "What Happens When You Destroy the Art?",
+    desc: "Every Origin Key has a private key sealed inside — physically sealed. To access the Bitcoin in that wallet you have to destroy the art piece. Import the private key into a wallet. The Origin Keys and any unclaimed proceeds are yours. But the vault is permanently marked as swept on chain. Everyone can see it. The provenance is broken forever. Alternatively, if the piece carries a Bitcoin Ordinal, you may choose to sell the Ordinal on marketplaces like Gamma, UniSat, or Ordinals Wallet instead of destroying the physical art.",
+    url: "https://youtube.com", tag: "REDEMPTION", tc: "#DA3A3A" },
 ];
 
 // ─── APPROVE HELPER — fully awaits confirmation + 1s delay for wallet sync ───
@@ -1745,9 +1767,9 @@ export default function Home() {
 
         {/* LEARN */}
         {tab === "learn" && (
-          <Panel title="Learn — Video Guides" theme={C}>
+          <Panel title="Conduct — Guides" theme={C}>
             <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
-              Everything you need to understand Origin Key, Analog Bitcoin, and how to participate.
+              Everything you need to understand Immutable Editions, Origin Keys, Ordinals, and how to participate.
             </p>
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
               {VIDEOS.map((v, i) => (
