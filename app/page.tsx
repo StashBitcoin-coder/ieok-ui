@@ -525,6 +525,8 @@ export default function Home() {
         setBuyM("Transaction cancelled.");
       } else if (msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
         setBuyM("Transaction failed — make sure you have enough cbBTC and try again.");
+      } else if (msg.includes("coalesce") || msg.includes("Unexpected error") || msg.includes("-32603") || msg.includes("insufficient funds")) {
+        setBuyM("This wallet needs ETH on Base to pay gas fees. Send a small amount of ETH first.");
       } else {
         setBuyM("Buy failed — check your cbBTC balance and try again.");
       }
@@ -546,12 +548,16 @@ export default function Home() {
       const msg = e.reason || e.message || "";
       if (msg.includes("Cannot sell entire supply") || msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
         setSellM("Cannot sell — at least 1 OKT must remain in total supply. Try a smaller amount.");
+      } else if (msg.includes("Minimum 100") || msg.includes("CALL_EXCEPTION")) {
+        setSellM("Minimum 100 Origin Keys to sell.");
       } else if (msg.includes("Insufficient balance")) {
         setSellM("You don't have enough OKT to sell that amount.");
       } else if (msg.includes("Slippage")) {
         setSellM("Price moved — try again or reduce your amount.");
       } else if (msg.includes("user rejected") || msg.includes("User denied")) {
         setSellM("Transaction cancelled.");
+      } else if (msg.includes("coalesce") || msg.includes("Unexpected error") || msg.includes("-32603") || msg.includes("insufficient funds")) {
+        setSellM("This wallet needs ETH on Base to pay gas fees. Send a small amount of ETH first.");
       } else {
         setSellM("Sell failed — check your balance and try again.");
       }
@@ -567,7 +573,19 @@ export default function Home() {
       await (await okt.withdraw()).wait();
       setWdS("success"); setWdM("cbBTC proceeds sent to your wallet");
       if (account) await load(account);
-    } catch (e: any) { setWdS("failed"); setWdM(e.reason || e.message || "Failed"); }
+    } catch (e: any) {
+      setWdS("failed");
+      const msg = e.reason || e.message || "";
+      if (msg.includes("No proceeds") || msg.includes("No dividends")) {
+        setWdM("No proceeds to claim.");
+      } else if (msg.includes("user rejected") || msg.includes("User denied")) {
+        setWdM("Transaction cancelled.");
+      } else if (msg.includes("coalesce") || msg.includes("Unexpected error") || msg.includes("-32603") || msg.includes("insufficient funds")) {
+        setWdM("This wallet needs ETH on Base to pay gas fees. Send a small amount of ETH to this address first.");
+      } else {
+        setWdM("Claim failed — try again.");
+      }
+    }
   }
 
   async function reinvest() {
