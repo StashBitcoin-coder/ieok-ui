@@ -546,18 +546,20 @@ export default function Home() {
     } catch (e: any) {
       setSellS("failed");
       const msg = e.reason || e.message || "";
-      if (msg.includes("Cannot sell entire supply") || msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
-        setSellM("Cannot sell — at least 1 OKT must remain in total supply. Try a smaller amount.");
-      } else if (msg.includes("Minimum 100") || msg.includes("CALL_EXCEPTION")) {
+      if (msg.includes("Minimum 100")) {
         setSellM("Minimum 100 Origin Keys to sell.");
+      } else if (msg.includes("Cannot sell entire supply")) {
+        setSellM("Cannot sell — at least 1 Origin Key must remain in total supply. Try a smaller amount.");
       } else if (msg.includes("Insufficient balance")) {
-        setSellM("You don't have enough OKT to sell that amount.");
+        setSellM("You don't have enough Origin Keys to sell that amount.");
       } else if (msg.includes("Slippage")) {
         setSellM("Price moved — try again or reduce your amount.");
       } else if (msg.includes("user rejected") || msg.includes("User denied")) {
         setSellM("Transaction cancelled.");
       } else if (msg.includes("coalesce") || msg.includes("Unexpected error") || msg.includes("-32603") || msg.includes("insufficient funds")) {
         setSellM("This wallet needs ETH on Base to pay gas fees. Send a small amount of ETH first.");
+      } else if (msg.includes("CALL_EXCEPTION") || msg.includes("missing revert")) {
+        setSellM("Minimum 100 Origin Keys to sell.");
       } else {
         setSellM("Sell failed — check your balance and try again.");
       }
@@ -619,7 +621,23 @@ export default function Home() {
       await (await okt.transfer(txTo, BigInt(txAmt))).wait();
       setTxS("success"); setTxM("Transfer complete — zero fee");
       if (account) await load(account);
-    } catch (e: any) { setTxS("failed"); setTxM(e.reason || e.message || "Failed"); }
+    } catch (e: any) {
+      setTxS("failed");
+      const msg = e.reason || e.message || "";
+      if (msg.includes("Zero tokens") || msg.includes("CALL_EXCEPTION") || msg.includes("missing revert")) {
+        setTxM("Enter an amount greater than zero to transfer.");
+      } else if (msg.includes("Zero address")) {
+        setTxM("Enter a valid wallet address to transfer to.");
+      } else if (msg.includes("Insufficient balance")) {
+        setTxM("You don't have enough Origin Keys to transfer that amount.");
+      } else if (msg.includes("user rejected") || msg.includes("User denied")) {
+        setTxM("Transaction cancelled.");
+      } else if (msg.includes("coalesce") || msg.includes("Unexpected error") || msg.includes("-32603") || msg.includes("insufficient funds")) {
+        setTxM("This wallet needs ETH on Base to pay gas fees. Send a small amount of ETH first.");
+      } else {
+        setTxM("Transfer failed — try again.");
+      }
+    }
   }
 
   async function inscribe() {
