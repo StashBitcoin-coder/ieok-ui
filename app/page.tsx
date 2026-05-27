@@ -343,7 +343,7 @@ async function ensureAllowance(
   const allowance = await cbbtc.allowance(owner, spender);
   if (allowance >= amount) return;
   setMsg("Approval needed — confirm in your wallet...");
-  const tx = await cbbtc.approve(spender, BigInt("999999999999999999"));
+  const tx = await cbbtc.approve(spender, BigInt("100000000")); // 1 BTC max approval
   setMsg("Approving cbBTC — waiting for confirmation...");
   await tx.wait();
   // Small delay — gives Coinbase Wallet and Phantom time to sync approval state
@@ -493,7 +493,7 @@ export default function Home() {
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
     setAppS("pending"); setAppM("Confirm approval in your wallet...");
     try {
-      const tx = await cbbtc.approve(IEOK_ADDRESS, BigInt("999999999999999999"));
+      const tx = await cbbtc.approve(IEOK_ADDRESS, BigInt("100000000")); // 1 BTC max approval
       setAppM("Approving — waiting for confirmation...");
       await tx.wait();
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -511,6 +511,11 @@ export default function Home() {
     const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   s);
     setBuyS("pending"); setBuyM("Confirm purchase in your wallet...");
     try {
+      // Approve exact amount then buy — safest for users
+      const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, signer);
+      const approveTx = await cbbtc.approve(IEOK_ADDRESS, BigInt(buyAmt));
+      await approveTx.wait();
+      setBuyM("Approved — now buying...");
       const tx = await okt.buy(BigInt(buyAmt), BigInt(0));
       setBuyM("Confirming on chain...");
       await tx.wait();
@@ -1258,7 +1263,7 @@ export default function Home() {
 
 
                 <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
-                  Enter your cbBTC amount in Satoshis. Minimum 100 sats. First time buyers will see their wallet pop up twice. First to approve. Then buy. Future purchases are single tap.
+                  Enter your cbBTC amount in Satoshis. Minimum 100 sats. Each purchase requires two wallet confirmations — first to approve the exact cbBTC amount, then to buy. Your wallet will never be approved for more than you are spending.
                 </p>
                 <Input theme={C} label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
                   hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 sats · 1,000 sats = 930 OKT after 7% fee"} />
@@ -1274,7 +1279,7 @@ export default function Home() {
                     <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 16px", marginBottom: 12 }}>
                       <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" />
                       <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 600 }}>
-                        First time — approve cbBTC before buying
+                        Approve & Acquire
                       </span>
                     </div>
                     <BigBtn onClick={approveCbbtc} theme={C} disabled={!connected}>
