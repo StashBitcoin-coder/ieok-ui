@@ -1248,11 +1248,34 @@ export default function Home() {
             </div>
           )}
 
+          {/* REVOKE APPROVAL */}
+          {connected && (
+            <div style={{ textAlign: "right" as const, marginBottom: 8 }}>
+              <span style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted }}>
+                <button onClick={async () => {
+                  try {
+                    const gs = await getSigner();
+                    const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, gs);
+                    const tx = await cbbtc.approve(IEOK_ADDRESS, BigInt(0));
+                    await tx.wait();
+                    alert("cbBTC approval revoked — the contract can no longer spend your cbBTC.");
+                  } catch (e: any) {
+                    if (e.message?.includes("user rejected")) return;
+                    alert("Revoke failed — try again.");
+                  }
+                }} style={{ background: "transparent", border: "none", fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
+                  Revoke cbBTC approval
+                </button>
+                {" "}— Revoke the cbBTC approval permission for your wallet. You can re-approve on your next acquisition.
+              </span>
+            </div>
+          )}
+
           {/* SWAP MODE TOGGLE */}
           <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-            <button onClick={() => setSwapMode("buy")} style={{ flex: 1, padding: "12px 8px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "buy" ? C.blue : "transparent", color: swapMode === "buy" ? "#FFFFFF" : C.textMuted, border: swapMode === "buy" ? "none" : `2px solid ${C.border}`, letterSpacing: "0.05em", boxShadow: swapMode === "buy" ? C.shadow : "none" }}>▲ ACQUIRE</button>
-            <button onClick={() => setSwapMode("sell")} style={{ flex: 1, padding: "12px 8px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "sell" ? C.blue : "transparent", color: swapMode === "sell" ? "#FFFFFF" : C.textMuted, border: swapMode === "sell" ? "none" : `2px solid ${C.border}`, letterSpacing: "0.05em", boxShadow: swapMode === "sell" ? C.shadow : "none" }}>▼ DISPOSE</button>
-            <button onClick={() => setSwapMode("transfer")} style={{ flex: 1, padding: "12px 8px", fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "transfer" ? C.blue : "transparent", color: swapMode === "transfer" ? "#FFFFFF" : C.textMuted, border: swapMode === "transfer" ? "none" : `2px solid ${C.border}`, letterSpacing: "0.05em", boxShadow: swapMode === "transfer" ? C.shadow : "none" }}>→ TRANSFER</button>
+            <button onClick={() => setSwapMode("buy")} style={{ flex: 1, padding: "14px 8px", fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "buy" ? C.blue : C.card, color: swapMode === "buy" ? "#FFFFFF" : C.text, border: `2px solid ${swapMode === "buy" ? C.blue : C.text}`, letterSpacing: "0.05em", boxShadow: swapMode === "buy" ? "0 2px 8px rgba(0,82,255,0.3)" : C.shadow }}>▲ ACQUIRE</button>
+            <button onClick={() => setSwapMode("sell")} style={{ flex: 1, padding: "14px 8px", fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "sell" ? C.blue : C.card, color: swapMode === "sell" ? "#FFFFFF" : C.text, border: `2px solid ${swapMode === "sell" ? C.blue : C.text}`, letterSpacing: "0.05em", boxShadow: swapMode === "sell" ? "0 2px 8px rgba(0,82,255,0.3)" : C.shadow }}>▼ DISPOSE</button>
+            <button onClick={() => setSwapMode("transfer")} style={{ flex: 1, padding: "14px 8px", fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: swapMode === "transfer" ? C.blue : C.card, color: swapMode === "transfer" ? "#FFFFFF" : C.text, border: `2px solid ${swapMode === "transfer" ? C.blue : C.text}`, letterSpacing: "0.05em", boxShadow: swapMode === "transfer" ? "0 2px 8px rgba(0,82,255,0.3)" : C.shadow }}>→ TRANSFER</button>
           </div>
 
           <div>
