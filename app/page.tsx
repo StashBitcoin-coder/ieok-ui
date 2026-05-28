@@ -1162,16 +1162,28 @@ export default function Home() {
               <SkeletonKey size={36} dark={darkMode} />
               <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Origin Key Exchange</span>
             </div>
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 2 }}>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 10 }}>
               Deterministic Automatic Operation (DAO) Contract
             </div>
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, color: C.textMuted, lineHeight: 1.6, marginBottom: 6 }}>
-              This token is where defined interest is placed in physical collectables.
-              <br /><br />This protocol operates on a strict unquestionable math.
-              <br /><br />The Origin Key Token's 7% fee only goes to already Inscribed Collectable Vaults and active participants who acquire OKT.
-              <br /><br />Every transaction is calculated and distributed proportionately to the number of Origin Keys in a wallet.
-              <br /><br />Absolutely no brokers or influencers benefit.
-              <br /><br />Only collectors and creators.
+            <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 6 }}>
+              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>This token is where defined interest is placed in physical collectables.</div>
+              </div>
+              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>This protocol operates on a strict unquestionable math.</div>
+              </div>
+              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>The Origin Key Token's 7% fee only goes to already Inscribed Collectable Vaults and active participants who acquire OKT.</div>
+              </div>
+              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>Every transaction is calculated and distributed proportionately to the number of Origin Keys in a wallet.</div>
+              </div>
+              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5, fontWeight: 700 }}>Absolutely no brokers or influencers benefit.</div>
+              </div>
+              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.blue, lineHeight: 1.5, fontWeight: 700 }}>Only collectors and creators.</div>
+              </div>
             </div>
           </div>
 
