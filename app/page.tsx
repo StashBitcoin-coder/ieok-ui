@@ -1166,9 +1166,12 @@ export default function Home() {
               Deterministic Automatic Operation (DAO) Contract
             </div>
             <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, color: C.textMuted, lineHeight: 1.6, marginBottom: 6 }}>
-              This protocol operates on a strict unquestionable math. The Origin Key Token's 7% fee only goes to active participants. Every transaction is calculated and distributed proportionately to the number of Origin Keys in a wallet.
-              <br />Absolutely no brokers or influencers benefit.
-              <br />Only collectors and creators.
+              This token is where defined interest is placed in physical collectables.
+              <br /><br />This protocol operates on a strict unquestionable math.
+              <br /><br />The Origin Key Token's 7% fee only goes to already Inscribed Collectable Vaults and active participants who acquire OKT.
+              <br /><br />Every transaction is calculated and distributed proportionately to the number of Origin Keys in a wallet.
+              <br /><br />Absolutely no brokers or influencers benefit.
+              <br /><br />Only collectors and creators.
             </div>
           </div>
 
@@ -1193,7 +1196,10 @@ export default function Home() {
                   </span>
                   <div style={{ display: "flex", gap: 6 }}>
                     <button onClick={withdraw} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>Claim Satoshis</button>
-                    <button onClick={reinvest} style={{ background: "transparent", color: C.blue, border: `1px solid ${C.blue}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>Repurchase</button>
+                    <button onClick={reinvest}
+                      onMouseEnter={(e: any) => { e.currentTarget.style.background = C.blue; e.currentTarget.style.color = "#FFFFFF"; }}
+                      onMouseLeave={(e: any) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.blue; }}
+                      style={{ background: "transparent", color: C.blue, border: `1px solid ${C.blue}`, borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em", transition: "all 0.15s ease" }}>Repurchase</button>
                   </div>
                   <div><Status state={wdS} msg={wdM} theme={C} /><Status state={rvS} msg={rvM} theme={C} /></div>
                 </div>
