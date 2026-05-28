@@ -1182,7 +1182,7 @@ export default function Home() {
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.5, fontWeight: 700 }}>Absolutely no brokers or influencers benefit.</div>
               </div>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.blue, lineHeight: 1.5, fontWeight: 700 }}>Only collectors and creators.</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.blue, lineHeight: 1.5, fontWeight: 700 }}>Only collectors and creators.</div>
               </div>
             </div>
           </div>
