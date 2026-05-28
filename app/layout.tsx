@@ -3,7 +3,7 @@ import { Providers } from "./providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title:       "Origin Key Exchange",
+  title:       "Immutable Editions",
   description: "cbBTC-backed tokens for physical Bitcoin art — Immutable Editions",
 };
 
