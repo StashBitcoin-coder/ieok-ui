@@ -1167,10 +1167,10 @@ export default function Home() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 6 }}>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>This token is where defined interest is placed in physical collectables.</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, lineHeight: 1.5 }}>This token is where defined interest is placed in physical collectables.</div>
               </div>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>This protocol operates on a strict unquestionable math.</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, lineHeight: 1.5 }}>This protocol operates on a strict unquestionable math.</div>
               </div>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>The Origin Key Token's 7% fee only goes to already Inscribed Collectable Vaults and active participants who acquire OKT.</div>
@@ -1179,7 +1179,7 @@ export default function Home() {
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>Every transaction is calculated and distributed proportionately to the number of Origin Keys in a wallet.</div>
               </div>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5, fontWeight: 700 }}>Absolutely no brokers or influencers benefit.</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.5, fontWeight: 700 }}>Absolutely no brokers or influencers benefit.</div>
               </div>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.blue, lineHeight: 1.5, fontWeight: 700 }}>Only collectors and creators.</div>
