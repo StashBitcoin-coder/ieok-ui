@@ -28,7 +28,7 @@
           "id": "donations",
           "name": "Donations",
           "private": true,
-          "password": "",
+          "password": "2026",
           "description": "Giving back to the community",
           "pieces": [
             {
