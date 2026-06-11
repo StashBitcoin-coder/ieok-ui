@@ -12,9 +12,6 @@ const config = getDefaultConfig({
   ssr:       true,
 });
 
-// Disable auto-reconnect on page load — wallet connects only when user clicks
-config.storage = null;
-
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
