@@ -509,16 +509,29 @@ export default function Home() {
     const s = await getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
     const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   s);
-    setBuyS("pending"); setBuyM("Confirm purchase in your wallet...");
+    setBuyS("pending"); setBuyM("Approving cbBTC...");
     try {
-      // Approve exact amount then buy — safest for users
+      // Step 1: Approve exact amount
       const approveTx = await cbbtc.approve(IEOK_ADDRESS, BigInt(buyAmt));
       await approveTx.wait();
-      setBuyM("Approved — now buying...");
+      setBuyM("Approved — acquiring Origin Keys...");
+    } catch (e: any) {
+      setBuyS("failed");
+      const msg = e.reason || e.message || "";
+      if (msg.includes("user rejected") || msg.includes("User denied")) {
+        setBuyM("Transaction cancelled.");
+      } else {
+        setBuyM("Approval failed — try again.");
+      }
+      return;
+    }
+    try {
+      // Step 2: Buy — small delay to let approval propagate
+      await new Promise(r => setTimeout(r, 1500));
       const tx = await okt.buy(BigInt(buyAmt), BigInt(0));
       setBuyM("Confirming on chain...");
       await tx.wait();
-      setBuyS("success"); setBuyM("Purchase confirmed — OKT tokens received");
+      setBuyS("success"); setBuyM("Purchase confirmed — Origin Keys received");
       if (account) await load(account);
     } catch (e: any) {
       setBuyS("failed");
