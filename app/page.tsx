@@ -512,7 +512,6 @@ export default function Home() {
     setBuyS("pending"); setBuyM("Confirm purchase in your wallet...");
     try {
       // Approve exact amount then buy — safest for users
-      const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
       const approveTx = await cbbtc.approve(IEOK_ADDRESS, BigInt(buyAmt));
       await approveTx.wait();
       setBuyM("Approved — now buying...");
@@ -1290,33 +1289,12 @@ export default function Home() {
                     { label: "OKT you receive (1 sat = 1 OKT)", value: bPrev.out.toLocaleString() + " OKey" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
-                {/* APPROVE + BUY FLOW */}
-                {connected && !isApproved && (
-                  <>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "12px 16px", marginBottom: 12 }}>
-                      <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" />
-                      <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 600 }}>
-                        Approve & Acquire
-                      </span>
-                    </div>
-                    <BigBtn onClick={approveCbbtc} theme={C} disabled={!connected}>
-                      <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                        <img src="/coinbase-wrapped-btc.png" width={16} height={16} alt="cbBTC" style={{ display: "inline" }} />
-                        Approve cbBTC
-                      </span>
-                    </BigBtn>
-                    <Status state={appS} msg={appM} theme={C} />
-                  </>
-                )}
-                {connected && isApproved && (
-                  <>
-                    <BigBtn onClick={buy}>Acquire Origin Keys</BigBtn>
-                    <Status state={buyS} msg={buyM} theme={C} />
-                  </>
-                )}
-                {!connected && (
-                  <BigBtn onClick={buy} disabled={true}>Acquire Origin Keys</BigBtn>
-                )}
+                {/* BUY BUTTON — auto-approves exact amount */}
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, marginBottom: 8, textAlign: "center" as const }}>
+                  The process is two steps: 1st Approve, 2nd Acquire. Your wallet will never be approved for more than you are spending.
+                </div>
+                <BigBtn onClick={buy} theme={C} disabled={!connected}>Acquire Origin Keys</BigBtn>
+                <Status state={buyS} msg={buyM} theme={C} />
               </Panel>
             )}
 
