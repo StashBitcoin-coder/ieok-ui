@@ -433,7 +433,7 @@ export default function Home() {
 
   // Gallery state
   const [galleryData, setGalleryData] = useState<any>(null);
-  const [galleryView, setGalleryView] = useState<"artists" | "collections" | "pieces">("artists");
+  const [galleryView, setGalleryView] = useState<"artists" | "collections" | "pieces">("collections");
   const [selectedArtist, setSelectedArtist] = useState<any>(null);
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
   const [selectedPiece, setSelectedPiece] = useState<any>(null);
@@ -948,51 +948,52 @@ export default function Home() {
         {tab === "gallery" && (
           <>
             {/* GALLERY NAVIGATION */}
-            {galleryView !== "artists" && (
-              <button onClick={() => {
-                if (galleryView === "pieces") { setGalleryView("collections"); setSelectedPiece(null); }
-                else { setGalleryView("artists"); setSelectedArtist(null); setSelectedCollection(null); }
-              }} style={{ background: "none", border: "none", color: C.blue, fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer", marginBottom: 16, padding: 0 }}>
-                ← Back to {galleryView === "pieces" ? "Collections" : "Artists"}
+            {galleryView === "pieces" && (
+              <button onClick={() => { setGalleryView("collections"); setSelectedPiece(null); }}
+                style={{ background: "none", border: "none", color: C.blue, fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer", marginBottom: 16, padding: 0 }}>
+                ← Back to Collections
               </button>
             )}
 
-            {/* LEVEL 1 — ARTISTS */}
-            {galleryView === "artists" && galleryData && (
+            {/* GALLERY — Artist Bio + Collections */}
+            {galleryView !== "pieces" && galleryData && galleryData.artists.length > 0 && (() => {
+              const artist = galleryData.artists[0];
+              return (
               <>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 12 }}>Gallery</div>
-                <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 16 }}>
-                  {galleryData.artists.map((artist: any) => (
-                    <div key={artist.id} onClick={() => { setSelectedArtist(artist); setGalleryView("collections"); }}
-                      style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, cursor: "pointer", boxShadow: C.shadow, transition: "border-color 0.2s" }}
-                      onMouseEnter={(e: any) => e.currentTarget.style.borderColor = C.blue}
-                      onMouseLeave={(e: any) => e.currentTarget.style.borderColor = C.border}>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 18, fontWeight: 700, color: C.text, marginBottom: 6 }}>{artist.name}</div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 8 }}>{artist.bio}</div>
-                      {artist.canvaEmbed && (
-                        <div style={{ borderRadius: 6, overflow: "hidden", marginBottom: 8 }}>
-                          <div style={{ position: "relative" as const, paddingBottom: artist.canvaAspect === "vertical" ? "177.78%" : "56.25%", height: 0 }}>
-                            <iframe src={artist.canvaEmbed + "?embed"} style={{ position: "absolute" as const, top: 0, left: 0, width: "100%", height: "100%", border: "none" }} loading="lazy" allowFullScreen />
-                          </div>
-                        </div>
-                      )}
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 600 }}>{artist.collections.length} Collection{artist.collections.length !== 1 ? "s" : ""} →</div>
-                    </div>
-                  ))}
+                <div style={{ textAlign: "center" as const, marginBottom: 28 }}>
+                  <div style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.06em", marginBottom: 12 }}>Michael James Slattery</div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.8, maxWidth: 640, margin: "0 auto", marginBottom: 16 }}>
+                    Michael is a fine art photographer and craftsman whose work captures the intersection of human civilization and the natural landscape. He calls himself the Luminist. His Luminous Views work is built on tripod-based multiple exposures over many hours, combined with traditional darkroom technique, and brought to life with archival printing.
+                    <br /><br />
+                    Revealing the extraordinary light within ordinary surroundings.
+                    <br /><br />
+                    Now he is pioneering permanent digital provenance for physical art through Immutable Editions. Every first edition original collectable is inscribed as a Bitcoin Ordinal. An immutable record on the most secure and transparent ledger of history in existence. Every limited edition piece and first edition carries an Origin Key Token vault, earning Bitcoin with every new publishing of each collectable.
+                    <br /><br />
+                    He builds the frames by hand. He inscribes the Ordinals. He founded and directed the tokenization of his physical work. From the capture to the collector — one artist, no intermediaries.
+                  </div>
+                  <div style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 13 : 15, color: C.textMuted, fontStyle: "italic", marginBottom: 8 }}>
+                    "Most art work captures just a moment of perception. OKT Luminism captures what — just right — could be."
+                  </div>
+                  <a href="https://luminous-views.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
+                    Luminous-Views.com ↗
+                  </a>
                 </div>
-              </>
-            )}
 
-            {/* LEVEL 2 — COLLECTIONS */}
-            {galleryView === "collections" && selectedArtist && (
-              <>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.text, marginBottom: 4 }}>{selectedArtist.name}</div>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, marginBottom: 12 }}>{selectedArtist.bio}</div>
+                {artist.canvaEmbed && (
+                  <div style={{ maxWidth: artist.canvaAspect === "vertical" ? 280 : 500, margin: "0 auto 24px", borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
+                    <div style={{ position: "relative" as const, paddingBottom: artist.canvaAspect === "vertical" ? "177.78%" : "56.25%", height: 0 }}>
+                      <iframe src={artist.canvaEmbed + "?embed"} style={{ position: "absolute" as const, top: 0, left: 0, width: "100%", height: "100%", border: "none" }} loading="lazy" allowFullScreen />
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 18, fontWeight: 700, color: C.text, marginBottom: 16 }}>Collections</div>
                 <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 16 }}>
-                  {selectedArtist.collections.map((col: any) => {
+                  {artist.collections.map((col: any) => {
                     const coverPiece = col.pieces.find((p: any) => p.inscriptionId) || col.pieces[0];
                     return (
                       <div key={col.id} onClick={() => {
+                        setSelectedArtist(artist);
                         if (col.private && !unlockedCollections.has(col.id)) {
                           const pw = prompt("This collection is private. Enter password:");
                           if (pw === col.password) {
@@ -1019,17 +1020,18 @@ export default function Home() {
                           <div style={{ fontFamily: "Arial, sans-serif", fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 4 }}>{col.name}</div>
                           <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginBottom: 6 }}>{col.description}</div>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 600 }}>{col.pieces.length} Piece{col.pieces.length !== 1 ? "s" : ""} →</div>
-                          {col.private && !unlockedCollections.has(col.id) && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12 }}>🔒</span>}
-                          {col.private && unlockedCollections.has(col.id) && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12 }}>🔓</span>}
-                        </div>
+                            <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 600 }}>{col.pieces.length} Piece{col.pieces.length !== 1 ? "s" : ""} →</div>
+                            {col.private && !unlockedCollections.has(col.id) && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12 }}>🔒</span>}
+                            {col.private && unlockedCollections.has(col.id) && <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12 }}>🔓</span>}
+                          </div>
                         </div>
                       </div>
                     );
                   })}
                 </div>
               </>
-            )}
+              );
+            })()}
 
             {/* LEVEL 3 — PIECES */}
             {galleryView === "pieces" && selectedCollection && (
@@ -1074,11 +1076,9 @@ export default function Home() {
                 <div onClick={(e: any) => e.stopPropagation()} style={{ background: C.card, borderRadius: 16, padding: mobile ? 20 : 32, maxWidth: 480, width: "100%", maxHeight: "90vh", overflow: "auto", boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
                   {/* Image */}
                   {selectedPiece.inscriptionId && (
-                    <a href={`https://ordinals.com/inscription/${selectedPiece.inscriptionId}`} target="_blank" rel="noopener noreferrer">
                       <img src={`https://ordinals.com/content/${selectedPiece.inscriptionId}`} alt={selectedPiece.name}
                         style={{ width: "100%", height: "auto", borderRadius: 8, marginBottom: 16 }}
                         onError={(e: any) => { e.target.style.display = "none"; }} />
-                    </a>
                   )}
 
                   {/* Title */}
@@ -1110,12 +1110,7 @@ export default function Home() {
 
                   {/* Links */}
                   <div style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
-                    {selectedPiece.inscriptionId && (
-                      <a href={`https://ordinals.com/inscription/${selectedPiece.inscriptionId}`} target="_blank" rel="noopener noreferrer"
-                        style={{ display: "block", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "10px 16px", fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, textDecoration: "none", fontWeight: 700, textAlign: "center" as const }}>
-                        View on Ordinals.com ↗
-                      </a>
-                    )}
+
                     {selectedPiece.shopifyUrl && (
                       <a href={selectedPiece.shopifyUrl} target="_blank" rel="noopener noreferrer"
                         style={{ display: "block", background: C.green, borderRadius: 8, padding: "12px 16px", fontFamily: "Arial, sans-serif", fontSize: 14, color: "#FFFFFF", textDecoration: "none", fontWeight: 700, textAlign: "center" as const }}>
@@ -1128,18 +1123,7 @@ export default function Home() {
                         Check Vault Status →
                       </button>
                     )}
-                    {selectedPiece.inscriptionId && (
-                      <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                        <a href={`https://gamma.io/ordinals/collections`} target="_blank" rel="noopener noreferrer"
-                          style={{ fontSize: 11, color: C.textMuted, fontFamily: "Arial, sans-serif", textDecoration: "none", fontWeight: 600 }}>Gamma ↗</a>
-                        <span style={{ color: C.textMuted }}>·</span>
-                        <a href={`https://unisat.io/market`} target="_blank" rel="noopener noreferrer"
-                          style={{ fontSize: 11, color: C.textMuted, fontFamily: "Arial, sans-serif", textDecoration: "none", fontWeight: 600 }}>UniSat ↗</a>
-                        <span style={{ color: C.textMuted }}>·</span>
-                        <a href={`https://ordinalswallet.com`} target="_blank" rel="noopener noreferrer"
-                          style={{ fontSize: 11, color: C.textMuted, fontFamily: "Arial, sans-serif", textDecoration: "none", fontWeight: 600 }}>Ordinals Wallet ↗</a>
-                      </div>
-                    )}
+
                   </div>
 
                   {/* Close button */}
