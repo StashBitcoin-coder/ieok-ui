@@ -744,7 +744,6 @@ export default function Home() {
   const isRegistrar  = accountStr.toLowerCase() === VAULT_REGISTRAR.toLowerCase();
 
   const tabs: { id: Tab; label: string; short: string }[] = [
-    { id: "home",     label: "HOME",        short: "HOME"     },
     { id: "gallery",  label: "GALLERY",     short: "GALLERY"  },
     { id: "swap",     label: "SWAP",        short: "SWAP"     },
     { id: "vault",    label: "VAULT CHECK", short: "VAULT"    },

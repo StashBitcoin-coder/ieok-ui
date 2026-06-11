@@ -1,5 +1,4 @@
 'use client';
-
 import '@rainbow-me/rainbowkit/styles.css';
 import { RainbowKitProvider, getDefaultConfig, lightTheme } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
@@ -7,17 +6,20 @@ import { base, baseSepolia } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 const config = getDefaultConfig({
-  appName:   'Origin Key Exchange',
+  appName:   'Immutable Editions',
   projectId: 'bd4bac2b-2190-4f0d-bdb9-3cb24357571e',
   chains:    [baseSepolia, base],
   ssr:       true,
 });
 
+// Disable auto-reconnect on page load — wallet connects only when user clicks
+config.storage = null;
+
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={config} reconnectOnMount={false}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           theme={lightTheme({
