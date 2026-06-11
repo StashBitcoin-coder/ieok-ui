@@ -1223,7 +1223,7 @@ export default function Home() {
               )}
             </div>
           ) : (
-            <div style={{ textAlign: "center" as const, padding: "12px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", padding: "12px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
               <ConnectButton
                 showBalance={false}
                 chainStatus="none"
