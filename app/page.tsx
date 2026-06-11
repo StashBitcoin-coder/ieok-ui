@@ -963,19 +963,17 @@ export default function Home() {
                 <div style={{ textAlign: "center" as const, marginBottom: 28 }}>
                   <div style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.06em", marginBottom: 12 }}>Michael James Slattery</div>
                   <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.8, maxWidth: 640, margin: "0 auto", marginBottom: 16 }}>
-                    Michael is a fine art photographer and craftsman whose work captures the intersection of human civilization and the natural landscape. He calls himself the Luminist. His Luminous Views work is built on tripod-based multiple exposures over many hours, combined with traditional darkroom technique, and brought to life with archival printing.
+                    Michael, The Luminist, captures the profound intersection of civilization and nature. Fusing hours-long exposures with darkroom alchemy, his archival prints reveal the extraordinary light hidden within the ordinary.
                     <br /><br />
-                    Revealing the extraordinary light within ordinary surroundings.
+                    Today, he pioneers the future of provenance and interest via Immutable Editions. By inscribing his physical masterpieces as Bitcoin Ordinals, he anchors art to history's most secure ledger. Furthermore, every edition acts as an Origin Key Token (OKT) vault, continuously yielding Bitcoin upon subsequent publishing of new work.
                     <br /><br />
-                    Now he is pioneering permanent digital provenance for physical art through Immutable Editions. Every first edition original collectable is inscribed as a Bitcoin Ordinal. An immutable record on the most secure and transparent ledger of history in existence. Every limited edition piece and first edition carries an Origin Key Token vault, earning Bitcoin with every new publishing of each collectable.
-                    <br /><br />
-                    He builds the frames by hand. He inscribes the Ordinals. He founded and directed the tokenization of his physical work. From the capture to the collector — one artist, no intermediaries.
+                    A sovereign creator, Michael masters every phase of his craft — from hand-building the physical frames to authoring the on-chain inscriptions. From capture to collector, with zero intermediaries.
                   </div>
                   <div style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 13 : 15, color: C.textMuted, fontStyle: "italic", marginBottom: 8 }}>
-                    "Most art work captures just a moment of perception. OKT Luminism captures what — just right — could be."
+                    "Most art captures just a moment of perception. OKT Luminism captures what could be."
                   </div>
-                  <a href="https://luminous-views.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
-                    Luminous-Views.com ↗
+                  <a href="https://ilikewhatisee.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
+                    Michael's wall art — ilikewhatisee.com ↗
                   </a>
                 </div>
 
