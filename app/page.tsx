@@ -1152,30 +1152,21 @@ export default function Home() {
 
         {tab === "swap" && (
           <>
-          {/* SWAP HEADER — Origin Key Exchange + DAO */}
+          {/* SWAP HEADER — Origin Key Token + DAO */}
           <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
             <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 11 : 12, color: C.textMuted, marginBottom: 12, lineHeight: 1.5 }}>
               Origin Key tokens are denominated 1:1 in Satoshis using cbBTC, tokenized Bitcoin issued by Coinbase.
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
               <SkeletonKey size={36} dark={darkMode} />
-              <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Origin Key Exchange</span>
+              <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Origin Key Token</span>
             </div>
             <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 10 }}>
               Deterministic Automatic Operation (DAO) Contract
             </div>
             <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 6 }}>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, lineHeight: 1.5 }}>This token is where defined interest is placed in physical collectables.</div>
-              </div>
-              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textDim, lineHeight: 1.5 }}>This protocol operates on a strict unquestionable math.</div>
-              </div>
-              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>The Origin Key Token's 7% fee only goes to already Inscribed Collectable Vaults and active participants who acquire OKT.</div>
-              </div>
-              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>Every transaction is calculated and distributed proportionately to the number of Origin Keys in a wallet.</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>The Origin Key Token's 7% fee is distributed proportionately via unquestionable math to Immutable Edition Collectables and active holders who acquire OKT only.</div>
               </div>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.5, fontWeight: 700 }}>Absolutely no brokers or influencers benefit.</div>
@@ -1251,12 +1242,7 @@ export default function Home() {
               )}
             </div>
           ) : (
-            <div style={{ textAlign: "center" as const, padding: "20px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, fontWeight: 600, marginBottom: 12 }}>Connect your wallet to see your balances</div>
-              <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginBottom: 8 }}>Use MetaMask or Coinbase Wallet on Base Sepolia</div>
-              <button onClick={() => setTab("learn")} style={{ background: "none", border: "none", fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, fontWeight: 700, cursor: "pointer", marginBottom: 12, textDecoration: "underline" }}>
-                New here? Watch the guides →
-              </button>
+            <div style={{ textAlign: "center" as const, padding: "12px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
               <ConnectButton
                 showBalance={false}
                 chainStatus="none"
