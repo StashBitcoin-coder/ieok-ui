@@ -777,7 +777,7 @@ export default function Home() {
 
         {/* ROW 2 — IMMUTABLE EDITIONS centered */}
         <div style={{ padding: mobile ? "2px 0 4px" : "2px 0 6px" }}>
-          <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 30, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
+          <span onClick={() => setTab("home")} style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 30, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const, cursor: "pointer" }}>
             Immutable Editions
           </span>
         </div>
@@ -1904,4 +1904,3 @@ export default function Home() {
     </main>
   );
 }
-
