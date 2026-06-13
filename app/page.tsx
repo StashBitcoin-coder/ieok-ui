@@ -221,7 +221,7 @@ function FeeBadge({ mobile, theme }: { mobile: boolean; theme?: typeof LIGHT }) 
     <div style={{ display: "flex", alignItems: "center", gap: 10, background: T.blueBg, border: `1px solid ${T.blue}`, borderRadius: 8, padding: mobile ? "10px 14px" : "12px 18px", marginBottom: 24 }}>
       <span style={{ fontFamily: "Arial, sans-serif", fontSize: 18, color: T.blue }}>◈</span>
       <span style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, color: T.blue, fontWeight: 600 }}>
-        7% fee on every buy and sell — distributed instantly to all Origin Key holders as cbBTC proceeds
+        7% network fee on every buy and sell — recirculates instantly to all Origin Key holders as cbBTC
       </span>
     </div>
   );
@@ -301,16 +301,16 @@ function Panel({ title, children, theme }: { title: string; children: React.Reac
 
 const VIDEOS = [
   { title: "What is Immutable Editions?",
-    desc: "The collectible space has always struggled with two problems. Authenticity — fake works, fake appraisals, expert opinions that can be bought. And fair value — where interest is measured by hype, not math. Immutable Editions solves both. Every piece carries on-chain provenance through Bitcoin Ordinals — permanent, verifiable, impossible to forge. Every piece carries Origin Key tokens that measure real interest through real transactions — buys, sells, and proceeds distributed by math. Where provenance and interest meet market integrity.",
+    desc: "The collectible space has always struggled with two problems. Authenticity — fake works, fake appraisals, expert opinions that can be bought. And fair value — where interest is measured by hype, not math. Immutable Editions solves both. Every piece carries on-chain provenance through Bitcoin Ordinals — permanent, verifiable, impossible to forge. Every piece carries Origin Key tokens that measure real interest through real transactions — buys, sells, and fees recirculated by math. Where provenance and interest meet market integrity.",
     url: "https://youtube.com", tag: "START HERE", tc: "#00A878" },
   { title: "How to Verify a Piece",
-    desc: "Tap the NFC chip on the art piece — or go to Vault Check and paste the wallet address. You'll see the vault status instantly — sealed or swept. If there's a linked Ordinal you'll see the actual inscription image and a link to verify on ordinals.com. Check that the owner address matches the vault address shown. If they match — the Ordinal is authentic and untouched. Below that you'll see the Origin Key balance — how many tokens are sealed inside. If proceeds are showing, the piece is actively earning from exchange activity. If the vault shows swept — someone has accessed the wallet and the provenance chain is broken.",
+    desc: "Tap the NFC chip on the art piece — or go to Vault Check and paste the wallet address. You'll see the vault status instantly — sealed or swept. If there's a linked Ordinal you'll see the actual inscription image and a link to verify on ordinals.com. Check that the owner address matches the vault address shown. If they match — the Ordinal is authentic and untouched. Below that you'll see the Origin Key balance — how many tokens are sealed inside. If recirculated satoshis are showing, trading activity has flowed to this vault. If the vault shows swept — someone has accessed the wallet and the provenance chain is broken.",
     url: "https://youtube.com", tag: "VERIFY", tc: "#00A878" },
   { title: "How Immutable Editions Use Ordinals",
     desc: "A Bitcoin Ordinal is data permanently written into the Bitcoin blockchain. It cannot be edited. It cannot be deleted. It cannot be faked. We inscribe every original work as an Ordinal using the Dublin Core Metadata Initiative — the same indexing standard used by libraries and museums worldwide. This is not a certificate of authenticity. This is not an expert opinion. This is not a slab grade. Those can be debated. Those can be forged. An Ordinal cannot. The record is cryptographically secured, fully transparent, and proves both the creation and ownership of the asset directly from the asset itself. Traditional provenance asks you to trust someone. An Ordinal asks you to verify math. That is Real World Inscription — and it is not up for debate. Ordinals are not Origin Keys. Ordinals are the permanent provenance layer on Bitcoin. Origin Keys are the value layer on Base chain. One proves the art is real. The other measures interest.",
     url: "https://youtube.com", tag: "ORDINALS", tc: "#0052FF" },
   { title: "What is an Origin Key?",
-    desc: "An Origin Key is a physical art piece with a Bitcoin wallet sealed inside. That wallet holds Origin Key tokens on Base chain — and those tokens earn cbBTC proceeds from every single trade on the exchange. Origin Keys are not Ordinals. Ordinals are permanent inscriptions on Bitcoin — the provenance layer. Origin Keys are tokens on Base — the value layer. One proves the art is real. The other measures how much interest that art generates. Some pieces carry both. Some carry just Origin Keys. The art earns Bitcoin while it hangs on your wall. Destroy the art to redeem the Bitcoin. Until then — it earns.",
+    desc: "An Origin Key is a physical art piece with a Bitcoin wallet sealed inside. That wallet holds Origin Keys on Base chain — and recirculated cbBTC from every trade flows to those keys. Origin Keys are not Ordinals. Ordinals are permanent inscriptions on Bitcoin — the provenance layer. Origin Keys are tokens on Base — the value layer. One proves the art is real. The other measures how much interest that art generates. Some pieces carry both. Some carry just Origin Keys. Recirculated Bitcoin accumulates in the vault while the art hangs on your wall. Destroy the art to redeem it. Until then — the vault keeps score.",
     url: "https://youtube.com", tag: "CONCEPT", tc: "#0052FF" },
   { title: "What is a DAO Contract?",
     desc: "A regular DAO is governed by votes. People argue. People lobby. People manipulate. A DAO Contract is governed by math. Every acquisition, every disposition, every proceed is calculated automatically. No admin can change it. No vote can override it. Math, not votes.",
@@ -319,16 +319,16 @@ const VIDEOS = [
     desc: "To acquire Origin Keys you need cbBTC on Base chain. Open Coinbase. Buy Bitcoin. Go to Coinbase Wallet. Tap send. Choose Base network. Send to your wallet address. That's it — your Bitcoin is now cbBTC on Base. Ready to acquire.",
     url: "https://youtube.com", tag: "BEGINNERS", tc: "#00A878" },
   { title: "How to Acquire Origin Keys",
-    desc: "Go to the SWAP tab. Connect your wallet. Tap Acquire. Enter the amount in satoshis — minimum 100. First time you'll see two wallet popups — first to approve cbBTC, then to buy. After that it's one tap. Your Origin Keys appear in your balance and start earning proceeds immediately.",
+    desc: "Go to the SWAP tab. Connect your wallet. Tap Acquire. Enter the amount in satoshis — minimum 100. First time you'll see two wallet popups — first to approve cbBTC, then to buy. After that it's one tap. Your Origin Keys appear in your balance and recirculation to them begins immediately.",
     url: "https://youtube.com", tag: "TRADING", tc: "#0052FF" },
   { title: "How to Dispose Origin Keys",
-    desc: "Go to the SWAP tab. Tap Dispose. Enter how many Origin Keys to sell. cbBTC goes directly to your wallet. Seven percent fee gets distributed to every other holder as proceeds. Simple.",
+    desc: "Go to the SWAP tab. Tap Dispose. Enter how many Origin Keys to sell. cbBTC goes directly to your wallet. The seven percent network fee recirculates to every other key holder. Simple.",
     url: "https://youtube.com", tag: "TRADING", tc: "#0052FF" },
-  { title: "How to Claim Proceeds",
-    desc: "Every trade on the exchange generates a seven percent fee. That fee is split proportionally to everyone holding Origin Keys. Your share shows in the Proceeds box. Tap Claim Satoshis to withdraw cbBTC to your wallet. Or tap Repurchase to convert proceeds into more Origin Keys.",
-    url: "https://youtube.com", tag: "PROCEEDS", tc: "#0052FF" },
+  { title: "How to Claim Satoshis",
+    desc: "Every trade generates a seven percent network fee. That fee recirculates proportionally to everyone holding Origin Keys. It shows in the Claimable box. Tap Claim Satoshis to withdraw cbBTC to your wallet. Or tap Repurchase to convert claimable satoshis into more Origin Keys.",
+    url: "https://youtube.com", tag: "CLAIMING", tc: "#0052FF" },
   { title: "What Happens When You Destroy the Art?",
-    desc: "Every Origin Key has a private key sealed inside — physically sealed. To access the Bitcoin in that wallet you have to destroy the art piece. Import the private key into a wallet. The Origin Keys and any unclaimed proceeds are yours. But the vault is permanently marked as swept on chain. Everyone can see it. The provenance is broken forever. Alternatively, if the piece carries a Bitcoin Ordinal, you may choose to sell the Ordinal on marketplaces like Gamma, UniSat, or Ordinals Wallet instead of destroying the physical art.",
+    desc: "Every Origin Key has a private key sealed inside — physically sealed. To access the Bitcoin in that wallet you have to destroy the art piece. Import the private key into a wallet. The Origin Keys and any unclaimed satoshis are yours. But the vault is permanently marked as swept on chain. Everyone can see it. The provenance is broken forever. Alternatively, if the piece carries a Bitcoin Ordinal, you may choose to sell the Ordinal on marketplaces like Gamma, UniSat, or Ordinals Wallet instead of destroying the physical art.",
     url: "https://youtube.com", tag: "REDEMPTION", tc: "#DA3A3A" },
 ];
 
@@ -590,13 +590,13 @@ export default function Home() {
     setWdS("pending"); setWdM("Awaiting wallet...");
     try {
       await (await okt.withdraw()).wait();
-      setWdS("success"); setWdM("cbBTC proceeds sent to your wallet");
+      setWdS("success"); setWdM("Recirculated cbBTC sent to your wallet");
       if (account) await load(account);
     } catch (e: any) {
       setWdS("failed");
       const msg = e.reason || e.message || "";
       if (msg.includes("No proceeds") || msg.includes("No dividends")) {
-        setWdM("No proceeds to claim.");
+        setWdM("No satoshis to claim.");
       } else if (msg.includes("user rejected") || msg.includes("User denied")) {
         setWdM("Transaction cancelled.");
       } else if (msg.includes("coalesce") || msg.includes("Unexpected error") || msg.includes("-32603") || msg.includes("insufficient funds")) {
@@ -614,13 +614,13 @@ export default function Home() {
     setRvS("pending"); setRvM("Awaiting wallet...");
     try {
       await (await okt.reinvest()).wait();
-      setRvS("success"); setRvM("Dividends repurchaseed — new OKT tokens received");
+      setRvS("success"); setRvM("Satoshis repurchased — new Origin Keys received");
       if (account) await load(account);
     } catch (e: any) {
       setRvS("failed");
       const msg = e.reason || e.message || "";
       if (msg.includes("Minimum 100 sats") || msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
-        setRvM("You need at least 100 sats in proceeds to repurchase. Keep earning.");
+        setRvM("You need at least 100 sats claimable to repurchase.");
       } else if (msg.includes("user rejected") || msg.includes("User denied")) {
         setRvM("Transaction cancelled.");
       } else {
@@ -757,14 +757,14 @@ export default function Home() {
 
   const tabs: { id: Tab; label: string; short: string }[] = [
     { id: "gallery",  label: "GALLERY",     short: "GALLERY"  },
+    { id: "vault",    label: "VAULT"      , short: "VAULT"    },
     { id: "swap",     label: "SWAP",        short: "SWAP"     },
-    { id: "vault",    label: "VAULT CHECK", short: "VAULT"    },
     { id: "learn",    label: "CONDUCT",     short: "CONDUCT"  },
     ...(isRegistrar ? [{ id: "inscribe" as Tab, label: "INSCRIBE", short: "INSCRIBE" }] : []),
   ];
 
   return (
-    <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif", touchAction: "pan-y", WebkitOverflowScrolling: "touch" as any, overscrollBehavior: "none" }}>
+    <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "Arial, sans-serif", touchAction: "pan-y pinch-zoom", WebkitOverflowScrolling: "touch" as any, overscrollBehavior: "none" }}>
 
       {/* HEADER */}
       <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: 0, display: "flex", flexDirection: "column" as const, alignItems: "center", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
@@ -869,14 +869,14 @@ export default function Home() {
                 {
                   label: "Interest",
                   title: "Origin Key",
-                  desc: "Every physical creation is embedded with Origin Keys at birth. Held tokens earn cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.",
+                  desc: "Every physical creation is embedded with Origin Keys at birth. Interest isn't an opinion here — it's measured. Each time another creation comes to life or a trade happens, the network fee recirculates as cbBTC to every key — including those still sealed inside vaulted creations.",
                   site: "Acquire Origin Keys",
                   url: null,
-                  tab: "trade",
+                  tab: "swap",
                 },
                 {
                   label: "Market Integrity",
-                  title: "The Key Exchange",
+                  title: "The Key Protocol",
                   desc: "Deployed on Base for the best performance and support. The Origin Key is pegged to Bitcoin (1 OKT = 1 Sat). The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.",
                   site: "Verify a Piece",
                   url: null,
@@ -892,7 +892,7 @@ export default function Home() {
                   </div>
                   <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300 }}>
                     {i === 1 ? (
-                      <>Every physical creation is embedded with Origin Keys at birth. Held tokens earn <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC yield each time another creation comes to life or when a trade happens. Fees from every collectable creation (and OKT trade) flow automatically to all holders — including each already (still Vaulted) creation.</>
+                      <>Every physical creation is embedded with Origin Keys at birth. Interest isn't an opinion here — it's measured. Each time another creation comes to life or a trade happens, the network fee recirculates as <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC to every key — including those still sealed inside vaulted creations.</>
                     ) : i === 2 ? (
                       <>Deployed on Base for the best performance and support. The Origin Key is pegged to Bitcoin (1 OKT = 1 Sat) so volatility in Automated Market Maker pricing <span style={{ color: "#DA3A3A", fontWeight: 700 }}>IS NOT HERE</span> to provide extractors one of their most valuable weapons. The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.</>
                     ) : p.desc}
@@ -919,8 +919,8 @@ export default function Home() {
                 {[
                   { n: "01", title: "Vault the Ordinal and Origin Keys", desc: "Both digital assets are placed in two different digital wallets — both sharing the same Private Key within the SeedPod." },
                   { n: "02", title: "Physical Art", desc: "A finished physical collectable is embedded with the SeedPod (printed wallet Private Key) along with a programmed read-only NFC Tag. Sealed securely within the asset." },
-                  { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Ordinal and Origin Keys along with the yield earned." },
-                  { n: "04", title: "Physical Bitcoin Interest", desc: "" },
+                  { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Ordinal and Origin Keys along with the satoshis recirculated to the vault." },
+                  { n: "04", title: "Physical Bitcoin Recirculation", desc: "" },
                   { n: "05", title: "Redemption (if necessary)", desc: "Destruction of the collectable can reveal the SeedPod one can use to sweep all digital assets out of the Vault." },
                 ].map((s, i) => (
                   <div key={i} style={{ position: "relative" as const }}>
@@ -928,7 +928,7 @@ export default function Home() {
                     <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>{s.title}</div>
                     <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, lineHeight: 1.6, fontWeight: 300 }}>
                       {i === 3 ? (
-                        <>Every published work and trade pays <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC proceeds to all Immutable Editions collectable holders and Origin Key holders.</>
+                        <>Every published work and trade recirculates <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC to all Immutable Editions collectable holders and Origin Key holders.</>
                       ) : s.desc}
                     </div>
                   </div>
@@ -977,7 +977,7 @@ export default function Home() {
                   <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.8, maxWidth: 640, margin: "0 auto", marginBottom: 16 }}>
                     Michael, The Luminist, captures the profound intersection of civilization and nature. Fusing hours-long exposures with darkroom alchemy, his archival prints reveal the extraordinary light hidden within the ordinary.
                     <br /><br />
-                    Today, he pioneers the future of provenance and interest via Immutable Editions. By inscribing his physical masterpieces as Bitcoin Ordinals, he anchors art to history's most secure ledger. Furthermore, every edition acts as an Origin Key Token (OKT) vault, continuously yielding Bitcoin upon subsequent publishing of new work.
+                    Today, he pioneers the future of provenance and interest via Immutable Editions. By inscribing his physical masterpieces as Bitcoin Ordinals, he anchors art to history's most secure ledger. Furthermore, every edition acts as an Origin Key Token (OKT) vault, continuously receiving recirculated Bitcoin as new work is published.
                     <br /><br />
                     A sovereign creator, Michael masters every phase of his craft — from hand-building the physical frames to authoring the on-chain inscriptions. From capture to collector, with zero intermediaries.
                   </div>
@@ -1184,11 +1184,11 @@ export default function Home() {
                 />
               </div>
 
-              {/* PROCEEDS BANNER — above balance boxes */}
+              {/* CLAIMABLE BANNER — above balance boxes */}
               {divsNum > 0 && (
                 <div style={{ background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: mobile ? "10px 12px" : "10px 16px", marginBottom: 8, display: "flex", flexDirection: mobile ? "column" : "row" as const, alignItems: mobile ? "stretch" : "center", justifyContent: "space-between", gap: 8 }}>
                   <span style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
-                    <CbbtcLogo size={14} />{fmtSats(divs)} cbBTC proceeds available
+                    <CbbtcLogo size={14} />{fmtSats(divs)} cbBTC ready to claim
                   </span>
                   <div style={{ display: "flex", gap: 6 }}>
                     <button onClick={withdraw} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "8px 16px", fontFamily: "Arial, sans-serif", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>Claim Satoshis</button>
@@ -1215,7 +1215,7 @@ export default function Home() {
                   {oktUsd && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.green, fontWeight: 600 }}>{oktUsd}</div>}
                 </div>
                 <div style={{ background: C.card, padding: "8px 10px", borderTop: `2px solid ${C.blue}` }}>
-                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: "0.1em", color: C.blue, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>Proceeds</div>
+                  <div style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: "0.1em", color: C.blue, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>Claimable</div>
                   <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, color: C.blue }}>{fmtSats(divs)}</div>
                   <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted }}>{fmtCbbtc(divs)}</div>
                   {divsUsd && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 10, color: C.green, fontWeight: 600 }}>{divsUsd}</div>}
@@ -1338,17 +1338,17 @@ export default function Home() {
                   <div style={{ position: "fixed" as const, top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
                     <div style={{ background: C.card, border: `2px solid ${C.orange}`, borderRadius: 16, padding: mobile ? 24 : 36, maxWidth: 480, width: "100%", boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 22, fontWeight: 700, color: C.orange, marginBottom: 16 }}>
-                        ⚠️ Wait — You Have Unclaimed Dividends
+                        ⚠️ Wait — You Have Unclaimed Satoshis
                       </div>
                       <p style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
-                        You have <strong style={{ color: C.blue }}>{fmtSats(divs.toString())} cbBTC</strong> in unclaimed proceeds. We recommend claiming them before selling your tokens to ensure you receive every satoshi.
+                        You have <strong style={{ color: C.blue }}>{fmtSats(divs.toString())} cbBTC</strong> in unclaimed recirculated satoshis. We recommend claiming them before selling your keys to ensure you receive every satoshi.
                       </p>
                       <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 24 }}>
-                        <strong>Why this matters:</strong> Your share of yield is tied directly to your token balance. If you sell first, your earning power drops to zero. Withdraw first and you collect your cbBTC while still holding OKT — continuing to earn on every transaction until the moment you sell.
+                        <strong>Why this matters:</strong> Recirculation is tied directly to your key balance. If you sell first, nothing further recirculates to you. Claim first and you collect your cbBTC while still holding your keys.
                       </p>
                       <div style={{ display: "flex", gap: 10, flexDirection: mobile ? "column" : "row" as const }}>
                         <button onClick={() => { setShowSellWarning(false); }} style={{ flex: 1, background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px", fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
-                          ← Withdraw First (Recommended)
+                          ← Claim First (Recommended)
                         </button>
                         <button onClick={() => { setShowSellWarning(false); sell(); }} style={{ flex: 1, background: "transparent", color: C.red, border: `2px solid ${C.red}`, borderRadius: 8, padding: "14px", fontFamily: "Arial, sans-serif", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
                           Sell Anyway
@@ -1364,7 +1364,7 @@ export default function Home() {
             {swapMode === "transfer" && (
               <Panel title="Transfer Origin Keys — Zero Fee" theme={C}>
                 <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
-                  Send Origin Keys to any wallet with no fee. Dividend yield moves proportionally with the tokens.
+                  Send Origin Keys to any wallet with no fee. Recirculation follows the keys — claimable satoshis accrue to whoever holds them.
                 </p>
                 <Input theme={C} label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
                 <Input theme={C} label="Origin Keys amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OK" hint={`Your balance: ${oktNum.toLocaleString()} OKey`} />
@@ -1381,7 +1381,7 @@ export default function Home() {
           <div>
             <Panel title="Inscribe Vault — Analog Bitcoin Art Piece" theme={C}>
               <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
-                You spend cbBTC — 7% goes to all OKT holders as dividends, and the remaining 93% becomes OKT tokens sealed inside the vault. The Ordinal number is optional — leave blank for series pieces without an Ordinal.
+                You spend cbBTC — the 7% network fee recirculates to all Origin Key holders, and the remaining 93% becomes Origin Keys sealed inside the vault. The Ordinal number is optional — leave blank for series pieces without an Ordinal.
               </p>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "16px", marginBottom: 12 }}>
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.blue, marginBottom: 12, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.08em" }}>How It Works</div>
@@ -1390,7 +1390,7 @@ export default function Home() {
                   "Copy that wallet address into the Vault field below",
                   "Get your Ordinal inscription number from ordinals.com (optional)",
                   "Enter how much cbBTC you want embedded — 7% fee applies, minimum 100 sats",
-                  "Hit Inscribe — cbBTC approved, fee distributed, OKT sealed in vault",
+                  "Hit Inscribe — cbBTC approved, fee recirculated, OKT sealed in vault",
                   "Print the private key and seal it inside the physical art",
                 ].map((s, i) => (
                   <div key={i} style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textDim, padding: "5px 0", display: "flex", gap: 12 }}>
@@ -1406,7 +1406,7 @@ export default function Home() {
                 <Input theme={C} label="Ordinal inscription ID" value={insInsId} onChange={setInsInsId} placeholder="01b0dd658974e98059a753bab23e3cdbd4c86c7b49b92c2b03f7ede01b09031ei0" hint="Paste the full inscription ID from ordinals.com/inscription/YOUR_NUMBER — this displays the ordinal image in the vault checker" />
               ) : (
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginBottom: 20, padding: "10px 14px", background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
-                  No Ordinal — this vault will hold Origin Keys only. The vault checker will show token balance and dividends but no linked Bitcoin inscription.
+                  No Ordinal — this vault will hold Origin Keys only. The vault checker will show key balance and recirculated satoshis but no linked Bitcoin inscription.
                 </div>
               )}
               <Input theme={C} label="cbBTC to spend (sats) — 7% fee, rest becomes OKT in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
@@ -1753,7 +1753,7 @@ export default function Home() {
                       {btcPrice > 0 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.balance), btcPrice))} USD</div>}
                     </div>
                     <div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>cbBTC Yield Earned</div>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Recirculated cbBTC</div>
                       {Number(vResult.dividends) > 0 ? (
                         <>
                           <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
@@ -1763,7 +1763,7 @@ export default function Home() {
                           {btcPrice > 0 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.dividends), btcPrice))} USD</div>}
                         </>
                       ) : (
-                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>No yield yet — accumulates as others buy and sell</div>
+                        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: C.textMuted }}>Nothing recirculated yet — accumulates as keys trade</div>
                       )}
                     </div>
 
@@ -1775,7 +1775,7 @@ export default function Home() {
                           <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted }}>{fmtCbbtc((Number(vResult.balance) + Number(vResult.dividends)).toString())}&nbsp;·&nbsp;{(Number(vResult.balance) + Number(vResult.dividends)).toLocaleString()} sats</div>
                         </div>
                         <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginTop: 6 }}>
-                          OKT tokens + accumulated cbBTC yield — redeemable by destroying the art piece and acquiring the embedded SeedPod (Private Key) to the wallet holding the digital assets.
+                          Origin Keys + recirculated cbBTC — redeemable by destroying the art piece and acquiring the embedded SeedPod (Private Key) to the wallet holding the digital assets.
                         </div>
                       </div>
                     )}
