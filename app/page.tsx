@@ -1160,7 +1160,7 @@ export default function Home() {
                 <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>Origin Key tokens are denominated in 1 Satoshi = 1 OKT using cbBTC (tokenized Bitcoin from Coinbase). The 7% fee is distributed proportionately to Immutable Edition Collectables and active holders of OKT.</div>
               </div>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>Administrators, middlemen, order books, bonding curves and "the house" were removed so there's nothing to corrupt. <span style={{ fontStyle: "italic", fontWeight: 700 }}>Equity is not promised.</span><br /><span style={{ fontWeight: 700, fontSize: 14 }}>It's coded in math.</span></div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>Administrators, middlemen, order books, bonding curves and "the house" were removed so there's nothing to corrupt.<br /><span style={{ fontStyle: "italic", fontWeight: 700 }}>Equity is not promised.</span><br /><span style={{ fontWeight: 700, fontSize: 15, color: C.blue }}>It's coded in math.</span></div>
               </div>
             </div>
           </div>
