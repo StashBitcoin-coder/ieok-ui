@@ -1148,9 +1148,6 @@ export default function Home() {
           <>
           {/* SWAP HEADER — Origin Key Token + DAO */}
           <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 11 : 12, color: C.textMuted, marginBottom: 12, lineHeight: 1.5 }}>
-              Origin Key tokens are denominated 1:1 in Satoshis using cbBTC, tokenized Bitcoin issued by Coinbase.
-            </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
               <SkeletonKey size={36} dark={darkMode} />
               <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Origin Key Token</span>
@@ -1158,15 +1155,12 @@ export default function Home() {
             <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 10 }}>
               Deterministic Automatic Operation (DAO) Contract
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 6 }}>
+            <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 6 }}>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>The Origin Key Token's 7% fee is distributed proportionately via unquestionable math to Immutable Edition Collectables and active holders who acquire OKT only.</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>Origin Key tokens are denominated in 1 Satoshi = 1 OKT using cbBTC (tokenized Bitcoin from Coinbase). The 7% fee is distributed proportionately to Immutable Edition Collectables and active holders of OKT.</div>
               </div>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.5, fontWeight: 700 }}>Absolutely no brokers or influencers benefit.</div>
-              </div>
-              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
-                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 17, color: C.blue, lineHeight: 1.5, fontWeight: 700 }}>Only collectors and creators.</div>
+                <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>Administrators, middlemen, order books, bonding curves and "the house" were removed so there's nothing to corrupt. <span style={{ fontStyle: "italic" }}>Equity is not promised.</span> <span style={{ fontWeight: 700, fontSize: 14 }}>It's coded in math.</span></div>
               </div>
             </div>
           </div>
@@ -1228,10 +1222,22 @@ export default function Home() {
               </div>
 
 
-              {/* Wallet address */}
+              {/* Wallet address + revoke */}
               {connected && account && (
-                <div style={{ textAlign: "center" as const, marginTop: 8, fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>
-                  Your Wallet Address: {mobile ? fmtAddr(accountStr) : accountStr}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8, gap: 8 }}>
+                  <button onClick={async () => {
+                    try {
+                      const gs = await getSigner();
+                      const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, gs);
+                      const tx = await cbbtc.approve(IEOK_ADDRESS, BigInt(0));
+                      await tx.wait();
+                      alert("cbBTC approval revoked — the contract can no longer spend your cbBTC.");
+                    } catch (e: any) {
+                      if (e.message?.includes("user rejected")) return;
+                      alert("Revoke failed — try again.");
+                    }
+                  }} style={{ background: "transparent", border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 14px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>REVOKE CONTRACT</button>
+                  <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>{mobile ? fmtAddr(accountStr) : accountStr}</span>
                 </div>
               )}
             </div>
@@ -1245,28 +1251,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* REVOKE APPROVAL */}
-          {connected && (
-            <div style={{ textAlign: "center" as const, marginBottom: 10 }}>
-              <span style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted }}>
-                <button onClick={async () => {
-                  try {
-                    const gs = await getSigner();
-                    const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, gs);
-                    const tx = await cbbtc.approve(IEOK_ADDRESS, BigInt(0));
-                    await tx.wait();
-                    alert("cbBTC approval revoked — the contract can no longer spend your cbBTC.");
-                  } catch (e: any) {
-                    if (e.message?.includes("user rejected")) return;
-                    alert("Revoke failed — try again.");
-                  }
-                }} style={{ background: "transparent", border: "none", fontFamily: "Arial, sans-serif", fontSize: 10, color: C.textMuted, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
-                  Revoke cbBTC approval
-                </button>
-                {" "}— Revoke the cbBTC approval permission for your wallet. You can re-approve on your next acquisition.
-              </span>
-            </div>
-          )}
 
           {/* SWAP MODE TOGGLE */}
           <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
@@ -1838,7 +1822,8 @@ export default function Home() {
           </Panel>
         )}
 
-        {/* CONTRACT ADDRESSES */}
+        {/* CONTRACT ADDRESSES — SWAP tab only */}
+        {tab === "swap" && (
         <div style={{ marginTop: 24, background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, padding: "16px 20px" }}>
           <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 16 }}>
             {[
@@ -1852,6 +1837,7 @@ export default function Home() {
             ))}
           </div>
         </div>
+        )}
 
         {/* FOOTER */}
         <div style={{ textAlign: "center" as const, padding: "32px 0 16px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.15em", lineHeight: 2 }}>
