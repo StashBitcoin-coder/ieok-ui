@@ -96,8 +96,8 @@ const satsToUsd = (s: number, p: number) => satsToBtc(s) * p;
 const fmtUsd    = (n: number) => "$" + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtAddr   = (v: string) => v ? v.slice(0, 6) + "..." + v.slice(-4) : "—";
 const fmtCbbtc  = (v: string) => (Number(v) / 1e8).toFixed(6) + " cbBTC";
-const fmtSats   = (v: string) => Number(v).toLocaleString() + " sats";
-const fmtOK    = (v: string) => Number(v).toLocaleString() + " OKey";
+const fmtSats   = (v: string) => Number(v).toLocaleString() + " Sats";
+const fmtOK    = (v: string) => Number(v).toLocaleString() + " Origin Key";
 const fmtTs     = (ts: string) => { const n = Number(ts); if (!n) return "—"; return new Date(n * 1000).toLocaleString(); };
 
 function preview7(sats: string) {
@@ -505,7 +505,7 @@ export default function Home() {
   async function buy() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!buyAmt)  { alert("Enter cbBTC amount");   return; }
-    if (Number(buyAmt) < 100) { alert("Minimum buy is 100 sats"); return; }
+    if (Number(buyAmt) < 100) { alert("Minimum buy is 100 Sats"); return; }
     const s = await getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
     const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   s);
@@ -536,8 +536,8 @@ export default function Home() {
     } catch (e: any) {
       setBuyS("failed");
       const msg = e.reason || e.message || "";
-      if (msg.includes("Minimum 100 sats")) {
-        setBuyM("Minimum purchase is 100 sats.");
+      if (msg.includes("Minimum 100 Sats")) {
+        setBuyM("Minimum purchase is 100 Sats.");
       } else if (msg.includes("user rejected") || msg.includes("User denied")) {
         setBuyM("Transaction cancelled.");
       } else if (msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
@@ -619,8 +619,8 @@ export default function Home() {
     } catch (e: any) {
       setRvS("failed");
       const msg = e.reason || e.message || "";
-      if (msg.includes("Minimum 100 sats") || msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
-        setRvM("You need at least 100 sats claimable to repurchase.");
+      if (msg.includes("Minimum 100 Sats") || msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
+        setRvM("You need at least 100 Sats claimable to repurchase.");
       } else if (msg.includes("user rejected") || msg.includes("User denied")) {
         setRvM("Transaction cancelled.");
       } else {
@@ -660,7 +660,7 @@ export default function Home() {
   async function inscribe() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!insVault || !insAsset || !insCbbtc) { alert("Vault address, asset ID and cbBTC amount are required"); return; }
-    if (Number(insCbbtc) < 100) { alert("Minimum inscribe is 100 sats"); return; }
+    if (Number(insCbbtc) < 100) { alert("Minimum inscribe is 100 Sats"); return; }
     const s = await getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
     const okt   = new ethers.Contract(IEOK_ADDRESS,  OKT_ABI,   s);
@@ -1266,19 +1266,19 @@ export default function Home() {
           <div>
 
             {swapMode === "buy" && (
-              <Panel title="Acquire Origin Keys — Fixed Price 1 Sat = 1 OKey" theme={C}>
+              <Panel title="Acquire Origin Keys — Fixed Price 1 Sat = 1 Origin Key" theme={C}>
                 <FeeBadge mobile={mobile} theme={C} />
 
 
                 <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
-                  Enter your cbBTC amount in Satoshis. Minimum 100 sats. The process is two steps: 1st Approve, 2nd Acquire. Your wallet will never be approved for more than you are spending.
+                  Enter your cbBTC amount in Satoshis. Minimum 100 Sats. The process is two steps: 1st Approve, 2nd Acquire. Your wallet will never be approved for more than you are spending.
                 </p>
                 <Input theme={C} label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
-                  hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 sats · 1,000 sats = 930 OKT after 7% fee"} />
+                  hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 Sats · 1,000 Sats = 930 OKT after 7% fee"} />
                 {bPrev && (
                   <Preview theme={C} rows={[
-                    { label: "7% fee — paid to all OKT holders", value: bPrev.fee.toLocaleString() + " sats" },
-                    { label: "OKT you receive (1 sat = 1 OKT)", value: bPrev.out.toLocaleString() + " OKey" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.out, btcPrice)) : ""), blue: true },
+                    { label: "7% fee — paid to all OKT holders", value: bPrev.fee.toLocaleString() + " Sats" },
+                    { label: "OKT you receive (1 sat = 1 OKT)", value: bPrev.out.toLocaleString() + " Origin Key" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
                 {/* BUY BUTTON — auto-approves exact amount */}
@@ -1296,8 +1296,8 @@ export default function Home() {
                 <Input theme={C} label="OKT amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="OKT" hint={`Your balance: ${oktNum.toLocaleString()} OKT`} />
                 {sPrev && (
                   <Preview theme={C} rows={[
-                    { label: "7% fee — paid to all OKT holders", value: sPrev.fee.toLocaleString() + " sats" },
-                    { label: "cbBTC you receive (1 OKT = 1 sat)", value: sPrev.out.toLocaleString() + " sats" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(sPrev.out, btcPrice)) : ""), blue: true },
+                    { label: "7% fee — paid to all OKT holders", value: sPrev.fee.toLocaleString() + " Sats" },
+                    { label: "cbBTC you receive (1 OKT = 1 sat)", value: sPrev.out.toLocaleString() + " Sats" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(sPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
                 <BigBtn onClick={() => {
@@ -1346,7 +1346,7 @@ export default function Home() {
                   Send Origin Keys to any wallet with no fee. Recirculation follows the keys — claimable satoshis accrue to whoever holds them.
                 </p>
                 <Input theme={C} label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
-                <Input theme={C} label="Origin Keys amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OK" hint={`Your balance: ${oktNum.toLocaleString()} OKey`} />
+                <Input theme={C} label="Origin Keys amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OK" hint={`Your balance: ${oktNum.toLocaleString()} Origin Key`} />
                 <BigBtn onClick={transfer} theme={C} disabled={!connected}>Transfer — Free</BigBtn>
                 <Status state={txS} msg={txM} theme={C} />
               </Panel>
@@ -1368,7 +1368,7 @@ export default function Home() {
                   "Generate a fresh wallet in MetaMask — click Add Account",
                   "Copy that wallet address into the Vault field below",
                   "Get your Ordinal inscription number from ordinals.com (optional)",
-                  "Enter how much cbBTC you want embedded — 7% fee applies, minimum 100 sats",
+                  "Enter how much cbBTC you want embedded — 7% fee applies, minimum 100 Sats",
                   "Hit Inscribe — cbBTC approved, fee recirculated, OKT sealed in vault",
                   "Print the private key and seal it inside the physical art",
                 ].map((s, i) => (
@@ -1388,12 +1388,12 @@ export default function Home() {
                   No Ordinal — this vault will hold Origin Keys only. The vault checker will show key balance and recirculated satoshis but no linked Bitcoin inscription.
                 </div>
               )}
-              <Input theme={C} label="cbBTC to spend (sats) — 7% fee, rest becomes OKT in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
-                hint={btcPrice > 0 && insCbbtc ? `≈ ${fmtUsd(satsToUsd(Number(insCbbtc), btcPrice))} USD` : `Your cbBTC: ${fmtSats(cbbtcBal)} · Minimum 100 sats`} />
+              <Input theme={C} label="cbBTC to spend (Sats) — 7% fee, rest becomes OKT in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
+                hint={btcPrice > 0 && insCbbtc ? `≈ ${fmtUsd(satsToUsd(Number(insCbbtc), btcPrice))} USD` : `Your cbBTC: ${fmtSats(cbbtcBal)} · Minimum 100 Sats`} />
               {insPrev && (
                 <Preview theme={C} rows={[
-                  { label: "7% fee — distributed to all OKT holders", value: insPrev.fee.toLocaleString() + " sats" },
-                  { label: "OKT sealed in vault (1 sat = 1 OKT)", value: insPrev.out.toLocaleString() + " OKey" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.out, btcPrice)) : ""), blue: true },
+                  { label: "7% fee — distributed to all OKT holders", value: insPrev.fee.toLocaleString() + " Sats" },
+                  { label: "OKT sealed in vault (1 sat = 1 OKT)", value: insPrev.out.toLocaleString() + " Origin Key" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.out, btcPrice)) : ""), blue: true },
                 ]} />
               )}
               {/* ─── Gallery Admin ─── */}
@@ -1727,8 +1727,8 @@ export default function Home() {
                     </div>
                     <div>
                       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Origin Key Balance</div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.text, fontWeight: 700 }}>{Number(vResult.balance).toLocaleString()} OKey</div>
-                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{Number(vResult.balance).toLocaleString()} sats&nbsp;·&nbsp;{fmtCbbtc(vResult.balance)}</div>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.text, fontWeight: 700 }}>{Number(vResult.balance).toLocaleString()} Origin Key</div>
+                      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{Number(vResult.balance).toLocaleString()} Sats&nbsp;·&nbsp;{fmtCbbtc(vResult.balance)}</div>
                       {btcPrice > 0 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.balance), btcPrice))} USD</div>}
                     </div>
                     <div>
@@ -1736,7 +1736,7 @@ export default function Home() {
                       {Number(vResult.dividends) > 0 ? (
                         <>
                           <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 22 : 26, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
-                            <CbbtcLogo size={24} />{Number(vResult.dividends).toLocaleString()} sats
+                            <CbbtcLogo size={24} />{Number(vResult.dividends).toLocaleString()} Sats
                           </div>
                           <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{fmtCbbtc(vResult.dividends)}</div>
                           {btcPrice > 0 && <div style={{ fontFamily: "Arial, sans-serif", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.dividends), btcPrice))} USD</div>}
@@ -1751,7 +1751,7 @@ export default function Home() {
                         <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.blue, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 700 }}>Total Redeemable Value</div>
                         <div style={{ display: "flex", alignItems: "baseline", gap: 14, flexWrap: "wrap" as const }}>
                           <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 24 : 30, color: C.blue, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.balance) + Number(vResult.dividends), btcPrice))} USD</div>
-                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted }}>{fmtCbbtc((Number(vResult.balance) + Number(vResult.dividends)).toString())}&nbsp;·&nbsp;{(Number(vResult.balance) + Number(vResult.dividends)).toLocaleString()} sats</div>
+                          <div style={{ fontFamily: "Arial, sans-serif", fontSize: 13, color: C.textMuted }}>{fmtCbbtc((Number(vResult.balance) + Number(vResult.dividends)).toString())}&nbsp;·&nbsp;{(Number(vResult.balance) + Number(vResult.dividends)).toLocaleString()} Sats</div>
                         </div>
                         <div style={{ fontFamily: "Arial, sans-serif", fontSize: 12, color: C.textMuted, marginTop: 6 }}>
                           Origin Keys + recirculated cbBTC — redeemable by destroying the art piece and acquiring the embedded SeedPod (Private Key) to the wallet holding the digital assets.
