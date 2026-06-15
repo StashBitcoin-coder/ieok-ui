@@ -1170,7 +1170,19 @@ export default function Home() {
           {/* CONNECT + PORTFOLIO CARDS — inside swap tab, 35% smaller */}
           {connected ? (
             <div style={{ marginBottom: 16 }}>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, gap: 8 }}>
+                <button onClick={async () => {
+                  try {
+                    const gs = await getSigner();
+                    const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, gs);
+                    const tx = await cbbtc.approve(IEOK_ADDRESS, BigInt(0));
+                    await tx.wait();
+                    alert("cbBTC approval revoked — the contract can no longer spend your cbBTC.");
+                  } catch (e: any) {
+                    if (e.message?.includes("user rejected")) return;
+                    alert("Revoke failed — try again.");
+                  }
+                }} style={{ background: "transparent", border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 14px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>REVOKE CONTRACT</button>
                 <ConnectButton
                   showBalance={false}
                   chainStatus="none"
@@ -1222,24 +1234,7 @@ export default function Home() {
               </div>
 
 
-              {/* Wallet address + revoke */}
-              {connected && account && (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8, gap: 8 }}>
-                  <button onClick={async () => {
-                    try {
-                      const gs = await getSigner();
-                      const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, gs);
-                      const tx = await cbbtc.approve(IEOK_ADDRESS, BigInt(0));
-                      await tx.wait();
-                      alert("cbBTC approval revoked — the contract can no longer spend your cbBTC.");
-                    } catch (e: any) {
-                      if (e.message?.includes("user rejected")) return;
-                      alert("Revoke failed — try again.");
-                    }
-                  }} style={{ background: "transparent", border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 14px", fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>REVOKE CONTRACT</button>
-                  <span style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: C.textMuted }}>{mobile ? fmtAddr(accountStr) : accountStr}</span>
-                </div>
-              )}
+
             </div>
           ) : (
             <div style={{ display: "flex", justifyContent: "flex-end", padding: "12px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
