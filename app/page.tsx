@@ -319,10 +319,10 @@ const VIDEOS = [
     desc: "To acquire Origin Keys you need cbBTC on Base chain. Open Coinbase. Buy Bitcoin. Go to Coinbase Wallet. Tap send. Choose Base network. Send to your wallet address. That's it — your Bitcoin is now cbBTC on Base. Ready to acquire.",
     url: "https://youtube.com", tag: "BEGINNERS", tc: "#00A878" },
   { title: "How to Acquire Origin Keys",
-    desc: "Go to the SWAP tab. Connect your wallet. Tap Acquire. Enter the amount in satoshis — minimum 100. First time you'll see two wallet popups — first to approve cbBTC, then to buy. After that it's one tap. Your Origin Keys appear in your balance and recirculation to them begins immediately.",
+    desc: "Go to the SETTLE tab. Connect your wallet. Tap Acquire. Enter the amount in satoshis — minimum 100. First time you'll see two wallet popups — first to approve cbBTC, then to buy. After that it's one tap. Your Origin Keys appear in your balance and recirculation to them begins immediately.",
     url: "https://youtube.com", tag: "TRADING", tc: "#0052FF" },
   { title: "How to Dispose Origin Keys",
-    desc: "Go to the SWAP tab. Tap Dispose. Enter how many Origin Keys to sell. cbBTC goes directly to your wallet. The seven percent network fee recirculates to every other key holder. Simple.",
+    desc: "Go to the SETTLE tab. Tap Dispose. Enter how many Origin Keys to sell. cbBTC goes directly to your wallet. The seven percent network fee recirculates to every other key holder. Simple.",
     url: "https://youtube.com", tag: "TRADING", tc: "#0052FF" },
   { title: "How to Claim Satoshis",
     desc: "Every trade generates a seven percent network fee. That fee recirculates proportionally to everyone holding Origin Keys. It shows in the Claimable box. Tap Claim Satoshis to withdraw cbBTC to your wallet. Or tap Repurchase to convert claimable satoshis into more Origin Keys.",
@@ -758,7 +758,7 @@ export default function Home() {
   const tabs: { id: Tab; label: string; short: string }[] = [
     { id: "gallery",  label: "GALLERY",     short: "GALLERY"  },
     { id: "vault",    label: "VAULT"      , short: "VAULT"    },
-    { id: "swap",     label: "SWAP",        short: "SWAP"     },
+    { id: "swap",     label: "SETTLE",      short: "SETTLE"   },
     { id: "learn",    label: "CONDUCT",     short: "CONDUCT"  },
     ...(isRegistrar ? [{ id: "inscribe" as Tab, label: "INSCRIBE", short: "INSCRIBE" }] : []),
   ];
@@ -945,11 +945,8 @@ export default function Home() {
                 Collect physical assets that represent a trustless, permissionless and unquestionable integrity.
               </p>
               <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
-                <a href="https://analogbitcoin.com" target="_blank" rel="noopener noreferrer" style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textDecoration: "none", display: "inline-block" }}>
-                  Explore Analog Bitcoin
-                </a>
-                <button onClick={() => setTab("swap")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
-                  Start Trading
+                <button onClick={() => setTab("gallery")} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "Arial, sans-serif", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
+                  Explore the Gallery
                 </button>
               </div>
             </div>
