@@ -820,7 +820,7 @@ export default function Home() {
         {tab === "home" && (
           <div>
             {/* HERO */}
-            <div style={{ textAlign: "center" as const, padding: mobile ? "40px 0 16px" : "56px 0 24px" }}>
+            <div style={{ textAlign: "center" as const, padding: mobile ? "12px 0 16px" : "20px 0 24px" }}>
 
               <h1 style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 36 : 56, fontWeight: 400, color: C.text, lineHeight: 1.1, margin: "0 0 24px", letterSpacing: "-0.02em" }}>
                 Where Provenance<br/>and Interest meet<br/>
