@@ -836,7 +836,7 @@ export default function Home() {
             <div style={{ margin: "16px auto 0", maxWidth: 320, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.border}` }}>
               <div style={{ position: "relative" as const, paddingBottom: "177.78%", height: 0 }}>
                 <iframe
-                  src="https://www.canva.com/design/DAHKUQElnjQ/KEZ-IoKy9KaXVkTgCgBh0g/watch?embed&autoplay=1&mute=1&loop=1"
+                  src="https://www.canva.com/design/DAHMw5jIeH8/zz5Y1qng5CH2fRTapcUKzg/watch?embed&autoplay=1&mute=1&loop=1"
                   style={{ position: "absolute" as const, top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
                   loading="lazy"
                   allow="autoplay; fullscreen"
