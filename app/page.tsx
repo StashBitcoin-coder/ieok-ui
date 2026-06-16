@@ -820,25 +820,26 @@ export default function Home() {
         {tab === "home" && (
           <div>
             {/* HERO */}
-            <div style={{ textAlign: "center" as const, padding: mobile ? "48px 0 40px" : "64px 0 56px" }}>
+            <div style={{ textAlign: "center" as const, padding: mobile ? "40px 0 16px" : "56px 0 24px" }}>
 
               <h1 style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 36 : 56, fontWeight: 400, color: C.text, lineHeight: 1.1, margin: "0 0 24px", letterSpacing: "-0.02em" }}>
                 Where Provenance<br/>and Interest meet<br/>
                 <span style={{ color: C.blue, fontStyle: "italic" }}>Market Integrity.</span>
               </h1>
-              <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 18, color: C.textMuted, lineHeight: 1.7, maxWidth: 600, margin: "0 auto 40px", fontWeight: 300 }}>
+              <p style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 15 : 18, color: C.textMuted, lineHeight: 1.7, maxWidth: 600, margin: "0 auto 20px", fontWeight: 300 }}>
                 The collectible space has always struggled with authenticity and fair value. We built the infrastructure to fix both — permanently, on chain, with no one in control.
               </p>
 
             </div>
 
             {/* CANVA VIDEO */}
-            <div style={{ margin: "48px auto 0", maxWidth: 320, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.border}` }}>
+            <div style={{ margin: "16px auto 0", maxWidth: 320, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.border}` }}>
               <div style={{ position: "relative" as const, paddingBottom: "177.78%", height: 0 }}>
                 <iframe
-                  src="https://www.canva.com/design/DAHKUQElnjQ/KEZ-IoKy9KaXVkTgCgBh0g/watch?embed"
+                  src="https://www.canva.com/design/DAHKUQElnjQ/KEZ-IoKy9KaXVkTgCgBh0g/watch?embed&autoplay=1&mute=1&loop=1"
                   style={{ position: "absolute" as const, top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
                   loading="lazy"
+                  allow="autoplay; fullscreen"
                   allowFullScreen
                   title="Immutable Editions"
                 />
@@ -846,7 +847,7 @@ export default function Home() {
             </div>
 
             {/* DIVIDER */}
-            <div style={{ height: 1, background: C.border, margin: "56px 0 56px" }} />
+            <div style={{ height: 1, background: C.border, margin: "32px 0 32px" }} />
 
             {/* THE PROBLEM */}
             <div style={{ textAlign: "center" as const, marginBottom: 56 }}>
