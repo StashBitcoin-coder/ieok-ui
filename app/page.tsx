@@ -1150,8 +1150,11 @@ export default function Home() {
               <SkeletonKey size={36} dark={darkMode} />
               <span style={{ fontFamily: "Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Origin Key Token</span>
             </div>
-            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 10 }}>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 4 }}>
               Deterministic Automatic Operation (DAO) Contract
+            </div>
+            <div style={{ fontFamily: "Arial, sans-serif", fontSize: mobile ? 12 : 13, fontWeight: 400, color: C.textDim, marginBottom: 10 }}>
+              Making <span style={{ fontStyle: "italic", fontWeight: 700 }}>interest</span> an accurate unit of measure.
             </div>
             <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 8, marginBottom: 6 }}>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 12px" }}>
