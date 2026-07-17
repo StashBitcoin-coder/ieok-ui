@@ -434,7 +434,10 @@ export default function Home() {
 
   // Gallery state
   const [galleryData, setGalleryData] = useState<any>(null);
-  const [vaultMode, setVaultMode] = useState<"verify" | "acquire" | "guides">("verify");
+  const [vaultMode, setVaultMode] = useState<"keychain" | "conduct" | "checker">("keychain");
+  const [isWitness, setIsWitness]   = useState(false);
+  const [wS, setWS]                 = useState<TxState>("idle");
+  const [wM, setWM]                 = useState("");
   const [galleryView, setGalleryView] = useState<"artists" | "collections" | "pieces">("collections");
   const [selectedArtist, setSelectedArtist] = useState<any>(null);
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
@@ -480,6 +483,68 @@ export default function Home() {
   }
 
   // ─── Helper: get ethers signer from wagmi walletClient ──────────────────
+  // ─── Witness gate ─────────────────────────────────────────────────────────
+  // The attestation is the legal artifact: the wallet declares WHY it holds
+  // keys — participation and verification, not profit. Signature is evidence.
+  const ATTESTATION = (addr: string) => [
+    "I am becoming a Witness of The Glass Vault.",
+    "",
+    "I acquire Witness Keys to participate in and verify the provenance of",
+    "physical art. I am not acquiring them as an investment, and not in",
+    "expectation of profit from the efforts of others.",
+    "",
+    "I understand:",
+    "  1 Witness Key = 1 satoshi. The peg never changes.",
+    "  The 7% fee recirculates to holders and vaults by fixed math.",
+    "  No one directs it. No one can change it.",
+    "  This contract has no owner, no admin, and no governance.",
+    "  Recirculation follows network activity, not management.",
+    "",
+    `Wallet: ${addr}`,
+    `Date: ${new Date().toISOString()}`,
+  ].join("\n");
+
+  useEffect(() => {
+    if (!account) { setIsWitness(false); return; }
+    try {
+      setIsWitness(localStorage.getItem(`witness:${account.toLowerCase()}`) === "1");
+    } catch { setIsWitness(false); }
+  }, [account]);
+
+  async function becomeWitness() {
+    if (!account) { setWS("failed"); setWM("Connect a wallet to attest."); return; }
+    setWS("pending"); setWM("Sign the attestation in your wallet...");
+    let message = "", signature = "";
+    try {
+      const s = await getSigner();
+      message   = ATTESTATION(account);
+      signature = await s.signMessage(message);
+    } catch (e: any) {
+      setWS("failed");
+      const msg = e?.reason || e?.message || "";
+      setWM(msg.includes("user rejected") || msg.includes("User denied")
+        ? "Attestation cancelled."
+        : "Could not sign — try again.");
+      return;
+    }
+    setWM("Recording attestation...");
+    try {
+      const res = await fetch("/api/witness", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: account, message, signature }),
+      });
+      if (!res.ok) throw new Error("record failed");
+      // Only unlock once the record actually landed.
+      localStorage.setItem(`witness:${account.toLowerCase()}`, "1");
+      setIsWitness(true);
+      setWS("success"); setWM("Witnessed. The vault is open.");
+    } catch {
+      setWS("failed");
+      setWM("Your signature did not reach the registry. Nothing was recorded — please try again.");
+    }
+  }
+
   function getSigner() {
     if (!walletClient) throw new Error("Wallet not connected");
     const { account: acc, chain: ch, transport } = walletClient;
@@ -954,7 +1019,7 @@ export default function Home() {
                 <a href="https://analogbitcoin.com" target="_blank" rel="noopener noreferrer" style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textDecoration: "none", display: "inline-block" }}>
                   Explore Analog Bitcoin
                 </a>
-                <button onClick={() => setTab("vault"); setVaultMode("acquire")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
+                <button onClick={() => setTab("vault"); setVaultMode("keychain")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
                   Start Trading
                 </button>
               </div>
@@ -1150,7 +1215,7 @@ export default function Home() {
           </>
         )}
 
-        {tab === "vault" && vaultMode === "acquire" && (
+        {tab === "vault" && isWitness && vaultMode === "keychain" && (
           <>
           {/* SWAP HEADER — Witness Key Token + DAO */}
           <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
@@ -1647,35 +1712,91 @@ export default function Home() {
         )}
 
         {/* VAULT */}
-        {/* VAULT SUB-NAV */}
+        {/* ─── VAULT: copy stack, always shown ─────────────────────────── */}
         {tab === "vault" && (
-          <>
-            <div style={{ textAlign: "center" as const, marginBottom: 18 }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.18em", marginBottom: 10 }}>
-                THE GLASS VAULT&trade; &middot; PATENT PENDING
-              </div>
-              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 26 : 34, fontWeight: 400, color: C.text, letterSpacing: "-0.01em", marginBottom: 4 }}>
-                Integrity, witnessed.
-              </div>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 11, color: C.textMuted, letterSpacing: "0.06em" }}>
-                Collect the card, hold the Keys.
-              </div>
+          <div style={{ textAlign: "center" as const, marginBottom: 18 }}>
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.18em", marginBottom: 10 }}>
+              THE GLASS VAULT&trade; &middot; PATENT PENDING
             </div>
-
-            <div style={{ display: "flex", gap: 6, marginBottom: 20, justifyContent: "center" }}>
-              {([["verify","VERIFY"],["acquire","ACQUIRE"],["guides","GUIDES"]] as const).map(([m, label]) => (
-                <button key={m} onClick={() => setVaultMode(m as any)}
-                  onMouseEnter={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue; } }}
-                  onMouseLeave={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textMuted; } }}
-                  style={{ padding: mobile ? "8px 14px" : "9px 22px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, fontWeight: 600, letterSpacing: "0.1em", cursor: "pointer", borderRadius: 4, background: vaultMode === m ? C.blue : "transparent", color: vaultMode === m ? "#FFFFFF" : C.textMuted, border: `1px solid ${vaultMode === m ? C.blue : C.border}`, transition: "all 0.15s ease" }}>
-                  {label}
-                </button>
-              ))}
+            <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 26 : 34, fontWeight: 400, color: C.text, letterSpacing: "-0.01em", marginBottom: 4 }}>
+              Integrity, witnessed.
             </div>
-          </>
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 11, color: C.textMuted, letterSpacing: "0.06em" }}>
+              Collect the card, hold the Keys.
+            </div>
+          </div>
         )}
 
-        {tab === "vault" && vaultMode === "verify" && (
+        {/* ─── THE DOOR — nothing past this until attested ──────────────── */}
+        {tab === "vault" && !isWitness && (
+          <div style={{ maxWidth: 560, margin: "0 auto" }}>
+            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: mobile ? "24px 20px" : "34px 32px", boxShadow: C.shadow }}>
+
+              <div style={{ textAlign: "center" as const, marginBottom: 22 }}>
+                <SkeletonKey size={40} dark={darkMode} />
+              </div>
+
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 20 : 24, fontWeight: 400, color: C.text, textAlign: "center" as const, marginBottom: 14 }}>
+                Become a Witness
+              </div>
+
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
+                The vault is glass. Anyone can look. But to hold Keys you go on record first — signing a statement of why you are here.
+                <br /><br />
+                No gas. No cost. Nothing on chain. Your wallet signs a message; the signature proves it was you.
+              </div>
+
+              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 6, padding: "14px 16px", marginBottom: 20 }}>
+                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.textMuted, letterSpacing: "0.14em", marginBottom: 10 }}>
+                  YOU WILL SIGN
+                </div>
+                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 11, color: C.textDim, lineHeight: 1.75 }}>
+                  I acquire Witness Keys to participate in and verify the provenance of physical art. I am not acquiring them as an investment, and not in expectation of profit from the efforts of others.
+                  <br /><br />
+                  1 Witness Key = 1 satoshi. The peg never changes. The 7% fee recirculates by fixed math. No owner. No admin. No governance.
+                </div>
+              </div>
+
+              {!connected && (
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
+                  <ConnectButton showBalance={false} chainStatus="none" accountStatus="address" />
+                </div>
+              )}
+
+              <BigBtn onClick={becomeWitness} theme={C} disabled={!connected}>
+                {connected ? "Sign & Become a Witness" : "Connect a wallet to attest"}
+              </BigBtn>
+              <Status state={wS} msg={wM} theme={C} />
+
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted, textAlign: "center" as const, marginTop: 16, lineHeight: 1.6 }}>
+                No rips. No odds. You knew what was inside before you bought.
+                <br />That's the point.
+              </div>
+            </div>
+
+            <div style={{ textAlign: "center" as const, marginTop: 18 }}>
+              <button onClick={() => setTab("gallery")} style={{ background: "none", border: "none", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, cursor: "pointer", textDecoration: "underline" }}>
+                Just looking? Visit the gallery &rarr;
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ─── VAULT SUB-NAV — only past the door ───────────────────────── */}
+        {tab === "vault" && isWitness && (
+          <div style={{ display: "flex", gap: 6, marginBottom: 20, justifyContent: "center", flexWrap: "wrap" as const }}>
+            {([["keychain","KEYCHAIN"],["conduct","CONDUCT"],["checker","VAULT CHECKER"]] as const).map(([m, label]) => (
+              <button key={m} onClick={() => setVaultMode(m as any)}
+                onMouseEnter={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue; } }}
+                onMouseLeave={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textMuted; } }}
+                style={{ padding: mobile ? "8px 12px" : "9px 20px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 12, fontWeight: 600, letterSpacing: "0.1em", cursor: "pointer", borderRadius: 4, background: vaultMode === m ? C.blue : "transparent", color: vaultMode === m ? "#FFFFFF" : C.textMuted, border: `1px solid ${vaultMode === m ? C.blue : C.border}`, transition: "all 0.15s ease" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {tab === "vault" && isWitness && vaultMode === "checker" && (
           <Panel title="Vault Registry — On-Chain Seal — Scan NFC or Paste Wallet Address" theme={C}>
 
             {/* INPUT AND BUTTON — always visible at top */}
@@ -1855,7 +1976,7 @@ export default function Home() {
         )}
 
         {/* LEARN */}
-        {tab === "vault" && vaultMode === "guides" && (
+        {tab === "vault" && isWitness && vaultMode === "conduct" && (
           <Panel title="Guides" theme={C}>
             <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
               Everything you need to understand Immutable Editions, Witness Keys, Origin Keys, and how to participate.
