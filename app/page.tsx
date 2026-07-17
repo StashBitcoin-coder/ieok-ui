@@ -1019,9 +1019,26 @@ export default function Home() {
                 <a href="https://analogbitcoin.com" target="_blank" rel="noopener noreferrer" style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textDecoration: "none", display: "inline-block" }}>
                   Explore Analog Bitcoin
                 </a>
-                <button onClick={() => setTab("vault"); setVaultMode("keychain")} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
-                  Start Trading
-                </button>
+                <button 
+  onClick={() => { 
+    setTab("vault"); 
+    setVaultMode("keychain"); 
+  }} 
+  style={{ 
+    background: "transparent", 
+    color: C.blue, 
+    border: `2px solid ${C.blue}`, 
+    borderRadius: 8, 
+    padding: "14px 32px", 
+    fontFamily: "'IBM Plex Mono', ui-monospace, monospace", 
+    fontSize: 15, 
+    fontWeight: 700, 
+    cursor: "pointer", 
+    letterSpacing: "0.05em" 
+  }}
+>
+  Start Trading
+</button>
               </div>
             </div>
           </div>
