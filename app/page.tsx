@@ -1150,6 +1150,36 @@ export default function Home() {
           </>
         )}
 
+        {/* VAULT */}
+        {/* ─── VAULT: copy stack, always shown ─────────────────────────── */}
+        {tab === "vault" && (
+          <div style={{ textAlign: "center" as const, marginBottom: 18 }}>
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.18em", marginBottom: 10 }}>
+              THE GLASS VAULT&trade; &middot; PATENT PENDING
+            </div>
+            <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 26 : 34, fontWeight: 400, color: C.text, letterSpacing: "-0.01em", marginBottom: 4 }}>
+              Integrity, witnessed.
+            </div>
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 11, color: C.textMuted, letterSpacing: "0.06em" }}>
+              Collect the card, hold the Keys.
+            </div>
+          </div>
+        )}
+
+        {/* ─── VAULT SUB-NAV ───────────────────────────────────────────── */}
+        {tab === "vault" && (
+          <div style={{ display: "flex", gap: 6, marginBottom: 20, justifyContent: "center", flexWrap: "wrap" as const }}>
+            {([["keychain","KEYCHAIN"],["conduct","CONDUCT"],["checker","VAULT CHECKER"]] as const).map(([m, label]) => (
+              <button key={m} onClick={() => setVaultMode(m as any)}
+                onMouseEnter={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue; } }}
+                onMouseLeave={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textMuted; } }}
+                style={{ padding: mobile ? "8px 12px" : "9px 20px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 12, fontWeight: 600, letterSpacing: "0.1em", cursor: "pointer", borderRadius: 4, background: vaultMode === m ? C.blue : "transparent", color: vaultMode === m ? "#FFFFFF" : C.textMuted, border: `1px solid ${vaultMode === m ? C.blue : C.border}`, transition: "all 0.15s ease" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
         {tab === "vault" && vaultMode === "keychain" && (
           <>
           {/* SWAP HEADER — Witness Key Token + DAO */}
@@ -1658,36 +1688,6 @@ export default function Home() {
               <BigBtn onClick={reportOrdinalMoved} theme={C} variant="outline" disabled={!connected}>Report Ordinal Moved</BigBtn>
               <Status state={repS} msg={repM} theme={C} />
             </Panel>
-          </div>
-        )}
-
-        {/* VAULT */}
-        {/* ─── VAULT: copy stack, always shown ─────────────────────────── */}
-        {tab === "vault" && (
-          <div style={{ textAlign: "center" as const, marginBottom: 18 }}>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.18em", marginBottom: 10 }}>
-              THE GLASS VAULT&trade; &middot; PATENT PENDING
-            </div>
-            <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 26 : 34, fontWeight: 400, color: C.text, letterSpacing: "-0.01em", marginBottom: 4 }}>
-              Integrity, witnessed.
-            </div>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 11, color: C.textMuted, letterSpacing: "0.06em" }}>
-              Collect the card, hold the Keys.
-            </div>
-          </div>
-        )}
-
-        {/* ─── VAULT SUB-NAV ───────────────────────────────────────────── */}
-        {tab === "vault" && (
-          <div style={{ display: "flex", gap: 6, marginBottom: 20, justifyContent: "center", flexWrap: "wrap" as const }}>
-            {([["keychain","KEYCHAIN"],["conduct","CONDUCT"],["checker","VAULT CHECKER"]] as const).map(([m, label]) => (
-              <button key={m} onClick={() => setVaultMode(m as any)}
-                onMouseEnter={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue; } }}
-                onMouseLeave={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textMuted; } }}
-                style={{ padding: mobile ? "8px 12px" : "9px 20px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 12, fontWeight: 600, letterSpacing: "0.1em", cursor: "pointer", borderRadius: 4, background: vaultMode === m ? C.blue : "transparent", color: vaultMode === m ? "#FFFFFF" : C.textMuted, border: `1px solid ${vaultMode === m ? C.blue : C.border}`, transition: "all 0.15s ease" }}>
-                {label}
-              </button>
-            ))}
           </div>
         )}
 
