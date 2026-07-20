@@ -1571,6 +1571,7 @@ export default function Home() {
         )}
 
         {tab === "vault" && vaultMode === "checker" && (
+          <>
           <Panel title="Vault Registry — On-Chain Seal — Scan NFC or Paste Wallet Address" theme={C}>
 
             {/* INPUT AND BUTTON — always visible at top */}
@@ -1770,19 +1771,6 @@ export default function Home() {
 
             </div>
 
-            {/* CANVA VIDEO */}
-            <div style={{ margin: "48px auto 0", maxWidth: 320, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.border}` }}>
-              <div style={{ position: "relative" as const, paddingBottom: "177.78%", height: 0 }}>
-                <iframe
-                  src="https://www.canva.com/design/DAHKUQElnjQ/KEZ-IoKy9KaXVkTgCgBh0g/watch?embed"
-                  style={{ position: "absolute" as const, top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
-                  loading="lazy"
-                  allowFullScreen
-                  title="Immutable Editions"
-                />
-              </div>
-            </div>
-
             {/* DIVIDER */}
             <div style={{ height: 1, background: C.border, margin: "56px 0 56px" }} />
 
@@ -1892,6 +1880,7 @@ export default function Home() {
               </div>
             </div>
           </div>
+          </>
 
         )}
 
