@@ -1751,8 +1751,8 @@ export default function Home() {
 
           {/* ─── LANDING CONTENT — below verify status ─────────────────── */}
           <div>
-            {/* HERO — horizontal box, compact */}
-            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: mobile ? "20px 22px" : "24px 32px", margin: "24px 0 32px", boxShadow: C.shadow, textAlign: "center" as const }}>
+            {/* HERO — plain, compact */}
+            <div style={{ padding: mobile ? "8px 0 4px" : "12px 0 4px", margin: "16px 0 20px", textAlign: "center" as const }}>
               <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.15em", marginBottom: 10, textTransform: "uppercase" as const }}>
                 THE GLASS VAULT™ · PATENT PENDING
               </div>
@@ -1767,9 +1767,9 @@ export default function Home() {
               </p>
             </div>
 
-            {/* THE PROBLEM */}
-            <div style={{ textAlign: "center" as const, marginBottom: 56 }}>
-              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 20 : 28, color: C.textDim, lineHeight: 1.5, maxWidth: 700, margin: "0 auto", fontStyle: "italic", fontWeight: 400 }}>
+            {/* THE PROBLEM — boxed */}
+            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: mobile ? "18px 22px" : "22px 32px", margin: "0 0 32px", boxShadow: C.shadow, textAlign: "center" as const }}>
+              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 15 : 18, color: C.textDim, lineHeight: 1.5, maxWidth: 640, margin: "0 auto", fontStyle: "italic", fontWeight: 400 }}>
                 "The collectable market runs on trust — but trust is not provenance, interest is not measured accurately, and integrity is not always enforced."
               </p>
             </div>
@@ -1860,17 +1860,9 @@ export default function Home() {
               <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 24 : 36, color: C.text, marginBottom: 16, fontStyle: "italic" }}>
                 Ready to own a piece of the future?
               </div>
-              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, marginBottom: 32, fontWeight: 300 }}>
+              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, marginBottom: 0, fontWeight: 300 }}>
                 Collect physical assets that represent a trustless, permissionless and unquestionable integrity.
               </p>
-              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
-                <a href="https://analogbitcoin.com" target="_blank" rel="noopener noreferrer" style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textDecoration: "none", display: "inline-block" }}>
-                  Explore Analog Bitcoin
-                </a>
-                <button onClick={() => { setTab("vault"); setVaultMode("keychain"); }} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
-                  Start Trading
-                </button>
-              </div>
             </div>
           </div>
           </>
