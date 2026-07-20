@@ -99,6 +99,7 @@ const fmtAddr   = (v: string) => v ? v.slice(0, 6) + "..." + v.slice(-4) : "—"
 const fmtCbbtc  = (v: string) => (Number(v) / 1e8).toFixed(6) + " cbBTC";
 const fmtSats   = (v: string) => Number(v).toLocaleString() + " Satoshis";
 const fmtOK    = (v: string) => Number(v).toLocaleString() + " WK";
+const fmtOnlyNum = (v: string) => Number(v).toLocaleString();
 const fmtTs     = (ts: string) => { const n = Number(ts); if (!n) return "—"; return new Date(n * 1000).toLocaleString(); };
 
 function preview7(Satoshis: string) {
@@ -1212,82 +1213,62 @@ export default function Home() {
             </div>
           </div>
 
-          {/* CONNECT + PORTFOLIO CARDS — inside swap tab, 35% smaller */}
+          {/* WALLET — compact bar + inline stats */}
           {connected ? (
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
-                <ConnectButton
-                  showBalance={false}
-                  chainStatus="none"
-                  accountStatus="address"
-                />
+            <div style={{ marginBottom: 14 }}>
+
+              {/* Compact wallet bar: address pill + disconnect */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 12px", marginBottom: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: C.green, flexShrink: 0 }} />
+                  <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
+                    {fmtAddr(accountStr)}
+                  </span>
+                </div>
+                <ConnectButton.Custom>
+                  {({ openAccountModal }) => (
+                    <button onClick={openAccountModal} style={{ background: "transparent", border: `1px solid ${C.border}`, borderRadius: 6, padding: "5px 10px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, cursor: "pointer", fontWeight: 600, flexShrink: 0 }}>
+                      Manage
+                    </button>
+                  )}
+                </ConnectButton.Custom>
               </div>
 
-              {/* RECIRCULATION BANNER — above balance boxes */}
+              {/* Recirculation claim — only when there's something to claim */}
               {divsNum > 0 && (
-                <div style={{ background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: mobile ? "10px 12px" : "10px 16px", marginBottom: 8, display: "flex", flexDirection: mobile ? "column" : "row" as const, alignItems: mobile ? "stretch" : "center", justifyContent: "space-between", gap: 8 }}>
+                <div style={{ background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "10px 12px", marginBottom: 8, display: "flex", flexDirection: mobile ? "column" : "row" as const, alignItems: mobile ? "stretch" : "center", justifyContent: "space-between", gap: 8 }}>
                   <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
-                    <CbbtcLogo size={14} />{fmtSats(divs)} cbBTC recirculation available
+                    <CbbtcLogo size={14} />{fmtSats(divs)} available
                   </span>
                   <div style={{ display: "flex", gap: 6 }}>
-                    <button onClick={claim} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "8px 16px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em" }}>Collect Satoshis</button>
+                    <button onClick={claim} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 6, padding: "7px 14px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>Collect</button>
                     <button onClick={recirculate}
                       onMouseEnter={(e: any) => { e.currentTarget.style.background = C.blue; e.currentTarget.style.color = "#FFFFFF"; }}
                       onMouseLeave={(e: any) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.blue; }}
-                      style={{ background: "transparent", color: C.blue, border: `1px solid ${C.blue}`, borderRadius: 6, padding: "8px 16px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: "0.05em", transition: "all 0.15s ease" }}>Recirculate</button>
+                      style={{ background: "transparent", color: C.blue, border: `1px solid ${C.blue}`, borderRadius: 6, padding: "7px 14px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, cursor: "pointer", fontWeight: 700, transition: "all 0.15s ease" }}>Recirculate</button>
                   </div>
                   <div><Status state={wdS} msg={wdM} theme={C} /><Status state={rvS} msg={rvM} theme={C} /></div>
                 </div>
               )}
 
-              <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 1, background: C.border, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
-                <div style={{ background: C.card, padding: "8px 10px" }}>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>cbBTC Balance</div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, color: C.text }}>{fmtSats(cbbtcBal)}</div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted }}>{fmtCbbtc(cbbtcBal)}</div>
-                  {cbbtcUsd && <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.green, fontWeight: 600 }}>{cbbtcUsd}</div>}
-                </div>
-                <div style={{ background: C.card, padding: "8px 10px" }}>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>Keys Held</div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, color: C.text }}>{fmtOK(oktBal)}</div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted }}>{fmtSats(oktBal)}</div>
-                  {oktUsd && <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.green, fontWeight: 600 }}>{oktUsd}</div>}
-                </div>
-                <div style={{ background: C.card, padding: "8px 10px", borderTop: `2px solid ${C.blue}` }}>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, letterSpacing: "0.1em", color: C.blue, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>Recirculation</div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, color: C.blue }}>{fmtSats(divs)}</div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted }}>{fmtCbbtc(divs)}</div>
-                  {divsUsd && <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.green, fontWeight: 600 }}>{divsUsd}</div>}
-                </div>
-                <div style={{ background: C.card, padding: "8px 10px" }}>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 4 }}>Total Key Supply</div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, color: C.text }}>{fmtOK(supply)}</div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted }}>{fmtSats(supply)}</div>
-                </div>
+              {/* Inline stat strip — 4 compact cells */}
+              <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 1, background: C.border, borderRadius: 8, overflow: "hidden", border: `1px solid ${C.border}` }}>
+                {[
+                  { k: "cbBTC", v: fmtOnlyNum(cbbtcBal), u: cbbtcUsd, hi: false },
+                  { k: "Keys Held", v: fmtOnlyNum(oktBal), u: oktUsd, hi: false },
+                  { k: "Recirculation", v: fmtOnlyNum(divs), u: divsUsd, hi: true },
+                  { k: "Total Supply", v: fmtOnlyNum(supply), u: "", hi: false },
+                ].map((s, i) => (
+                  <div key={i} style={{ background: C.card, padding: "7px 10px", borderTop: s.hi ? `2px solid ${C.blue}` : "2px solid transparent" }}>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 8, letterSpacing: "0.08em", color: s.hi ? C.blue : C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 3 }}>{s.k}</div>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, fontWeight: 700, color: s.hi ? C.blue : C.text, lineHeight: 1.1 }}>{s.v}</div>
+                    {s.u && <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.green, fontWeight: 600, marginTop: 1 }}>{s.u}</div>}
+                  </div>
+                ))}
               </div>
 
-
-              {/* Wallet address */}
-              {connected && account && (
-                <div style={{ textAlign: "center" as const, marginTop: 8, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted }}>
-                  Your Wallet Address: {mobile ? fmtAddr(accountStr) : accountStr}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div style={{ display: "flex", justifyContent: "flex-end", padding: "12px", marginBottom: 16, background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
-              <ConnectButton
-                showBalance={false}
-                chainStatus="none"
-                accountStatus="address"
-              />
-            </div>
-          )}
-
-          {/* REVOKE APPROVAL */}
-          {connected && (
-            <div style={{ textAlign: "center" as const, marginBottom: 10 }}>
-              <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted }}>
+              {/* Footer: revoke only — address is already in the bar above */}
+              <div style={{ textAlign: "center" as const, marginTop: 7 }}>
                 <button onClick={async () => {
                   try {
                     const gs = await getSigner();
@@ -1302,8 +1283,17 @@ export default function Home() {
                 }} style={{ background: "transparent", border: "none", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
                   Revoke cbBTC approval
                 </button>
-                {" "}— Revoke the cbBTC approval permission for your wallet. You can re-approve on your next acquisition.
-              </span>
+              </div>
+            </div>
+          ) : (
+            <div style={{ marginBottom: 14 }}>
+              <ConnectButton.Custom>
+                {({ openConnectModal }) => (
+                  <button onClick={openConnectModal} style={{ width: "100%", background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "15px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
+                    Connect Wallet
+                  </button>
+                )}
+              </ConnectButton.Custom>
             </div>
           )}
 
