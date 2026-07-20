@@ -1169,7 +1169,7 @@ export default function Home() {
         {/* ─── VAULT SUB-NAV ───────────────────────────────────────────── */}
         {tab === "vault" && (
           <div style={{ display: "flex", gap: 6, marginBottom: 20, justifyContent: "center", flexWrap: "wrap" as const }}>
-            {([["keychain","KEYCHAIN"],["conduct","CONDUCT"],["checker","VAULT CHECKER"]] as const).map(([m, label]) => (
+            {([["checker","VAULT CHECKER"],["keychain","KEYCHAIN"],["conduct","CONDUCT"]] as const).map(([m, label]) => (
               <button key={m} onClick={() => setVaultMode(m as any)}
                 onMouseEnter={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue; } }}
                 onMouseLeave={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textMuted; } }}
@@ -1184,32 +1184,12 @@ export default function Home() {
           <>
           {/* SWAP HEADER — Witness Key Token + DAO */}
           <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.textMuted, marginBottom: 12, lineHeight: 1.5 }}>
-              Witness Key tokens are denominated 1:1 in Satoshis using cbBTC, tokenized Bitcoin issued by Coinbase.
-            </div>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 11, color: C.textMuted, letterSpacing: "0.15em", marginBottom: 6, textTransform: "uppercase" as const }}>
-              THE GLASS VAULT™ · PATENT PENDING
-            </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
               <SkeletonKey size={36} dark={darkMode} />
               <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Witness Key</span>
             </div>
             <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 10 }}>
               Deterministic Automatic Operation (DAO) Contract
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr 1fr", gap: 8, marginBottom: 6 }}>
-              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 14px" }}>
-                <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 15, color: C.text, fontWeight: 700, marginBottom: 4 }}>It watches</div>
-                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>Every piece. Every hour. Nothing moves unseen.</div>
-              </div>
-              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 14px" }}>
-                <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 15, color: C.text, fontWeight: 700, marginBottom: 4 }}>It holds</div>
-                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>1 Satoshi = 1 key. No one can change it. No one.</div>
-              </div>
-              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 14px" }}>
-                <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 15, color: C.blue, fontWeight: 700, marginBottom: 4 }}>It never locks</div>
-                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>The exit works every hour of every day. Forever.</div>
-              </div>
             </div>
           </div>
 
@@ -1221,8 +1201,10 @@ export default function Home() {
               Witness Keys are cbBTC-backed tokens on Base, sealed inside physical art.
             </div>
             <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.textDim, lineHeight: 1.9 }}>
-              1 Key = 1 Satoshi. Permanently pegged.
-              <br />The 7% fee recirculates by fixed math &mdash; no one directs it.
+              100,000,000 Satoshis = 1 Bitcoin
+              <br />1 Key = 1 Satoshi. Permanently pegged.
+              <br />The 7% fee recirculates by fixed math according to each wallet's holding.
+              <br />No one directs it.
               <br />No owner. No admin. No governance.
             </div>
             <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.text, lineHeight: 1.9, marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}`, fontWeight: 600 }}>
