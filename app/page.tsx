@@ -92,17 +92,17 @@ const CHAIN_ID        = "84532";
 const CHAIN_LABEL     = "BASE SEPOLIA";
 const BLOCK_EXPLORER  = "https://sepolia.basescan.org";
 
-const satsToBtc = (s: number) => s / 1e8;
-const satsToUsd = (s: number, p: number) => satsToBtc(s) * p;
+const SatoshisToBtc = (s: number) => s / 1e8;
+const SatoshisToUsd = (s: number, p: number) => SatoshisToBtc(s) * p;
 const fmtUsd    = (n: number) => "$" + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtAddr   = (v: string) => v ? v.slice(0, 6) + "..." + v.slice(-4) : "—";
 const fmtCbbtc  = (v: string) => (Number(v) / 1e8).toFixed(6) + " cbBTC";
-const fmtSats   = (v: string) => Number(v).toLocaleString() + " sats";
-const fmtOK    = (v: string) => Number(v).toLocaleString() + " OKey";
+const fmtSats   = (v: string) => Number(v).toLocaleString() + " Satoshis";
+const fmtOK    = (v: string) => Number(v).toLocaleString() + " WK";
 const fmtTs     = (ts: string) => { const n = Number(ts); if (!n) return "—"; return new Date(n * 1000).toLocaleString(); };
 
-function preview7(sats: string) {
-  const n = Number(sats);
+function preview7(Satoshis: string) {
+  const n = Number(Satoshis);
   if (!n) return null;
   const fee = Math.floor(n * 7 / 100);
   return { fee, out: n - fee };
@@ -320,7 +320,7 @@ const VIDEOS = [
     desc: "To acquire Witness Keys you need cbBTC on Base chain. Open Coinbase. Buy Bitcoin. Go to Coinbase Wallet. Tap send. Choose Base network. Send to your wallet address. That's it — your Bitcoin is now cbBTC on Base. Ready to acquire.",
     url: "https://youtube.com", tag: "BEGINNERS", tc: "#4FA88A" },
   { title: "How to Acquire Witness Keys",
-    desc: "Go to the SWAP tab. Connect your wallet. Tap Acquire. Enter the amount in satoshis — minimum 100. First time you'll see two wallet popups — first to approve cbBTC, then to buy. After that it's one tap. Your Witness Keys appear in your balance and recirculation begins immediately.",
+    desc: "Go to the SWAP tab. Connect your wallet. Tap Acquire. Enter the amount in Satoshis — minimum 100. First time you'll see two wallet popups — first to approve cbBTC, then to buy. After that it's one tap. Your Witness Keys appear in your balance and recirculation begins immediately.",
     url: "https://youtube.com", tag: "TRADING", tc: "#4A90C2" },
   { title: "How to Dispose Witness Keys",
     desc: "Go to the SWAP tab. Tap Dispose. Enter how many Witness Keys to sell. cbBTC goes directly to your wallet. Seven percent fee gets recirculated to every other holder. Simple.",
@@ -435,9 +435,6 @@ export default function Home() {
   // Gallery state
   const [galleryData, setGalleryData] = useState<any>(null);
   const [vaultMode, setVaultMode] = useState<"keychain" | "conduct" | "checker">("keychain");
-  const [isWitness, setIsWitness]   = useState(false);
-  const [wS, setWS]                 = useState<TxState>("idle");
-  const [wM, setWM]                 = useState("");
   const [galleryView, setGalleryView] = useState<"artists" | "collections" | "pieces">("collections");
   const [selectedArtist, setSelectedArtist] = useState<any>(null);
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
@@ -483,68 +480,6 @@ export default function Home() {
   }
 
   // ─── Helper: get ethers signer from wagmi walletClient ──────────────────
-  // ─── Witness gate ─────────────────────────────────────────────────────────
-  // The attestation is the legal artifact: the wallet declares WHY it holds
-  // keys — participation and verification, not profit. Signature is evidence.
-  const ATTESTATION = (addr: string) => [
-    "I am becoming a Witness of The Glass Vault.",
-    "",
-    "I acquire Witness Keys to participate in and verify the provenance of",
-    "physical art. I am not acquiring them as an investment, and not in",
-    "expectation of profit from the efforts of others.",
-    "",
-    "I understand:",
-    "  1 Witness Key = 1 satoshi. The peg never changes.",
-    "  The 7% fee recirculates to holders and vaults by fixed math.",
-    "  No one directs it. No one can change it.",
-    "  This contract has no owner, no admin, and no governance.",
-    "  Recirculation follows network activity, not management.",
-    "",
-    `Wallet: ${addr}`,
-    `Date: ${new Date().toISOString()}`,
-  ].join("\n");
-
-  useEffect(() => {
-    if (!account) { setIsWitness(false); return; }
-    try {
-      setIsWitness(localStorage.getItem(`witness:${account.toLowerCase()}`) === "1");
-    } catch { setIsWitness(false); }
-  }, [account]);
-
-  async function becomeWitness() {
-    if (!account) { setWS("failed"); setWM("Connect a wallet to attest."); return; }
-    setWS("pending"); setWM("Sign the attestation in your wallet...");
-    let message = "", signature = "";
-    try {
-      const s = await getSigner();
-      message   = ATTESTATION(account);
-      signature = await s.signMessage(message);
-    } catch (e: any) {
-      setWS("failed");
-      const msg = e?.reason || e?.message || "";
-      setWM(msg.includes("user rejected") || msg.includes("User denied")
-        ? "Attestation cancelled."
-        : "Could not sign — try again.");
-      return;
-    }
-    setWM("Recording attestation...");
-    try {
-      const res = await fetch("/api/witness", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: account, message, signature }),
-      });
-      if (!res.ok) throw new Error("record failed");
-      // Only unlock once the record actually landed.
-      localStorage.setItem(`witness:${account.toLowerCase()}`, "1");
-      setIsWitness(true);
-      setWS("success"); setWM("Witnessed. The vault is open.");
-    } catch {
-      setWS("failed");
-      setWM("Your signature did not reach the registry. Nothing was recorded — please try again.");
-    }
-  }
-
   function getSigner() {
     if (!walletClient) throw new Error("Wallet not connected");
     const { account: acc, chain: ch, transport } = walletClient;
@@ -572,7 +507,7 @@ export default function Home() {
   async function buy() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!buyAmt)  { alert("Enter cbBTC amount");   return; }
-    if (Number(buyAmt) < 100) { alert("Minimum buy is 100 sats"); return; }
+    if (Number(buyAmt) < 100) { alert("Minimum buy is 100 Satoshis"); return; }
     const s = await getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
     const wk   = new ethers.Contract(WK_ADDRESS,  WK_ABI,   s);
@@ -603,8 +538,8 @@ export default function Home() {
     } catch (e: any) {
       setBuyS("failed");
       const msg = e.reason || e.message || "";
-      if (msg.includes("Minimum 100 sats")) {
-        setBuyM("Minimum purchase is 100 sats.");
+      if (msg.includes("Minimum 100 Satoshis")) {
+        setBuyM("Minimum purchase is 100 Satoshis.");
       } else if (msg.includes("user rejected") || msg.includes("User denied")) {
         setBuyM("Transaction cancelled.");
       } else if (msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
@@ -686,8 +621,8 @@ export default function Home() {
     } catch (e: any) {
       setRvS("failed");
       const msg = e.reason || e.message || "";
-      if (msg.includes("Minimum 100 sats") || msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
-        setRvM("You need at least 100 sats of recirculation to recirculate.");
+      if (msg.includes("Minimum 100 Satoshis") || msg.includes("missing revert") || msg.includes("CALL_EXCEPTION")) {
+        setRvM("You need at least 100 Satoshis of recirculation to recirculate.");
       } else if (msg.includes("user rejected") || msg.includes("User denied")) {
         setRvM("Transaction cancelled.");
       } else {
@@ -727,7 +662,7 @@ export default function Home() {
   async function inscribe() {
     if (!account) { alert("Connect wallet first"); return; }
     if (!insVault || !insAsset || !insCbbtc) { alert("Vault address, asset ID and cbBTC amount are required"); return; }
-    if (Number(insCbbtc) < 100) { alert("Minimum inscribe is 100 sats"); return; }
+    if (Number(insCbbtc) < 100) { alert("Minimum inscribe is 100 Satoshis"); return; }
     const s = await getSigner();
     const cbbtc = new ethers.Contract(CBBTC_ADDRESS, CBBTC_ABI, s);
     const wk   = new ethers.Contract(WK_ADDRESS,  WK_ABI,   s);
@@ -816,9 +751,9 @@ export default function Home() {
   const oktNum   = Number(oktBal);
   const divsNum  = Number(divs);
   const supplyNum= Number(supply);
-  const cbbtcUsd = btcPrice > 0 ? fmtUsd(satsToUsd(cbbtcNum, btcPrice)) : "";
-  const oktUsd   = btcPrice > 0 ? fmtUsd(satsToUsd(oktNum,   btcPrice)) : "";
-  const divsUsd  = btcPrice > 0 ? fmtUsd(satsToUsd(divsNum,  btcPrice)) : "";
+  const cbbtcUsd = btcPrice > 0 ? fmtUsd(SatoshisToUsd(cbbtcNum, btcPrice)) : "";
+  const oktUsd   = btcPrice > 0 ? fmtUsd(SatoshisToUsd(oktNum,   btcPrice)) : "";
+  const divsUsd  = btcPrice > 0 ? fmtUsd(SatoshisToUsd(divsNum,  btcPrice)) : "";
   const accountStr   = account ?? "";
   const isRegistrar  = accountStr.toLowerCase() === VAULT_REGISTRAR.toLowerCase();
 
@@ -1019,26 +954,9 @@ export default function Home() {
                 <a href="https://analogbitcoin.com" target="_blank" rel="noopener noreferrer" style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px 32px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textDecoration: "none", display: "inline-block" }}>
                   Explore Analog Bitcoin
                 </a>
-                <button 
-  onClick={() => { 
-    setTab("vault"); 
-    setVaultMode("keychain"); 
-  }} 
-  style={{ 
-    background: "transparent", 
-    color: C.blue, 
-    border: `2px solid ${C.blue}`, 
-    borderRadius: 8, 
-    padding: "14px 32px", 
-    fontFamily: "'IBM Plex Mono', ui-monospace, monospace", 
-    fontSize: 15, 
-    fontWeight: 700, 
-    cursor: "pointer", 
-    letterSpacing: "0.05em" 
-  }}
->
-  Start Trading
-</button>
+                <button onClick={() => { setTab("vault"); setVaultMode("keychain"); }} style={{ background: "transparent", color: C.blue, border: `2px solid ${C.blue}`, borderRadius: 8, padding: "14px 32px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em" }}>
+                  Start Trading
+                </button>
               </div>
             </div>
           </div>
@@ -1232,7 +1150,7 @@ export default function Home() {
           </>
         )}
 
-        {tab === "vault" && isWitness && vaultMode === "keychain" && (
+        {tab === "vault" && vaultMode === "keychain" && (
           <>
           {/* SWAP HEADER — Witness Key Token + DAO */}
           <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
@@ -1256,7 +1174,7 @@ export default function Home() {
               </div>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 14px" }}>
                 <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 15, color: C.text, fontWeight: 700, marginBottom: 4 }}>It holds</div>
-                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>1 sat = 1 key. No one can change it. No one.</div>
+                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, lineHeight: 1.5 }}>1 Satoshi = 1 key. No one can change it. No one.</div>
               </div>
               <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 14px" }}>
                 <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 15, color: C.blue, fontWeight: 700, marginBottom: 4 }}>It never locks</div>
@@ -1266,6 +1184,21 @@ export default function Home() {
           </div>
 
           <div style={{ height: 1, background: C.border, marginBottom: 12 }} />
+
+          {/* ─── WHAT THESE ARE — read before you act ────────────────────── */}
+          <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 18 }}>
+            <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 15 : 17, fontWeight: 600, color: C.text, marginBottom: 10, lineHeight: 1.4 }}>
+              Witness Keys are cbBTC-backed tokens on Base, sealed inside physical art.
+            </div>
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.textDim, lineHeight: 1.9 }}>
+              1 Key = 1 Satoshi. Permanently pegged.
+              <br />The 7% fee recirculates by fixed math &mdash; no one directs it.
+              <br />No owner. No admin. No governance.
+            </div>
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.text, lineHeight: 1.9, marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}`, fontWeight: 600 }}>
+              Connecting a wallet makes you a participant. There are no customers here.
+            </div>
+          </div>
 
           {/* CONNECT + PORTFOLIO CARDS — inside swap tab, 35% smaller */}
           {connected ? (
@@ -1381,19 +1314,19 @@ export default function Home() {
           <div>
 
             {swapMode === "buy" && (
-              <Panel title="Acquire Witness Keys — Fixed Price 1 Sat = 1 OKey" theme={C}>
+              <Panel title="Acquire Witness Keys — Fixed Price 1 Sat = 1 WK" theme={C}>
                 <FeeBadge mobile={mobile} theme={C} />
 
 
                 <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
-                  Enter your cbBTC amount in Satoshis. Minimum 100 sats. The process is two steps: 1st Approve, 2nd Acquire. Your wallet will never be approved for more than you are spending.
+                  Enter your cbBTC amount in Satoshis. Minimum 100 Satoshis. The process is two steps: 1st Approve, 2nd Acquire. Your wallet will never be approved for more than you are spending.
                 </p>
-                <Input theme={C} label="cbBTC amount in satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
-                  hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(satsToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 sats · 1,000 sats = 930 WK after 7% fee"} />
+                <Input theme={C} label="cbBTC amount in Satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
+                  hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(SatoshisToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 Satoshis · 1,000 Satoshis = 930 WK after 7% fee"} />
                 {bPrev && (
                   <Preview theme={C} rows={[
-                    { label: "7% fee — paid to all WK holders", value: bPrev.fee.toLocaleString() + " sats" },
-                    { label: "WK you receive (1 sat = 1 WK)", value: bPrev.out.toLocaleString() + " OKey" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(bPrev.out, btcPrice)) : ""), blue: true },
+                    { label: "7% fee — paid to all WK holders", value: bPrev.fee.toLocaleString() + " Satoshis" },
+                    { label: "WK you receive (1 Satoshi = 1 WK)", value: bPrev.out.toLocaleString() + " WK" + (btcPrice > 0 ? "  ·  " + fmtUsd(SatoshisToUsd(bPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
                 {/* BUY BUTTON — auto-approves exact amount */}
@@ -1411,8 +1344,8 @@ export default function Home() {
                 <Input theme={C} label="WK amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="WK" hint={`Your balance: ${oktNum.toLocaleString()} WK`} />
                 {sPrev && (
                   <Preview theme={C} rows={[
-                    { label: "7% fee — paid to all WK holders", value: sPrev.fee.toLocaleString() + " sats" },
-                    { label: "cbBTC you receive (1 WK = 1 sat)", value: sPrev.out.toLocaleString() + " sats" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(sPrev.out, btcPrice)) : ""), blue: true },
+                    { label: "7% fee — paid to all WK holders", value: sPrev.fee.toLocaleString() + " Satoshis" },
+                    { label: "cbBTC you receive (1 WK = 1 Satoshi)", value: sPrev.out.toLocaleString() + " Satoshis" + (btcPrice > 0 ? "  ·  " + fmtUsd(SatoshisToUsd(sPrev.out, btcPrice)) : ""), blue: true },
                   ]} />
                 )}
                 <BigBtn onClick={() => {
@@ -1435,7 +1368,7 @@ export default function Home() {
                         ⚠️ Wait — You Have Uncollected Recirculation
                       </div>
                       <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
-                        You have <strong style={{ color: C.blue }}>{fmtSats(divs.toString())} cbBTC</strong> in uncollected recirculation. We recommend claiming them before selling your tokens to ensure you receive every satoshi.
+                        You have <strong style={{ color: C.blue }}>{fmtSats(divs.toString())} cbBTC</strong> in uncollected recirculation. We recommend claiming them before selling your tokens to ensure you receive every Satoshi.
                       </p>
                       <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 24 }}>
                         <strong>Why this matters:</strong> Your share of recirculation is tied directly to your token balance. If you sell first, your share drops to zero. Collect first and you receive your cbBTC while still holding WK — continuing to receive recirculation on every transaction until the moment you sell.
@@ -1461,7 +1394,7 @@ export default function Home() {
                   Send Witness Keys to any wallet with no fee. Recirculation moves proportionally with the tokens.
                 </p>
                 <Input theme={C} label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
-                <Input theme={C} label="Witness Keys amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="OK" hint={`Your balance: ${oktNum.toLocaleString()} OKey`} />
+                <Input theme={C} label="Witness Keys amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="WK" hint={`Your balance: ${oktNum.toLocaleString()} WK`} />
                 <BigBtn onClick={transfer} theme={C} disabled={!connected}>Transfer — Free</BigBtn>
                 <Status state={txS} msg={txM} theme={C} />
               </Panel>
@@ -1483,7 +1416,7 @@ export default function Home() {
                   "Generate a fresh wallet in MetaMask — click Add Account",
                   "Copy that wallet address into the Vault field below",
                   "Get your Ordinal inscription number from ordinals.com (optional)",
-                  "Enter how much cbBTC you want embedded — 7% fee applies, minimum 100 sats",
+                  "Enter how much cbBTC you want embedded — 7% fee applies, minimum 100 Satoshis",
                   "Hit Inscribe — cbBTC approved, fee distributed, WK sealed in vault",
                   "Print the private key and seal it inside the physical art",
                 ].map((s, i) => (
@@ -1503,12 +1436,12 @@ export default function Home() {
                   No Origin Key — this vault will hold Witness Keys only. The vault checker will show token balance and recirculation but no linked Bitcoin inscription.
                 </div>
               )}
-              <Input theme={C} label="cbBTC to spend (sats) — 7% fee, rest becomes WK in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
-                hint={btcPrice > 0 && insCbbtc ? `≈ ${fmtUsd(satsToUsd(Number(insCbbtc), btcPrice))} USD` : `Your cbBTC: ${fmtSats(cbbtcBal)} · Minimum 100 sats`} />
+              <Input theme={C} label="cbBTC to spend (Satoshis) — 7% fee, rest becomes WK in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
+                hint={btcPrice > 0 && insCbbtc ? `≈ ${fmtUsd(SatoshisToUsd(Number(insCbbtc), btcPrice))} USD` : `Your cbBTC: ${fmtSats(cbbtcBal)} · Minimum 100 Satoshis`} />
               {insPrev && (
                 <Preview theme={C} rows={[
-                  { label: "7% fee — distributed to all WK holders", value: insPrev.fee.toLocaleString() + " sats" },
-                  { label: "WK sealed in vault (1 sat = 1 WK)", value: insPrev.out.toLocaleString() + " OKey" + (btcPrice > 0 ? "  ·  " + fmtUsd(satsToUsd(insPrev.out, btcPrice)) : ""), blue: true },
+                  { label: "7% fee — distributed to all WK holders", value: insPrev.fee.toLocaleString() + " Satoshis" },
+                  { label: "WK sealed in vault (1 Satoshi = 1 WK)", value: insPrev.out.toLocaleString() + " WK" + (btcPrice > 0 ? "  ·  " + fmtUsd(SatoshisToUsd(insPrev.out, btcPrice)) : ""), blue: true },
                 ]} />
               )}
               {/* ─── Gallery Admin ─── */}
@@ -1744,63 +1677,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* ─── THE DOOR — nothing past this until attested ──────────────── */}
-        {tab === "vault" && !isWitness && (
-          <div style={{ maxWidth: 560, margin: "0 auto" }}>
-            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: mobile ? "24px 20px" : "34px 32px", boxShadow: C.shadow }}>
-
-              <div style={{ textAlign: "center" as const, marginBottom: 22 }}>
-                <SkeletonKey size={40} dark={darkMode} />
-              </div>
-
-              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 20 : 24, fontWeight: 400, color: C.text, textAlign: "center" as const, marginBottom: 14 }}>
-                Become a Witness
-              </div>
-
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.textDim, lineHeight: 1.7, marginBottom: 20 }}>
-                The vault is glass. Anyone can look. But to hold Keys you go on record first — signing a statement of why you are here.
-                <br /><br />
-                No gas. No cost. Nothing on chain. Your wallet signs a message; the signature proves it was you.
-              </div>
-
-              <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 6, padding: "14px 16px", marginBottom: 20 }}>
-                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.textMuted, letterSpacing: "0.14em", marginBottom: 10 }}>
-                  YOU WILL SIGN
-                </div>
-                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 11, color: C.textDim, lineHeight: 1.75 }}>
-                  I acquire Witness Keys to participate in and verify the provenance of physical art. I am not acquiring them as an investment, and not in expectation of profit from the efforts of others.
-                  <br /><br />
-                  1 Witness Key = 1 satoshi. The peg never changes. The 7% fee recirculates by fixed math. No owner. No admin. No governance.
-                </div>
-              </div>
-
-              {!connected && (
-                <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
-                  <ConnectButton showBalance={false} chainStatus="none" accountStatus="address" />
-                </div>
-              )}
-
-              <BigBtn onClick={becomeWitness} theme={C} disabled={!connected}>
-                {connected ? "Sign & Become a Witness" : "Connect a wallet to attest"}
-              </BigBtn>
-              <Status state={wS} msg={wM} theme={C} />
-
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted, textAlign: "center" as const, marginTop: 16, lineHeight: 1.6 }}>
-                No rips. No odds. You knew what was inside before you bought.
-                <br />That's the point.
-              </div>
-            </div>
-
-            <div style={{ textAlign: "center" as const, marginTop: 18 }}>
-              <button onClick={() => setTab("gallery")} style={{ background: "none", border: "none", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, cursor: "pointer", textDecoration: "underline" }}>
-                Just looking? Visit the gallery &rarr;
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ─── VAULT SUB-NAV — only past the door ───────────────────────── */}
-        {tab === "vault" && isWitness && (
+        {/* ─── VAULT SUB-NAV ───────────────────────────────────────────── */}
+        {tab === "vault" && (
           <div style={{ display: "flex", gap: 6, marginBottom: 20, justifyContent: "center", flexWrap: "wrap" as const }}>
             {([["keychain","KEYCHAIN"],["conduct","CONDUCT"],["checker","VAULT CHECKER"]] as const).map(([m, label]) => (
               <button key={m} onClick={() => setVaultMode(m as any)}
@@ -1813,7 +1691,7 @@ export default function Home() {
           </div>
         )}
 
-        {tab === "vault" && isWitness && vaultMode === "checker" && (
+        {tab === "vault" && vaultMode === "checker" && (
           <Panel title="Vault Registry — On-Chain Seal — Scan NFC or Paste Wallet Address" theme={C}>
 
             {/* INPUT AND BUTTON — always visible at top */}
@@ -1926,19 +1804,19 @@ export default function Home() {
                     </div>
                     <div>
                       <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Witness Key Balance</div>
-                      <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 22 : 26, color: C.text, fontWeight: 700 }}>{Number(vResult.balance).toLocaleString()} OKey</div>
-                      <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{Number(vResult.balance).toLocaleString()} sats&nbsp;·&nbsp;{fmtCbbtc(vResult.balance)}</div>
-                      {btcPrice > 0 && <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.balance), btcPrice))} USD</div>}
+                      <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 22 : 26, color: C.text, fontWeight: 700 }}>{Number(vResult.balance).toLocaleString()} WK</div>
+                      <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{Number(vResult.balance).toLocaleString()} Satoshis&nbsp;·&nbsp;{fmtCbbtc(vResult.balance)}</div>
+                      {btcPrice > 0 && <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(SatoshisToUsd(Number(vResult.balance), btcPrice))} USD</div>}
                     </div>
                     <div>
                       <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>cbBTC Recirculation</div>
                       {Number(vResult.recirculation) > 0 ? (
                         <>
                           <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 22 : 26, color: C.blue, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
-                            <CbbtcLogo size={24} />{Number(vResult.recirculation).toLocaleString()} sats
+                            <CbbtcLogo size={24} />{Number(vResult.recirculation).toLocaleString()} Satoshis
                           </div>
                           <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.textMuted, marginTop: 4 }}>{fmtCbbtc(vResult.recirculation)}</div>
-                          {btcPrice > 0 && <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.recirculation), btcPrice))} USD</div>}
+                          {btcPrice > 0 && <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, color: C.green, marginTop: 6, fontWeight: 700 }}>{fmtUsd(SatoshisToUsd(Number(vResult.recirculation), btcPrice))} USD</div>}
                         </>
                       ) : (
                         <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted }}>No recirculation yet — accumulates as others buy and sell</div>
@@ -1949,8 +1827,8 @@ export default function Home() {
                       <div style={{ gridColumn: "1 / -1", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "16px 20px" }}>
                         <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.blue, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 700 }}>Total Redeemable Value</div>
                         <div style={{ display: "flex", alignItems: "baseline", gap: 14, flexWrap: "wrap" as const }}>
-                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 24 : 30, color: C.blue, fontWeight: 700 }}>{fmtUsd(satsToUsd(Number(vResult.balance) + Number(vResult.recirculation), btcPrice))} USD</div>
-                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.textMuted }}>{fmtCbbtc((Number(vResult.balance) + Number(vResult.recirculation)).toString())}&nbsp;·&nbsp;{(Number(vResult.balance) + Number(vResult.recirculation)).toLocaleString()} sats</div>
+                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 24 : 30, color: C.blue, fontWeight: 700 }}>{fmtUsd(SatoshisToUsd(Number(vResult.balance) + Number(vResult.recirculation), btcPrice))} USD</div>
+                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.textMuted }}>{fmtCbbtc((Number(vResult.balance) + Number(vResult.recirculation)).toString())}&nbsp;·&nbsp;{(Number(vResult.balance) + Number(vResult.recirculation)).toLocaleString()} Satoshis</div>
                         </div>
                         <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, marginTop: 6 }}>
                           WK tokens + accumulated cbBTC recirculation — redeemable by destroying the art piece and acquiring the embedded SeedPod (Private Key) to the wallet holding the digital assets.
@@ -1993,7 +1871,7 @@ export default function Home() {
         )}
 
         {/* LEARN */}
-        {tab === "vault" && isWitness && vaultMode === "conduct" && (
+        {tab === "vault" && vaultMode === "conduct" && (
           <Panel title="Guides" theme={C}>
             <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
               Everything you need to understand Immutable Editions, Witness Keys, Origin Keys, and how to participate.
