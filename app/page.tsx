@@ -435,7 +435,7 @@ export default function Home() {
 
   // Gallery state
   const [galleryData, setGalleryData] = useState<any>(null);
-  const [vaultMode, setVaultMode] = useState<"keychain" | "conduct" | "checker">("keychain");
+  const [vaultMode, setVaultMode] = useState<"keychain" | "conduct" | "checker">("checker");
   const [galleryView, setGalleryView] = useState<"artists" | "collections" | "pieces">("collections");
   const [selectedArtist, setSelectedArtist] = useState<any>(null);
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
@@ -1750,29 +1750,22 @@ export default function Home() {
           </Panel>
 
           {/* ─── LANDING CONTENT — below verify status ─────────────────── */}
-          <div style={{ height: 1, background: C.border, margin: "32px 0" }} />
           <div>
-            {/* HERO */}
-            <div style={{ textAlign: "center" as const, padding: mobile ? "48px 0 40px" : "64px 0 56px" }}>
-
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 12, color: C.textMuted, letterSpacing: "0.15em", marginBottom: 16, textTransform: "uppercase" as const }}>
+            {/* HERO — horizontal box, compact */}
+            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: mobile ? "20px 22px" : "24px 32px", margin: "24px 0 32px", boxShadow: C.shadow, textAlign: "center" as const }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.15em", marginBottom: 10, textTransform: "uppercase" as const }}>
                 THE GLASS VAULT™ · PATENT PENDING
               </div>
-              <h1 style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 40 : 60, fontWeight: 400, color: C.text, lineHeight: 1.1, margin: "0 0 24px", letterSpacing: "-0.02em" }}>
-                Integrity,<br/>
-                <span style={{ color: C.blue, fontStyle: "italic" }}>witnessed.</span>
-              </h1>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 13, color: C.textMuted, letterSpacing: "0.06em", margin: "-12px 0 24px" }}>
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.text, lineHeight: 1.15, marginBottom: 6, letterSpacing: "-0.01em" }}>
+                Integrity, <span style={{ color: C.blue, fontStyle: "italic" }}>witnessed.</span>
+              </div>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 12, color: C.textMuted, letterSpacing: "0.05em", marginBottom: 12 }}>
                 Collect the card, hold the Keys.
               </div>
-              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 15 : 18, color: C.textMuted, lineHeight: 1.7, maxWidth: 600, margin: "0 auto 40px", fontWeight: 300 }}>
+              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textMuted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto", fontWeight: 300 }}>
                 The collectible space has always struggled with authenticity and fair value. We built the infrastructure to fix both — permanently, on chain, with no one in control.
               </p>
-
             </div>
-
-            {/* DIVIDER */}
-            <div style={{ height: 1, background: C.border, margin: "56px 0 56px" }} />
 
             {/* THE PROBLEM */}
             <div style={{ textAlign: "center" as const, marginBottom: 56 }}>
