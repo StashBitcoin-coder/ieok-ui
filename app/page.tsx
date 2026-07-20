@@ -1753,13 +1753,13 @@ export default function Home() {
           <div>
             {/* HERO — plain, compact */}
             <div style={{ padding: mobile ? "8px 0 4px" : "12px 0 4px", margin: "16px 0 20px", textAlign: "center" as const }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.15em", marginBottom: 10, textTransform: "uppercase" as const }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 13, color: C.textMuted, letterSpacing: "0.15em", marginBottom: 12, textTransform: "uppercase" as const }}>
                 THE GLASS VAULT™ · PATENT PENDING
               </div>
-              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.text, lineHeight: 1.15, marginBottom: 6, letterSpacing: "-0.01em" }}>
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 30 : 38, fontWeight: 400, color: C.text, lineHeight: 1.15, marginBottom: 8, letterSpacing: "-0.01em" }}>
                 Integrity, <span style={{ color: C.blue, fontStyle: "italic" }}>witnessed.</span>
               </div>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 12, color: C.textMuted, letterSpacing: "0.05em", marginBottom: 12 }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 14, color: C.textMuted, letterSpacing: "0.05em", marginBottom: 12 }}>
                 Collect the card, hold the Keys.
               </div>
               <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textMuted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto", fontWeight: 300 }}>
@@ -1860,9 +1860,12 @@ export default function Home() {
               <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 24 : 36, color: C.text, marginBottom: 16, fontStyle: "italic" }}>
                 Ready to own a piece of the future?
               </div>
-              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, marginBottom: 0, fontWeight: 300 }}>
+              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, marginBottom: 28, fontWeight: 300 }}>
                 Collect physical assets that represent a trustless, permissionless and unquestionable integrity.
               </p>
+              <button onClick={() => { setTab("vault"); setVaultMode("keychain"); }} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "15px 40px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.08em" }}>
+                GET THE KEYS
+              </button>
             </div>
           </div>
           </>
