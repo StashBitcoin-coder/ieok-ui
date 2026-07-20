@@ -1259,10 +1259,10 @@ export default function Home() {
                   { k: "Recirculation", v: fmtOnlyNum(divs), u: divsUsd, hi: true },
                   { k: "Total Supply", v: fmtOnlyNum(supply), u: "", hi: false },
                 ].map((s, i) => (
-                  <div key={i} style={{ background: C.card, padding: "7px 10px", borderTop: s.hi ? `2px solid ${C.blue}` : "2px solid transparent" }}>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 8, letterSpacing: "0.08em", color: s.hi ? C.blue : C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 3 }}>{s.k}</div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, fontWeight: 700, color: s.hi ? C.blue : C.text, lineHeight: 1.1 }}>{s.v}</div>
-                    {s.u && <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.green, fontWeight: 600, marginTop: 1 }}>{s.u}</div>}
+                  <div key={i} style={{ background: C.card, padding: "11px 12px", borderTop: s.hi ? `2px solid ${C.blue}` : "2px solid transparent" }}>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, letterSpacing: "0.08em", color: s.hi ? C.blue : C.textMuted, textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 5 }}>{s.k}</div>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 21, fontWeight: 700, color: s.hi ? C.blue : C.text, lineHeight: 1.1 }}>{s.v}</div>
+                    {s.u && <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.green, fontWeight: 600, marginTop: 2 }}>{s.u}</div>}
                   </div>
                 ))}
               </div>
@@ -1297,16 +1297,13 @@ export default function Home() {
             </div>
           )}
 
-          {/* SWAP MODE TOGGLE */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-            {(["buy", "sell", "transfer"] as const).map(m => {
-              const label = m === "buy" ? "▲ ACQUIRE" : m === "sell" ? "▼ DISPOSE" : "→ TRANSFER";
+          {/* MODE SELECTOR — segmented, no arrows */}
+          <div style={{ display: "flex", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, padding: 4, marginBottom: 14, gap: 4 }}>
+            {([["buy","Acquire"],["sell","Dispose"],["transfer","Transfer"]] as const).map(([m, label]) => {
               const active = swapMode === m;
               return (
                 <button key={m} onClick={() => setSwapMode(m)}
-                  onMouseEnter={(e: any) => { if (!active) { e.currentTarget.style.background = C.blue; e.currentTarget.style.color = "#FFFFFF"; e.currentTarget.style.borderColor = C.blue; } }}
-                  onMouseLeave={(e: any) => { if (!active) { e.currentTarget.style.background = C.panel; e.currentTarget.style.color = C.text; e.currentTarget.style.borderColor = C.border; } }}
-                  style={{ flex: 1, padding: "14px 8px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, fontWeight: 700, cursor: "pointer", borderRadius: 8, background: active ? C.blue : C.panel, color: active ? "#FFFFFF" : C.text, border: `2px solid ${active ? C.blue : C.border}`, letterSpacing: "0.05em", boxShadow: active ? "0 2px 8px rgba(0,82,255,0.3)" : C.shadow, transition: "all 0.15s ease" }}>
+                  style={{ flex: 1, padding: mobile ? "11px 8px" : "12px 8px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, fontWeight: 700, cursor: "pointer", borderRadius: 7, background: active ? C.blue : "transparent", color: active ? "#FFFFFF" : C.textMuted, border: "none", letterSpacing: "0.03em", transition: "all 0.15s ease" }}>
                   {label}
                 </button>
               );
@@ -1315,80 +1312,139 @@ export default function Home() {
 
           <div>
 
-            {swapMode === "buy" && (
-              <Panel title="Acquire Witness Keys — Fixed Price 1 Sat = 1 WK" theme={C}>
-                <FeeBadge mobile={mobile} theme={C} />
+            {/* ═══ FLIP-CARD SWAP — Buy & Sell share one surface ═══ */}
+            {(swapMode === "buy" || swapMode === "sell") && (() => {
+              const isBuy = swapMode === "buy";
+              // Buy: pay cbBTC (SATS) -> receive WK.  Sell: pay WK -> receive cbBTC (SATS).
+              const payAmt   = isBuy ? buyAmt : sellAmt;
+              const setPay   = isBuy ? setBuyAmt : setSellAmt;
+              const prev     = isBuy ? bPrev : sPrev;
+              const payTag   = isBuy ? "SATS" : "WK";
+              const getTag   = isBuy ? "WK" : "SATS";
+              const payLabel = isBuy ? "cbBTC (in Satoshis)" : "Witness Keys";
+              const getLabel = isBuy ? "Witness Keys" : "cbBTC (in Satoshis)";
+              const payBal   = isBuy ? cbbtcNum : oktNum;
+              const outVal   = prev ? prev.out : 0;
+              const feeVal   = prev ? prev.fee : 0;
 
+              return (
+                <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: mobile ? 16 : 20, boxShadow: C.shadow }}>
 
-                <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
-                  Enter your cbBTC amount in Satoshis. Minimum 100 Satoshis. The process is two steps: 1st Approve, 2nd Acquire. Your wallet will never be approved for more than you are spending.
-                </p>
-                <Input theme={C} label="cbBTC amount in Satoshis" value={buyAmt} onChange={setBuyAmt} placeholder="1000" type="number" tag="SATS"
-                  hint={btcPrice > 0 && buyAmt ? `≈ ${fmtUsd(SatoshisToUsd(Number(buyAmt), btcPrice))} USD` : "Minimum 100 Satoshis · 1,000 Satoshis = 930 WK after 7% fee"} />
-                {bPrev && (
-                  <Preview theme={C} rows={[
-                    { label: "7% fee — paid to all WK holders", value: bPrev.fee.toLocaleString() + " Satoshis" },
-                    { label: "WK you receive (1 Satoshi = 1 WK)", value: bPrev.out.toLocaleString() + " WK" + (btcPrice > 0 ? "  ·  " + fmtUsd(SatoshisToUsd(bPrev.out, btcPrice)) : ""), blue: true },
-                  ]} />
-                )}
-                {/* BUY BUTTON — auto-approves exact amount */}
-                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, marginBottom: 8, textAlign: "center" as const }}>
-                  The process is two steps: 1st Approve, 2nd Acquire. Your wallet will never be approved for more than you are spending.
-                </div>
-                <BigBtn onClick={buy} theme={C} disabled={!connected}>Acquire Witness Keys</BigBtn>
-                <Status state={buyS} msg={buyM} theme={C} />
-              </Panel>
-            )}
-
-            {swapMode === "sell" && (
-              <Panel title="Dispose Witness Keys" theme={C}>
-                <FeeBadge mobile={mobile} theme={C} />
-                <Input theme={C} label="WK amount to sell" value={sellAmt} onChange={setSellAmt} placeholder="930" type="number" tag="WK" hint={`Your balance: ${oktNum.toLocaleString()} WK`} />
-                {sPrev && (
-                  <Preview theme={C} rows={[
-                    { label: "7% fee — paid to all WK holders", value: sPrev.fee.toLocaleString() + " Satoshis" },
-                    { label: "cbBTC you receive (1 WK = 1 Satoshi)", value: sPrev.out.toLocaleString() + " Satoshis" + (btcPrice > 0 ? "  ·  " + fmtUsd(SatoshisToUsd(sPrev.out, btcPrice)) : ""), blue: true },
-                  ]} />
-                )}
-                <BigBtn onClick={() => {
-                  if (!sellAmt) return;
-                  const selling = Number(sellAmt);
-                  const balance = oktNum;
-                  const divs    = divsNum;
-                  if (selling >= balance && divs > 0) {
-                    setShowSellWarning(true);
-                  } else {
-                    sell();
-                  }
-                }} variant="outline" disabled={!connected}>Dispose Witness Keys for cbBTC</BigBtn>
-
-                {/* SELL WARNING POPUP */}
-                {showSellWarning && (
-                  <div style={{ position: "fixed" as const, top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-                    <div style={{ background: C.card, border: `2px solid ${C.orange}`, borderRadius: 16, padding: mobile ? 24 : 36, maxWidth: 480, width: "100%", boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
-                      <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 22, fontWeight: 700, color: C.orange, marginBottom: 16 }}>
-                        ⚠️ Wait — You Have Uncollected Recirculation
-                      </div>
-                      <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
-                        You have <strong style={{ color: C.blue }}>{fmtSats(divs.toString())} cbBTC</strong> in uncollected recirculation. We recommend claiming them before selling your tokens to ensure you receive every Satoshi.
-                      </p>
-                      <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 24 }}>
-                        <strong>Why this matters:</strong> Your share of recirculation is tied directly to your token balance. If you sell first, your share drops to zero. Collect first and you receive your cbBTC while still holding WK — continuing to receive recirculation on every transaction until the moment you sell.
-                      </p>
-                      <div style={{ display: "flex", gap: 10, flexDirection: mobile ? "column" : "row" as const }}>
-                        <button onClick={() => { setShowSellWarning(false); }} style={{ flex: 1, background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
-                          ← Withdraw First (Recommended)
-                        </button>
-                        <button onClick={() => { setShowSellWarning(false); sell(); }} style={{ flex: 1, background: "transparent", color: C.red, border: `2px solid ${C.red}`, borderRadius: 8, padding: "14px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
-                          Sell Anyway
-                        </button>
-                      </div>
-                    </div>
+                  {/* Header row: title + fee pill */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                    <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 18 : 20, fontWeight: 500, color: C.text }}>
+                      {isBuy ? "Acquire Keys" : "Dispose Keys"}
+                    </span>
+                    <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, fontWeight: 700, color: C.blue, background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 20, padding: "4px 12px" }}>
+                      7% fee &rarr; holders
+                    </span>
                   </div>
-                )}
-                <Status state={sellS} msg={sellM} theme={C} />
-              </Panel>
-            )}
+
+                  {/* YOU PAY */}
+                  <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? "12px 14px" : "14px 16px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                      <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.08em", textTransform: "uppercase" as const, fontWeight: 600 }}>You spend</span>
+                      <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted }}>Balance: {payBal.toLocaleString()} {payTag}</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <input type="number" value={payAmt} onChange={e => setPay(e.target.value)} placeholder="0"
+                        style={{ flex: 1, minWidth: 0, background: "transparent", border: "none", outline: "none", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 24 : 28, fontWeight: 700, color: C.text, WebkitAppearance: "none" as const, padding: 0 }} />
+                      <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 16, fontWeight: 700, color: C.blue, flexShrink: 0, display: "flex", alignItems: "center", gap: 6 }}>
+                        {(isBuy) && <CbbtcLogo size={18} />}{payTag}
+                      </span>
+                    </div>
+                    {btcPrice > 0 && Number(payAmt) > 0 && (
+                      <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, marginTop: 4 }}>
+                        &asymp; {fmtUsd(SatoshisToUsd(isBuy ? Number(payAmt) : Number(payAmt), btcPrice))} USD
+                      </div>
+                    )}
+                  </div>
+
+                  {/* FLIP BUTTON */}
+                  <div style={{ display: "flex", justifyContent: "center", margin: "-10px 0", position: "relative" as const, zIndex: 2 }}>
+                    <button onClick={() => setSwapMode(isBuy ? "sell" : "buy")}
+                      title="Flip direction"
+                      onMouseEnter={(e: any) => { e.currentTarget.style.background = C.blue; e.currentTarget.style.color = "#FFFFFF"; e.currentTarget.style.transform = "rotate(180deg)"; }}
+                      onMouseLeave={(e: any) => { e.currentTarget.style.background = C.card; e.currentTarget.style.color = C.blue; e.currentTarget.style.transform = "rotate(0deg)"; }}
+                      style={{ width: 38, height: 38, borderRadius: "50%", background: C.card, border: `2px solid ${C.blue}`, color: C.blue, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 700, transition: "all 0.2s ease", boxShadow: C.shadow }}>
+                      &#8645;
+                    </button>
+                  </div>
+
+                  {/* YOU RECEIVE */}
+                  <div style={{ background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 12, padding: mobile ? "12px 14px" : "14px 16px", marginBottom: 14 }}>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.blue, letterSpacing: "0.08em", textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 8 }}>You get</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ flex: 1, minWidth: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 24 : 28, fontWeight: 700, color: outVal > 0 ? C.text : C.textMuted, overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {outVal > 0 ? outVal.toLocaleString() : "0"}
+                      </span>
+                      <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 16, fontWeight: 700, color: C.blue, flexShrink: 0, display: "flex", alignItems: "center", gap: 6 }}>
+                        {(!isBuy) && <CbbtcLogo size={18} />}{getTag}
+                      </span>
+                    </div>
+                    {btcPrice > 0 && outVal > 0 && (
+                      <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.green, fontWeight: 600, marginTop: 4 }}>
+                        &asymp; {fmtUsd(SatoshisToUsd(outVal, btcPrice))} USD
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Fee line + 1:1 note */}
+                  <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, marginBottom: 14, padding: "0 2px" }}>
+                    <span>1 Satoshi = 1 WK &middot; permanently pegged</span>
+                    {feeVal > 0 && <span>Fee: {feeVal.toLocaleString()} Satoshis</span>}
+                  </div>
+
+                  {/* ACTION BUTTON */}
+                  {isBuy ? (
+                    <>
+                      <BigBtn onClick={buy} theme={C} disabled={!connected}>
+                        {connected ? "Acquire Witness Keys" : "Connect wallet to acquire"}
+                      </BigBtn>
+                      <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, marginTop: 8, textAlign: "center" as const }}>
+                        Two steps: approve, then acquire. You approve only what you spend.
+                      </div>
+                      <Status state={buyS} msg={buyM} theme={C} />
+                    </>
+                  ) : (
+                    <>
+                      <BigBtn variant="outline" theme={C} disabled={!connected} onClick={() => {
+                        if (!sellAmt) return;
+                        if (Number(sellAmt) >= oktNum && divsNum > 0) { setShowSellWarning(true); }
+                        else { sell(); }
+                      }}>
+                        {connected ? "Dispose for cbBTC" : "Connect wallet to dispose"}
+                      </BigBtn>
+                      <Status state={sellS} msg={sellM} theme={C} />
+
+                      {showSellWarning && (
+                        <div style={{ position: "fixed" as const, top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+                          <div style={{ background: C.card, border: `2px solid ${C.orange}`, borderRadius: 16, padding: mobile ? 24 : 36, maxWidth: 480, width: "100%", boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
+                            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 20, fontWeight: 700, color: C.orange, marginBottom: 16 }}>
+                              Wait &mdash; you have uncollected recirculation
+                            </div>
+                            <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, color: C.textDim, lineHeight: 1.7, marginBottom: 16 }}>
+                              You have <strong style={{ color: C.blue }}>{fmtSats(divs.toString())}</strong> in uncollected recirculation. Collect it before selling so you receive every Satoshi.
+                            </p>
+                            <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 24 }}>
+                              Your share of recirculation is tied to your token balance. Sell first and your share drops to zero. Collect first and you keep it while still holding WK.
+                            </p>
+                            <div style={{ display: "flex", gap: 10, flexDirection: mobile ? "column" : "row" as const }}>
+                              <button onClick={() => setShowSellWarning(false)} style={{ flex: 1, background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "14px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                                Collect first (recommended)
+                              </button>
+                              <button onClick={() => { setShowSellWarning(false); sell(); }} style={{ flex: 1, background: "transparent", color: C.red, border: `2px solid ${C.red}`, borderRadius: 8, padding: "14px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                                Sell anyway
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })()}
 
             {swapMode === "transfer" && (
               <Panel title="Transfer Witness Keys — Zero Fee" theme={C}>
