@@ -379,7 +379,7 @@ export default function Home() {
   const [divs, setDivs]         = useState("0");
   const [supply, setSupply]     = useState("0");
   const [btcPrice, setBtcPrice] = useState(0);
-  const [tab, setTab]           = useState<Tab>("home");
+  const [tab, setTab]           = useState<Tab>("gallery");
   const [mode, setMode]         = useState<"buy" | "sell">("buy");
 
   const [isApproved, setIsApproved] = useState(false);
@@ -790,7 +790,7 @@ export default function Home() {
 
         {/* ROW 2 — IMMUTABLE EDITIONS centered */}
         <div style={{ padding: mobile ? "2px 0 4px" : "2px 0 6px" }}>
-          <span onClick={() => setTab("home")} style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 30, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const, cursor: "pointer" }}>
+          <span onClick={() => setTab("gallery")} style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 30, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const, cursor: "pointer" }}>
             Immutable Editions
           </span>
         </div>
@@ -817,8 +817,8 @@ export default function Home() {
 
 
 
-        {/* HOME */}
-        {tab === "home" && (
+        {/* LANDING — now lives on the gallery tab */}
+        {tab === "gallery" && (
           <div>
             {/* HERO */}
             <div style={{ textAlign: "center" as const, padding: mobile ? "48px 0 40px" : "64px 0 56px" }}>
@@ -879,7 +879,7 @@ export default function Home() {
                   desc: "Every physical creation is embedded with Witness Keys at birth. Held tokens receive cbBTC recirculation each time another creation comes to life or when a trade happens. Fees from every collectable creation (and WK trade) flow automatically to all holders — including each already (still Vaulted) creation.",
                   site: "Acquire Witness Keys",
                   url: null,
-                  tab: "trade",
+                  tab: "vault",
                 },
                 {
                   label: "Market Integrity",
@@ -1158,11 +1158,10 @@ export default function Home() {
             <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 9 : 10, color: C.textMuted, letterSpacing: "0.18em", marginBottom: 10 }}>
               THE GLASS VAULT&trade; &middot; PATENT PENDING
             </div>
-            <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 26 : 34, fontWeight: 400, color: C.text, letterSpacing: "-0.01em", marginBottom: 4 }}>
-              Integrity, witnessed.
-            </div>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 11, color: C.textMuted, letterSpacing: "0.06em" }}>
-              Collect the card, hold the Keys.
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: mobile ? 6 : 8, fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 26 : 34, fontWeight: 400, color: C.text, letterSpacing: "-0.01em" }}>
+              <span>Tokenized</span>
+              <span style={{ writingMode: "vertical-rl" as const, transform: "rotate(180deg)", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 8 : 10, fontWeight: 700, letterSpacing: "0.15em", color: C.blue, textTransform: "uppercase" as const, lineHeight: 1 }}>Physical</span>
+              <span>Real World Assets</span>
             </div>
           </div>
         )}
