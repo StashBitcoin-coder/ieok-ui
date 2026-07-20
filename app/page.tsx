@@ -1796,7 +1796,7 @@ export default function Home() {
                 },
                 {
                   label: "Market Integrity",
-                  title: "KEYCHAIN",
+                  title: "Keychain",
                   desc: "Deployed on Base for the best performance and support. The Witness Key is pegged to Bitcoin (1 WK = 1 Sat). The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.",
                   site: "Verify Transactions",
                   url: `${BLOCK_EXPLORER}/address/${WK_ADDRESS}`,
