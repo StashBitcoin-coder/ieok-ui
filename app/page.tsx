@@ -1779,7 +1779,7 @@ export default function Home() {
               {[
                 {
                   label: "Provenance",
-                  title: "Real World Inscriptions",
+                  title: "Origin Key",
                   desc: "Tokenizing physical collectables with the unquestionable Origin Key standard. Using the embedded SeedPod (wallet private key) and NFC scan for verification of provenance. Tap any piece to see its entire origin — unalterable, on chain, forever.",
                   site: "AnalogBitcoin.com",
                   url: "https://analogbitcoin.com",
@@ -1792,14 +1792,15 @@ export default function Home() {
                   site: "Acquire Witness Keys",
                   url: null,
                   tab: "vault",
+                  mode: "keychain",
                 },
                 {
                   label: "Market Integrity",
-                  title: "The Key Exchange",
+                  title: "KEYCHAIN",
                   desc: "Deployed on Base for the best performance and support. The Witness Key is pegged to Bitcoin (1 WK = 1 Sat). The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.",
-                  site: "Verify a Piece",
-                  url: null,
-                  tab: "vault",
+                  site: "Verify Transactions",
+                  url: `${BLOCK_EXPLORER}/address/${WK_ADDRESS}`,
+                  tab: null,
                 },
               ].map((p, i) => (
                 <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: "28px 24px", boxShadow: C.shadow }}>
@@ -1821,7 +1822,7 @@ export default function Home() {
                       {p.site} ↗
                     </a>
                   ) : (
-                    <button onClick={() => setTab(p.tab as Tab)} style={{ background: "none", border: "none", padding: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 600, cursor: "pointer" }}>
+                    <button onClick={() => { setTab(p.tab as Tab); if ((p as any).mode) setVaultMode((p as any).mode); }} style={{ background: "none", border: "none", padding: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 600, cursor: "pointer" }}>
                       {p.site} →
                     </button>
                   )}
