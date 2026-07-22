@@ -1162,9 +1162,10 @@ export default function Home() {
             </div>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textDim, lineHeight: 1.7 }}>
               {[
-                "A 1-of-1 inscription written directly onto Bitcoin — the permanent birth certificate of the physical piece.",
+                "A 1-of-1 inscription written directly onto Bitcoin — the permanent birth certificate of the physical collectable.",
+                "Each 1-of-1 is accompanied by a Limited Edition of 30 companion collectables — the Witnesses — every one carrying its own Witness Keys and standing as on-chain attestation to the original.",
                 "Embedded inside the collectable is the wallet where the provenance link can only be broken by destroying the collectable.",
-                "Scan the piece to read its Origin Key straight from the chain. No middleman, no server, no permission.",
+                "Scan the collectable to read its Origin Key straight from the chain. No middleman, no server, no permission.",
                 "Every Origin Key is born alongside its Witness Keys in the same Vault — provenance and interest, sealed together.",
               ].map((t, i) => (
                 <li key={i} style={{ display: "flex", gap: 10, marginBottom: 8, textAlign: "left" as const }}>
