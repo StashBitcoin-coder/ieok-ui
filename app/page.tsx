@@ -1146,24 +1146,23 @@ export default function Home() {
 
         {tab === "keychain" && (
           <>
-          {/* ORIGIN KEY — definition, mirrors Witness Key header */}
-          <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
-              <SkeletonKey size={36} dark={darkMode} />
-              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.06em" }}>Origin Key</span>
+          {/* ─── ORIGIN KEY — boxed, matches Witness Key ─────────────────── */}
+          <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 16 }}>
+            <div style={{ textAlign: "center" as const, marginBottom: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 6 }}>
+                <SkeletonKey size={36} dark={darkMode} />
+                <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Origin Key</span>
+              </div>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim }}>
+                Immutable Provenance Inscription (IPI)
+              </div>
             </div>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 10 }}>
-              Immutable Provenance (Bitcoin Ordinal) Inscription
-            </div>
-          </div>
-
-          <div style={{ maxWidth: 620, margin: "0 auto 20px", padding: mobile ? "0 4px" : 0 }}>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textDim, lineHeight: 1.7 }}>
               {[
                 "A 1-of-1 inscription written directly onto Bitcoin — the permanent birth certificate of the physical piece.",
-                "Anchored inside the card's own wallet. It stays put; move it out and the provenance link is broken.",
-                "Not for sale and not for trade — it isn't a payout. It is proof of origin, unalterable and on chain forever.",
+                "Embedded inside the collectable is the wallet where the provenance link can only be broken by destroying the collectable.",
                 "Scan the piece to read its Origin Key straight from the chain. No middleman, no server, no permission.",
+                "Every Origin Key is born alongside its Witness Keys in the same Vault — provenance and interest, sealed together.",
               ].map((t, i) => (
                 <li key={i} style={{ display: "flex", gap: 10, marginBottom: 8, textAlign: "left" as const }}>
                   <span style={{ color: C.blue, fontWeight: 700, flexShrink: 0 }}>&bull;</span>
@@ -1173,35 +1172,35 @@ export default function Home() {
             </ul>
           </div>
 
-          <div style={{ height: 1, background: C.border, marginBottom: 12 }} />
-
-          {/* SWAP HEADER — Witness Key Token + DAO */}
-          <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
-              <SkeletonKey size={36} dark={darkMode} />
-              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Witness Key</span>
+          {/* ─── WITNESS KEY — boxed, matches Origin Key ──────────────────── */}
+          <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 16 }}>
+            <div style={{ textAlign: "center" as const, marginBottom: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 6 }}>
+                <SkeletonKey size={36} dark={darkMode} />
+                <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Witness Key</span>
+              </div>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim }}>
+                Deterministic Automatic Operation (DAO) Contract
+              </div>
             </div>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 10 }}>
-              Deterministic Automatic Operation (DAO) Contract
-            </div>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textDim, lineHeight: 1.7 }}>
+              {[
+                "cbBTC-backed tokens on Base, sealed inside physical art. 1 Key = 1 Satoshi, permanently pegged (100,000,000 Satoshis = 1 Bitcoin).",
+                "The 7% fee recirculates by fixed math according to each wallet's holding. No one directs it — no owner, no admin, no governance.",
+                "Every Witness Key is born alongside its Origin Key in the same Vault — interest and provenance, sealed together.",
+              ].map((t, i) => (
+                <li key={i} style={{ display: "flex", gap: 10, marginBottom: 8, textAlign: "left" as const }}>
+                  <span style={{ color: C.blue, fontWeight: 700, flexShrink: 0 }}>&bull;</span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div style={{ height: 1, background: C.border, marginBottom: 12 }} />
-
-          {/* ─── WHAT THESE ARE — read before you act (hidden once connected) ─ */}
+          {/* ─── PARTICIPANT NOTE — hidden once connected ─────────────────── */}
           {!connected && (
-          <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 18 }}>
-            <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 15 : 17, fontWeight: 600, color: C.text, marginBottom: 10, lineHeight: 1.4 }}>
-              Witness Keys are cbBTC-backed tokens on Base, sealed inside physical art.
-            </div>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.textDim, lineHeight: 1.9 }}>
-              100,000,000 Satoshis = 1 Bitcoin
-              <br />1 Key = 1 Satoshi. Permanently pegged.
-              <br />The 7% fee recirculates by fixed math according to each wallet's holding.
-              <br />No one directs it.
-              <br />No owner. No admin. No governance.
-            </div>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.text, lineHeight: 1.9, marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}`, fontWeight: 600 }}>
+          <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "14px 16px" : "16px 22px", marginBottom: 18 }}>
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.text, lineHeight: 1.9, fontWeight: 600 }}>
               Connecting a wallet makes you a participant. There are no customers here.
             </div>
           </div>
