@@ -1888,7 +1888,8 @@ export default function Home() {
           </Panel>
         )}
 
-        {/* CONTRACT ADDRESSES */}
+        {/* CONTRACT ADDRESSES — Witness Key page only */}
+        {tab === "keychain" && (
         <div style={{ marginTop: 24, background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, padding: "16px 20px" }}>
           <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr", gap: 16 }}>
             {[
@@ -1902,6 +1903,7 @@ export default function Home() {
             ))}
           </div>
         </div>
+        )}
 
         {/* FOOTER */}
         <div style={{ textAlign: "center" as const, padding: "32px 0 16px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.15em", lineHeight: 2 }}>
