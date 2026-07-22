@@ -1163,8 +1163,7 @@ export default function Home() {
             <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textDim, lineHeight: 1.7 }}>
               {[
                 "A 1-of-1 inscription written directly onto Bitcoin — the permanent birth certificate of the physical collectable.",
-                "Each 1-of-1 is accompanied by a Limited Edition of 30 companion collectables — the Witnesses — every one carrying its own Witness Keys and standing as on-chain attestation to the original.",
-                "Embedded inside the collectable is the wallet where the provenance link can only be broken by destroying the collectable.",
+                "Embedded inside the collectable is the wallet SeedPod where one can control The Keys to use the digital assets without the physical vault.",
                 "Scan the collectable to read its Origin Key straight from the chain. No middleman, no server, no permission.",
                 "Every Origin Key is born alongside its Witness Keys in the same Vault — provenance and interest, sealed together.",
               ].map((t, i) => (
@@ -1189,6 +1188,7 @@ export default function Home() {
             </div>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textDim, lineHeight: 1.7 }}>
               {[
+                "Each 1-of-1 is accompanied by a Limited Edition of 30 companion collectables — the Witnesses — every one carrying its own Witness Keys and standing as on-chain attestation to the original.",
                 "cbBTC-backed tokens on Base, sealed inside physical art. 1 Key = 1 Satoshi, permanently pegged (100,000,000 Satoshis = 1 Bitcoin).",
                 "The 7% mint, inscribe and burn fee recirculates proportionately (fixed math) to the number of Witness Keys in each wallet. No one directs it — no owner, no admin, no governance.",
                 "Every Witness Key is born alongside its Origin Key in the same Vault — interest and provenance, sealed together.",
