@@ -379,7 +379,7 @@ export default function Home() {
   const [divs, setDivs]         = useState("0");
   const [supply, setSupply]     = useState("0");
   const [btcPrice, setBtcPrice] = useState(0);
-  const [tab, setTab]           = useState<Tab>("gallery");
+  const [tab, setTab]           = useState<Tab>("home");
   const [mode, setMode]         = useState<"buy" | "sell">("buy");
 
   const [isApproved, setIsApproved] = useState(false);
@@ -792,7 +792,7 @@ export default function Home() {
 
         {/* ROW 2 — IMMUTABLE EDITIONS centered */}
         <div style={{ padding: mobile ? "2px 0 4px" : "2px 0 6px" }}>
-          <span onClick={() => setTab("gallery")} style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 30, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const, cursor: "pointer" }}>
+          <span onClick={() => setTab("home")} style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 30, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const, cursor: "pointer" }}>
             Immutable Editions
           </span>
         </div>
@@ -819,6 +819,128 @@ export default function Home() {
 
 
 
+
+        {/* HOME / SPLASH — reached via IMMUTABLE EDITIONS title */}
+        {tab === "home" && (
+          <div>
+            {/* HERO — plain, compact */}
+            <div style={{ padding: mobile ? "8px 0 4px" : "12px 0 4px", margin: "16px 0 20px", textAlign: "center" as const }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 13, color: C.textMuted, letterSpacing: "0.15em", marginBottom: 12, textTransform: "uppercase" as const }}>
+                THE GLASS VAULT™ · PATENT PENDING
+              </div>
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 30 : 38, fontWeight: 400, color: C.text, lineHeight: 1.15, marginBottom: 8, letterSpacing: "-0.01em" }}>
+                Integrity, <span style={{ color: C.blue, fontStyle: "italic" }}>witnessed.</span>
+              </div>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 14, color: C.textMuted, letterSpacing: "0.05em", marginBottom: 12 }}>
+                Collect the card, hold the Keys.
+              </div>
+              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textMuted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto", fontWeight: 300 }}>
+                The collectible space has always struggled with authenticity and fair value. We built the infrastructure to fix both — permanently, on chain, with no one in control.
+              </p>
+            </div>
+
+            {/* THE PROBLEM — boxed */}
+            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: mobile ? "18px 22px" : "22px 32px", margin: "0 0 32px", boxShadow: C.shadow, textAlign: "center" as const }}>
+              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 15 : 18, color: C.textDim, lineHeight: 1.5, maxWidth: 640, margin: "0 auto", fontStyle: "italic", fontWeight: 400 }}>
+                "The collectable market runs on trust — but trust is not provenance, interest is not measured accurately, and integrity is not always enforced."
+              </p>
+            </div>
+
+            {/* THREE PILLARS */}
+            <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr 1fr", gap: mobile ? 16 : 20, marginBottom: 56 }}>
+              {[
+                {
+                  label: "Provenance",
+                  title: "Origin Key",
+                  desc: "Tokenizing physical collectables with the unquestionable Origin Key standard. Using the embedded SeedPod (wallet private key) and NFC scan for verification of provenance. Tap any piece to see its entire origin — unalterable, on chain, forever.",
+                  site: "AnalogBitcoin.com",
+                  url: "https://analogbitcoin.com",
+                  tab: null,
+                },
+                {
+                  label: "Interest",
+                  title: "Witness Key",
+                  desc: "Every physical creation is embedded with Witness Keys at birth. Held tokens receive cbBTC recirculation each time another creation comes to life or when a trade happens. Fees from every collectable creation (and WK trade) flow automatically to all holders — including each already (still Vaulted) creation.",
+                  site: "Acquire Witness Keys",
+                  url: null,
+                  tab: "keychain",
+                },
+                {
+                  label: "Market Integrity",
+                  title: "Keychain",
+                  desc: "Deployed on Base for the best performance and support. The Witness Key is pegged to Bitcoin (1 WK = 1 Sat). The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.",
+                  site: "Verify Transactions",
+                  url: `${BLOCK_EXPLORER}/address/${WK_ADDRESS}`,
+                  tab: null,
+                },
+              ].map((p, i) => (
+                <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: "28px 24px", boxShadow: C.shadow }}>
+                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: C.blue, textTransform: "uppercase" as const, marginBottom: 12 }}>
+                    {p.label}
+                  </div>
+                  <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 20, color: C.text, marginBottom: 14, lineHeight: 1.2 }}>
+                    {p.title}
+                  </div>
+                  <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300 }}>
+                    {i === 1 ? (
+                      <>Every physical creation is embedded with Witness Keys at birth. Held tokens receive <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC recirculation each time another creation comes to life or when a trade happens. Fees from every collectable creation (and WK trade) flow automatically to all holders — including each already (still Vaulted) creation.</>
+                    ) : i === 2 ? (
+                      <>Deployed on Base for the best performance and support. The Witness Key is pegged to Bitcoin (1 WK = 1 Sat) so volatility in Automated Market Maker pricing <span style={{ color: "#DA3A3A", fontWeight: 700 }}>IS NOT HERE</span> to provide extractors one of their most valuable weapons. The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.</>
+                    ) : p.desc}
+                  </p>
+                  {p.url ? (
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
+                      {p.site} ↗
+                    </a>
+                  ) : (
+                    <button onClick={() => setTab(p.tab as Tab)} style={{ background: "none", border: "none", padding: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 600, cursor: "pointer" }}>
+                      {p.site} →
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* HOW IT WORKS */}
+            <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? "32px 24px" : "40px 48px", marginBottom: 56 }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: C.blue, textTransform: "uppercase" as const, marginBottom: 24 }}>
+                How It Works
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(5, 1fr)", gap: mobile ? 20 : 12 }}>
+                {[
+                  { n: "01", title: "Vault the Origin Key and Witness Keys", desc: "Both digital assets are placed in two different digital wallets — both sharing the same Private Key within the SeedPod." },
+                  { n: "02", title: "Physical Art", desc: "A finished physical collectable is embedded with the SeedPod (printed wallet Private Key) along with a programmed read-only NFC Tag. Sealed securely within the asset." },
+                  { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Origin Key and Witness Keys along with the recirculation received." },
+                  { n: "04", title: "Physical Bitcoin Interest", desc: "" },
+                  { n: "05", title: "Redemption (if necessary)", desc: "Destruction of the collectable can reveal the SeedPod one can use to sweep all digital assets out of the Vault." },
+                ].map((s, i) => (
+                  <div key={i} style={{ position: "relative" as const }}>
+                    <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 32, color: C.border, fontWeight: 400, lineHeight: 1, marginBottom: 10 }}>{s.n}</div>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>{s.title}</div>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, lineHeight: 1.6, fontWeight: 300 }}>
+                      {i === 3 ? (
+                        <>Every published work and trade pays <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC recirculation to all Immutable Editions collectable holders and Witness Key holders.</>
+                      ) : s.desc}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* FOOTER CTA */}
+            <div style={{ textAlign: "center" as const, padding: mobile ? "32px 0 48px" : "40px 0 64px" }}>
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 24 : 36, color: C.text, marginBottom: 16, fontStyle: "italic" }}>
+                Ready to own a piece of the future?
+              </div>
+              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, marginBottom: 28, fontWeight: 300 }}>
+                Collect physical assets that represent a trustless, permissionless and unquestionable integrity.
+              </p>
+              <button onClick={() => setTab("keychain")} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "15px 40px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.08em" }}>
+                GET THE KEYS
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* TRADE */}
         {tab === "gallery" && (
@@ -1741,125 +1863,6 @@ export default function Home() {
             )}
           </Panel>
 
-          {/* ─── LANDING CONTENT — below verify status ─────────────────── */}
-          <div>
-            {/* HERO — plain, compact */}
-            <div style={{ padding: mobile ? "8px 0 4px" : "12px 0 4px", margin: "16px 0 20px", textAlign: "center" as const }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 13, color: C.textMuted, letterSpacing: "0.15em", marginBottom: 12, textTransform: "uppercase" as const }}>
-                THE GLASS VAULT™ · PATENT PENDING
-              </div>
-              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 30 : 38, fontWeight: 400, color: C.text, lineHeight: 1.15, marginBottom: 8, letterSpacing: "-0.01em" }}>
-                Integrity, <span style={{ color: C.blue, fontStyle: "italic" }}>witnessed.</span>
-              </div>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 14, color: C.textMuted, letterSpacing: "0.05em", marginBottom: 12 }}>
-                Collect the card, hold the Keys.
-              </div>
-              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textMuted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto", fontWeight: 300 }}>
-                The collectible space has always struggled with authenticity and fair value. We built the infrastructure to fix both — permanently, on chain, with no one in control.
-              </p>
-            </div>
-
-            {/* THE PROBLEM — boxed */}
-            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: mobile ? "18px 22px" : "22px 32px", margin: "0 0 32px", boxShadow: C.shadow, textAlign: "center" as const }}>
-              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 15 : 18, color: C.textDim, lineHeight: 1.5, maxWidth: 640, margin: "0 auto", fontStyle: "italic", fontWeight: 400 }}>
-                "The collectable market runs on trust — but trust is not provenance, interest is not measured accurately, and integrity is not always enforced."
-              </p>
-            </div>
-
-            {/* THREE PILLARS */}
-            <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr 1fr", gap: mobile ? 16 : 20, marginBottom: 56 }}>
-              {[
-                {
-                  label: "Provenance",
-                  title: "Origin Key",
-                  desc: "Tokenizing physical collectables with the unquestionable Origin Key standard. Using the embedded SeedPod (wallet private key) and NFC scan for verification of provenance. Tap any piece to see its entire origin — unalterable, on chain, forever.",
-                  site: "AnalogBitcoin.com",
-                  url: "https://analogbitcoin.com",
-                  tab: null,
-                },
-                {
-                  label: "Interest",
-                  title: "Witness Key",
-                  desc: "Every physical creation is embedded with Witness Keys at birth. Held tokens receive cbBTC recirculation each time another creation comes to life or when a trade happens. Fees from every collectable creation (and WK trade) flow automatically to all holders — including each already (still Vaulted) creation.",
-                  site: "Acquire Witness Keys",
-                  url: null,
-                  tab: "keychain",
-                },
-                {
-                  label: "Market Integrity",
-                  title: "Keychain",
-                  desc: "Deployed on Base for the best performance and support. The Witness Key is pegged to Bitcoin (1 WK = 1 Sat). The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.",
-                  site: "Verify Transactions",
-                  url: `${BLOCK_EXPLORER}/address/${WK_ADDRESS}`,
-                  tab: null,
-                },
-              ].map((p, i) => (
-                <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: "28px 24px", boxShadow: C.shadow }}>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: C.blue, textTransform: "uppercase" as const, marginBottom: 12 }}>
-                    {p.label}
-                  </div>
-                  <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 20, color: C.text, marginBottom: 14, lineHeight: 1.2 }}>
-                    {p.title}
-                  </div>
-                  <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300 }}>
-                    {i === 1 ? (
-                      <>Every physical creation is embedded with Witness Keys at birth. Held tokens receive <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC recirculation each time another creation comes to life or when a trade happens. Fees from every collectable creation (and WK trade) flow automatically to all holders — including each already (still Vaulted) creation.</>
-                    ) : i === 2 ? (
-                      <>Deployed on Base for the best performance and support. The Witness Key is pegged to Bitcoin (1 WK = 1 Sat) so volatility in Automated Market Maker pricing <span style={{ color: "#DA3A3A", fontWeight: 700 }}>IS NOT HERE</span> to provide extractors one of their most valuable weapons. The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.</>
-                    ) : p.desc}
-                  </p>
-                  {p.url ? (
-                    <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
-                      {p.site} ↗
-                    </a>
-                  ) : (
-                    <button onClick={() => setTab(p.tab as Tab)} style={{ background: "none", border: "none", padding: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 600, cursor: "pointer" }}>
-                      {p.site} →
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* HOW IT WORKS */}
-            <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? "32px 24px" : "40px 48px", marginBottom: 56 }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: C.blue, textTransform: "uppercase" as const, marginBottom: 24 }}>
-                How It Works
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(5, 1fr)", gap: mobile ? 20 : 12 }}>
-                {[
-                  { n: "01", title: "Vault the Origin Key and Witness Keys", desc: "Both digital assets are placed in two different digital wallets — both sharing the same Private Key within the SeedPod." },
-                  { n: "02", title: "Physical Art", desc: "A finished physical collectable is embedded with the SeedPod (printed wallet Private Key) along with a programmed read-only NFC Tag. Sealed securely within the asset." },
-                  { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Origin Key and Witness Keys along with the recirculation received." },
-                  { n: "04", title: "Physical Bitcoin Interest", desc: "" },
-                  { n: "05", title: "Redemption (if necessary)", desc: "Destruction of the collectable can reveal the SeedPod one can use to sweep all digital assets out of the Vault." },
-                ].map((s, i) => (
-                  <div key={i} style={{ position: "relative" as const }}>
-                    <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 32, color: C.border, fontWeight: 400, lineHeight: 1, marginBottom: 10 }}>{s.n}</div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>{s.title}</div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, lineHeight: 1.6, fontWeight: 300 }}>
-                      {i === 3 ? (
-                        <>Every published work and trade pays <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC recirculation to all Immutable Editions collectable holders and Witness Key holders.</>
-                      ) : s.desc}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* FOOTER CTA */}
-            <div style={{ textAlign: "center" as const, padding: mobile ? "32px 0 48px" : "40px 0 64px" }}>
-              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 24 : 36, color: C.text, marginBottom: 16, fontStyle: "italic" }}>
-                Ready to own a piece of the future?
-              </div>
-              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, marginBottom: 28, fontWeight: 300 }}>
-                Collect physical assets that represent a trustless, permissionless and unquestionable integrity.
-              </p>
-              <button onClick={() => setTab("keychain")} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "15px 40px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.08em" }}>
-                GET THE KEYS
-              </button>
-            </div>
-          </div>
           </>
 
         )}
