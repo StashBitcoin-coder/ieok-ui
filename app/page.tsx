@@ -1189,7 +1189,7 @@ export default function Home() {
             <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textDim, lineHeight: 1.7 }}>
               {[
                 "cbBTC-backed tokens on Base, sealed inside physical art. 1 Key = 1 Satoshi, permanently pegged (100,000,000 Satoshis = 1 Bitcoin).",
-                "The 7% fee recirculates by fixed math according to each wallet's holding. No one directs it — no owner, no admin, no governance.",
+                "The 7% mint, inscribe and burn fee recirculates proportionately (fixed math) to the number of Witness Keys in each wallet. No one directs it — no owner, no admin, no governance.",
                 "Every Witness Key is born alongside its Origin Key in the same Vault — interest and provenance, sealed together.",
               ].map((t, i) => (
                 <li key={i} style={{ display: "flex", gap: 10, marginBottom: 8, textAlign: "left" as const }}>
