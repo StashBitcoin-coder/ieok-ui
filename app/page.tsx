@@ -32,7 +32,7 @@ const CBBTC_ABI = [
 const PUBLIC_RPC = "https://sepolia.base.org";
 
 type TxState = "idle" | "pending" | "success" | "failed";
-type Tab = "home" | "gallery" | "vault" | "inscribe";
+type Tab = "home" | "gallery" | "vault" | "keychain" | "conduct" | "inscribe";
 type VaultResult = {
   registered: boolean;
   swept: boolean;
@@ -759,13 +759,15 @@ export default function Home() {
   const isRegistrar  = accountStr.toLowerCase() === VAULT_REGISTRAR.toLowerCase();
 
   const tabs: { id: Tab; label: string; short: string }[] = [
-    { id: "gallery",  label: "GALLERY", short: "GALLERY" },
-    { id: "vault",    label: "VAULT",   short: "VAULT"   },
+    { id: "gallery",  label: "GALLERY",  short: "GALLERY"  },
+    { id: "vault",    label: "VAULT",    short: "VAULT"    },
+    { id: "keychain", label: "KEYCHAIN", short: "KEYCHAIN" },
+    { id: "conduct",  label: "CONDUCT",  short: "CONDUCT"  },
     ...(isRegistrar ? [{ id: "inscribe" as Tab, label: "INSCRIBE", short: "INSCRIBE" }] : []),
   ];
 
   return (
-    <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", touchAction: "pan-y", WebkitOverflowScrolling: "touch" as any, overscrollBehavior: "none" }}>
+    <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", WebkitOverflowScrolling: "touch" as any }}>
 
       {/* HEADER */}
       <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: 0, display: "flex", flexDirection: "column" as const, alignItems: "center", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
@@ -1018,21 +1020,9 @@ export default function Home() {
           </div>
         )}
 
-        {/* ─── VAULT SUB-NAV ───────────────────────────────────────────── */}
-        {tab === "vault" && (
-          <div style={{ display: "flex", gap: 6, marginBottom: 20, justifyContent: "center", flexWrap: "wrap" as const }}>
-            {([["checker","VAULT CHECKER"],["keychain","KEYCHAIN"],["conduct","CONDUCT"]] as const).map(([m, label]) => (
-              <button key={m} onClick={() => setVaultMode(m as any)}
-                onMouseEnter={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue; } }}
-                onMouseLeave={(e: any) => { if (vaultMode !== m) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textMuted; } }}
-                style={{ padding: mobile ? "8px 12px" : "9px 20px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 12, fontWeight: 600, letterSpacing: "0.1em", cursor: "pointer", borderRadius: 4, background: vaultMode === m ? C.blue : "transparent", color: vaultMode === m ? "#FFFFFF" : C.textMuted, border: `1px solid ${vaultMode === m ? C.blue : C.border}`, transition: "all 0.15s ease" }}>
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* VAULT header shows on VAULT tab only */}
 
-        {tab === "vault" && vaultMode === "keychain" && (
+        {tab === "keychain" && (
           <>
           {/* SWAP HEADER — Witness Key Token + DAO */}
           <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
@@ -1047,7 +1037,8 @@ export default function Home() {
 
           <div style={{ height: 1, background: C.border, marginBottom: 12 }} />
 
-          {/* ─── WHAT THESE ARE — read before you act ────────────────────── */}
+          {/* ─── WHAT THESE ARE — read before you act (hidden once connected) ─ */}
+          {!connected && (
           <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 18 }}>
             <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 15 : 17, fontWeight: 600, color: C.text, marginBottom: 10, lineHeight: 1.4 }}>
               Witness Keys are cbBTC-backed tokens on Base, sealed inside physical art.
@@ -1063,6 +1054,7 @@ export default function Home() {
               Connecting a wallet makes you a participant. There are no customers here.
             </div>
           </div>
+          )}
 
           {/* WALLET — compact bar + inline stats */}
           {connected ? (
@@ -1570,7 +1562,7 @@ export default function Home() {
           </div>
         )}
 
-        {tab === "vault" && vaultMode === "checker" && (
+        {tab === "vault" && (
           <>
           <Panel title="Vault Registry — On-Chain Seal — Scan NFC or Paste Wallet Address" theme={C}>
 
@@ -1791,8 +1783,7 @@ export default function Home() {
                   desc: "Every physical creation is embedded with Witness Keys at birth. Held tokens receive cbBTC recirculation each time another creation comes to life or when a trade happens. Fees from every collectable creation (and WK trade) flow automatically to all holders — including each already (still Vaulted) creation.",
                   site: "Acquire Witness Keys",
                   url: null,
-                  tab: "vault",
-                  mode: "keychain",
+                  tab: "keychain",
                 },
                 {
                   label: "Market Integrity",
@@ -1822,7 +1813,7 @@ export default function Home() {
                       {p.site} ↗
                     </a>
                   ) : (
-                    <button onClick={() => { setTab(p.tab as Tab); if ((p as any).mode) setVaultMode((p as any).mode); }} style={{ background: "none", border: "none", padding: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 600, cursor: "pointer" }}>
+                    <button onClick={() => setTab(p.tab as Tab)} style={{ background: "none", border: "none", padding: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 600, cursor: "pointer" }}>
                       {p.site} →
                     </button>
                   )}
@@ -1864,7 +1855,7 @@ export default function Home() {
               <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, marginBottom: 28, fontWeight: 300 }}>
                 Collect physical assets that represent a trustless, permissionless and unquestionable integrity.
               </p>
-              <button onClick={() => { setTab("vault"); setVaultMode("keychain"); }} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "15px 40px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.08em" }}>
+              <button onClick={() => setTab("keychain")} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "15px 40px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.08em" }}>
                 GET THE KEYS
               </button>
             </div>
@@ -1874,7 +1865,7 @@ export default function Home() {
         )}
 
         {/* LEARN */}
-        {tab === "vault" && vaultMode === "conduct" && (
+        {tab === "conduct" && (
           <Panel title="Guides" theme={C}>
             <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
               Everything you need to understand Immutable Editions, Witness Keys, Origin Keys, and how to participate.
