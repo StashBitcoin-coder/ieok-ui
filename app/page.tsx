@@ -1146,6 +1146,9 @@ export default function Home() {
 
         {tab === "keychain" && (
           <>
+          {/* ─── KEY DEFINITIONS — hidden once connected ──────────────────── */}
+          {!connected && (
+          <>
           {/* ─── ORIGIN KEY — boxed, matches Witness Key ─────────────────── */}
           <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 16 }}>
             <div style={{ textAlign: "center" as const, marginBottom: 14 }}>
@@ -1197,13 +1200,13 @@ export default function Home() {
             </ul>
           </div>
 
-          {/* ─── PARTICIPANT NOTE — hidden once connected ─────────────────── */}
-          {!connected && (
+          {/* ─── PARTICIPANT NOTE ─────────────────────────────────────────── */}
           <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "14px 16px" : "16px 22px", marginBottom: 18 }}>
             <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.text, lineHeight: 1.9, fontWeight: 600 }}>
               Connecting a wallet makes you a participant. There are no customers here.
             </div>
           </div>
+          </>
           )}
 
           {/* WALLET — compact bar + inline stats */}
