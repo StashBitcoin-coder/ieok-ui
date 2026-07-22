@@ -1146,6 +1146,35 @@ export default function Home() {
 
         {tab === "keychain" && (
           <>
+          {/* ORIGIN KEY — definition, mirrors Witness Key header */}
+          <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
+              <SkeletonKey size={36} dark={darkMode} />
+              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.06em" }}>Origin Key</span>
+            </div>
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim, marginBottom: 10 }}>
+              Immutable Provenance (Bitcoin Ordinal) Inscription
+            </div>
+          </div>
+
+          <div style={{ maxWidth: 620, margin: "0 auto 20px", padding: mobile ? "0 4px" : 0 }}>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textDim, lineHeight: 1.7 }}>
+              {[
+                "A 1-of-1 inscription written directly onto Bitcoin — the permanent birth certificate of the physical piece.",
+                "Anchored inside the card's own wallet. It stays put; move it out and the provenance link is broken.",
+                "Not for sale and not for trade — it isn't a payout. It is proof of origin, unalterable and on chain forever.",
+                "Scan the piece to read its Origin Key straight from the chain. No middleman, no server, no permission.",
+              ].map((t, i) => (
+                <li key={i} style={{ display: "flex", gap: 10, marginBottom: 8, textAlign: "left" as const }}>
+                  <span style={{ color: C.blue, fontWeight: 700, flexShrink: 0 }}>&bull;</span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div style={{ height: 1, background: C.border, marginBottom: 12 }} />
+
           {/* SWAP HEADER — Witness Key Token + DAO */}
           <div style={{ textAlign: "center" as const, marginBottom: 12, padding: "4px 0" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
@@ -1262,6 +1291,9 @@ export default function Home() {
             </div>
           )}
 
+          {/* Trade inputs — only once a wallet is connected */}
+          {connected && (
+          <div>
           {/* MODE SELECTOR — segmented, no arrows */}
           <div style={{ display: "flex", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, padding: 4, marginBottom: 14, gap: 4 }}>
             {([["buy","Acquire"],["sell","Dispose"],["transfer","Transfer"]] as const).map(([m, label]) => {
@@ -1423,6 +1455,8 @@ export default function Home() {
               </Panel>
             )}
           </div>
+          </div>
+          )}
           </>
         )}
 
