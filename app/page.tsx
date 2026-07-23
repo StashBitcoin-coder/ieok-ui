@@ -174,44 +174,18 @@ function OrdinalPreview({ ordinalNumber, inscriptionId, mobile, borderColor }: {
   );
 }
 
-function SafeDial({ size = 36, color = "#14171C" }: { size?: number; color?: string }) {
-  const knurl = Array.from({ length: 36 }, (_, i) => i * 10);
-  const grads = Array.from({ length: 12 }, (_, i) => i * 30);
-  const pt = (deg: number, r: number) => {
-    const rad = (deg - 90) * Math.PI / 180;
-    return [50 + r * Math.cos(rad), 50 + r * Math.sin(rad)];
-  };
+function Keyhole({ size = 36, dark = false }: { size?: number; dark?: boolean }) {
+  const ratio = 527 / 341;   // native aspect of keyhole.png
+  const h = size * 1.22;     // matches SkeletonKey's optical height
+  const w = h / ratio;
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" style={{ display: "block" }} aria-label="The Glass Vault">
-      {/* index mark — fixed reference above the dial */}
-      <rect x="47.5" y="1" width="5" height="8" rx="1" fill={color} />
-      {/* outer bezel */}
-      <circle cx="50" cy="50" r="45" stroke={color} strokeWidth="4" />
-      {/* knurled grip edge */}
-      {knurl.map(deg => {
-        const [x1, y1] = pt(deg, 39);
-        const [x2, y2] = pt(deg, 45);
-        return <line key={`k${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="2" strokeLinecap="round" />;
-      })}
-      {/* dial face */}
-      <circle cx="50" cy="50" r="38" stroke={color} strokeWidth="2.5" />
-      {/* graduations */}
-      {grads.map(deg => {
-        const major = deg % 90 === 0;
-        const [x1, y1] = pt(deg, major ? 26 : 30);
-        const [x2, y2] = pt(deg, 35);
-        return <line key={`g${deg}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={major ? 3 : 1.5} strokeLinecap="round" />;
-      })}
-      {/* center knob */}
-      <circle cx="50" cy="50" r="16" stroke={color} strokeWidth="3" />
-      {/* knob fluting / turn grip */}
-      <line x1="50" y1="34" x2="50" y2="42" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="50" y1="58" x2="50" y2="66" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="34" y1="50" x2="42" y2="50" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="58" y1="50" x2="66" y2="50" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
-      {/* spindle */}
-      <circle cx="50" cy="50" r="4" fill={color} />
-    </svg>
+    <img
+      src="/keyhole.png"
+      width={w}
+      height={h}
+      alt="The Glass Vault"
+      style={{ display: "block", objectFit: "contain", opacity: 0.9, filter: dark ? "invert(1)" : "none" }}
+    />
   );
 }
 
@@ -1196,18 +1170,16 @@ export default function Home() {
                 name: "Origin Key",
                 sub: "Immutable Ordinal Inscription (IOI)",
                 bullets: [
-                  "A 1-of-1 written directly onto Bitcoin — the permanent record of the birth certificate of the physical collectable.",
-                  "The embedded SeedPod holds the private key for the wallet where the Origin Key (Ordinal) is; destroy the physical collectable to control the Origin Key and Witness Keys to sweep the digital assets out of The Glass Vault.",
-                  "Scan the embedded NFC tag in the collectable to see what is in The Glass Vault straight from the chain. No middleman, no server, no permission.",
+                  "An Origin Key is a 1-of-1 record written directly onto Bitcoin — the permanent unquestionable record of the birth certificate of the original physical collectable.",
                 ],
               },
               {
                 name: "Witness Key",
                 sub: "Deterministic Automatic Operation (DAO) Contract",
                 bullets: [
-                  "cbBTC-backed tokens on Base. 1 Key = 1 Satoshi, permanently pegged.",
-                  "The 7% mint, inscribe and burn fee recirculates proportionately to the Witness Keys each wallet contains.",
-                  "No one directs participation in the protocol's math or function — no owner, no admin, no governance.",
+                  "A Witness Key is a cbBTC-backed token on Base. 1 Key = 1 Satoshi, permanently pegged.",
+                  "There is a 7% inscribe, mint and burn fee that recirculates proportionately to the Witness Keys each wallet contains.",
+                  "No one directs participation in the protocol's math or function as a proof of witness — no owner, no admin, no governance.",
                 ],
               },
               {
@@ -1215,8 +1187,10 @@ export default function Home() {
                 sub: null,
                 dial: true,
                 bullets: [
-                  "One signed 1-of-1, which also carries the Origin Key, and a Limited Edition of 30. All 31 carry their own Witness Keys.",
-                  "Both keys are born from, encrypted and embedded in the same single SeedPod (private key): the Origin Key is the piece witnessed, the Witness Keys are the attestation to it.",
+                  "Every collectable has a SeedPod embedded inside it — the private key phrase (password) to that piece's wallet.",
+                  "The signed 1-of-1 holds the Origin Key and Witness Keys. Each of the 30 Limited Editions holds Witness Keys only.",
+                  "Anyone can look inside. The wallet address is printed on the back, and the NFC tag opens the vault verification with a tap — check balance, confirm everything is there, verify the piece is whole. That's the glass: you can see everything, and touch nothing.",
+                  "Reaching the keys means destroying the physical collectable.",
                   "Provenance and interest, sealed in one object of integrity.",
                 ],
               },
@@ -1225,7 +1199,7 @@ export default function Home() {
               <div key={b.name} style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 14 }}>
                 <div style={{ textAlign: "center" as const, marginBottom: 14 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 6 }}>
-                    {(b as any).dial ? <SafeDial size={36} color={C.text} /> : <SkeletonKey size={36} dark={darkMode} />}
+                    {(b as any).dial ? <Keyhole size={36} dark={darkMode} /> : <SkeletonKey size={36} dark={darkMode} />}
                     <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>{b.name}</span>
                   </div>
                   {b.sub && (
