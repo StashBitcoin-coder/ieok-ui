@@ -1780,23 +1780,37 @@ export default function Home() {
 
         {tab === "vault" && (
           <>
-          <Panel title="Vault Registry — On-Chain Seal — Scan NFC or Paste Wallet Address" theme={C}>
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: mobile ? 16 : 20, boxShadow: C.shadow }}>
 
-            {/* INPUT AND BUTTON — always visible at top */}
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.textDim, marginBottom: 8, fontWeight: 600 }}>Vault Wallet Address</div>
-              <div style={{ position: "relative" as const }}>
-                <input
-                  type="text"
-                  value={vAddr}
-                  onChange={e => setVAddr(e.target.value)}
-                  placeholder="0x..."
-                  style={{ width: "100%", background: C.input, border: `1.5px solid ${C.border}`, borderRadius: 8, color: C.text, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 17, padding: "14px 16px", outline: "none", boxSizing: "border-box" as const }}
-                  onFocus={e => e.target.style.borderColor = C.blue}
-                  onBlur={e => e.target.style.borderColor = C.border}
-                />
-              </div>
+            {/* Header row: title + read-only pill */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, gap: 10 }}>
+              <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 18 : 20, fontWeight: 500, color: C.text }}>
+                Vault Registry
+              </span>
+              <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, fontWeight: 700, color: C.blue, background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 20, padding: "4px 12px", whiteSpace: "nowrap" as const }}>
+                on-chain seal
+              </span>
             </div>
+
+            {/* VAULT ADDRESS — styled like the wallet inputs */}
+            <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? "12px 14px" : "14px 16px", marginBottom: 14 }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.08em", textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 8 }}>
+                Vault wallet address
+              </div>
+              <input
+                type="text"
+                value={vAddr}
+                onChange={e => setVAddr(e.target.value)}
+                placeholder="0x..."
+                style={{ width: "100%", background: "transparent", border: "none", outline: "none", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 16, fontWeight: 600, color: C.text, padding: 0, boxSizing: "border-box" as const }}
+              />
+            </div>
+
+            {/* Note line */}
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, marginBottom: 14, padding: "0 2px", textAlign: "center" as const }}>
+              Scan the NFC tag or paste the address &middot; read-only
+            </div>
+
             <BigBtn onClick={checkVault} theme={C} variant="outline">Verify Vault Status</BigBtn>
             <Status state={vS} msg={vM} theme={C} />
 
@@ -1955,7 +1969,7 @@ export default function Home() {
                 </div>
               </div>
             )}
-          </Panel>
+          </div>
 
           </>
 
