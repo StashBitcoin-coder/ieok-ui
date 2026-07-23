@@ -121,7 +121,7 @@ const useIsMobile = () => {
     const link = document.createElement("link");
     link.id = "vault-fonts";
     link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap";
+    link.href = "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap";
     document.head.appendChild(link);
   }
 
@@ -1149,61 +1149,62 @@ export default function Home() {
           {/* ─── KEY DEFINITIONS — hidden once connected ──────────────────── */}
           {!connected && (
           <>
-          {/* ─── ORIGIN KEY — boxed, matches Witness Key ─────────────────── */}
-          <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 16 }}>
-            <div style={{ textAlign: "center" as const, marginBottom: 14 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 6 }}>
-                <SkeletonKey size={36} dark={darkMode} />
-                <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Origin Key</span>
+          {(() => {
+            const BOXES = [
+              {
+                name: "Origin Key",
+                sub: "Immutable Ordinal Inscription (IOI)",
+                bullets: [
+                  "A 1-of-1 written directly onto Bitcoin — the permanent record of the birth certificate of the physical collectable.",
+                  "The embedded SeedPod holds The Private Key where the Origin Key (Ordinal) is; destroy the physical collectable to control the Origin Key and Witness Keys to sweep the digital assets out of The Glass Vault.",
+                  "Scan the embedded NFC tag in the collectable to see what is in The Glass Vault straight from the chain. No middleman, no server, no permission.",
+                ],
+              },
+              {
+                name: "Witness Key",
+                sub: "Deterministic Automatic Operation (DAO) Contract",
+                bullets: [
+                  "cbBTC-backed tokens on Base. 1 Key = 1 Satoshi, permanently pegged.",
+                  "The 7% mint, inscribe and burn fee recirculates proportionately to the Witness Keys each wallet contains.",
+                  "No one directs the protocol's math or function — no owner, no admin, no governance.",
+                ],
+              },
+              {
+                name: "Together",
+                sub: "The Glass Vault",
+                bullets: [
+                  "Every original work has 1-of-1 Origin Key issued — with a Limited Edition of 30 — the Witnesses each carrying its own Witness Keys.",
+                  "Both keys are born from, encrypted and embedded in the same single SeedPod (private key): the Origin Key is the piece witnessed, the Witness Keys are the attestation to it.",
+                  "Provenance and interest, sealed in one object of integrity.",
+                ],
+              },
+            ];
+            return BOXES.map(b => (
+              <div key={b.name} style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 14 }}>
+                <div style={{ textAlign: "center" as const, marginBottom: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 6 }}>
+                    <SkeletonKey size={36} dark={darkMode} />
+                    <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>{b.name}</span>
+                  </div>
+                  <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 600, color: C.textDim, letterSpacing: "0.02em" }}>
+                    {b.sub}
+                  </div>
+                </div>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.65, fontWeight: 400 }}>
+                  {b.bullets.map((t, i) => (
+                    <li key={i} style={{ display: "flex", gap: 10, marginBottom: 8, textAlign: "left" as const }}>
+                      <span style={{ color: C.blue, fontWeight: 700, flexShrink: 0 }}>&bull;</span>
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim }}>
-                Immutable Provenance Inscription (IPI)
-              </div>
-            </div>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textDim, lineHeight: 1.7 }}>
-              {[
-                "A 1-of-1 inscription written directly onto Bitcoin — the permanent birth certificate of the physical collectable.",
-                "Embedded inside the collectable is the wallet SeedPod where one can control The Keys to use the digital assets without the physical vault.",
-                "Scan the collectable to read its Origin Key straight from the chain. No middleman, no server, no permission.",
-                "Every Origin Key is born alongside its Witness Keys in the same Vault — provenance and interest, sealed together.",
-              ].map((t, i) => (
-                <li key={i} style={{ display: "flex", gap: 10, marginBottom: 8, textAlign: "left" as const }}>
-                  <span style={{ color: C.blue, fontWeight: 700, flexShrink: 0 }}>&bull;</span>
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* ─── WITNESS KEY — boxed, matches Origin Key ──────────────────── */}
-          <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 16 }}>
-            <div style={{ textAlign: "center" as const, marginBottom: 14 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 6 }}>
-                <SkeletonKey size={36} dark={darkMode} />
-                <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>Witness Key</span>
-              </div>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, fontWeight: 700, color: C.textDim }}>
-                Deterministic Automatic Operation (DAO) Contract
-              </div>
-            </div>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textDim, lineHeight: 1.7 }}>
-              {[
-                "Each 1-of-1 is accompanied by a Limited Edition of 30 companion collectables — the Witnesses — every one carrying its own Witness Keys and standing as on-chain attestation to the original.",
-                "cbBTC-backed tokens on Base, sealed inside physical art. 1 Key = 1 Satoshi, permanently pegged (100,000,000 Satoshis = 1 Bitcoin).",
-                "The 7% mint, inscribe and burn fee recirculates proportionately (fixed math) to the number of Witness Keys in each wallet. No one directs it — no owner, no admin, no governance.",
-                "Every Witness Key is born alongside its Origin Key in the same Vault — interest and provenance, sealed together.",
-              ].map((t, i) => (
-                <li key={i} style={{ display: "flex", gap: 10, marginBottom: 8, textAlign: "left" as const }}>
-                  <span style={{ color: C.blue, fontWeight: 700, flexShrink: 0 }}>&bull;</span>
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+            ));
+          })()}
 
           {/* ─── PARTICIPANT NOTE ─────────────────────────────────────────── */}
           <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "14px 16px" : "16px 22px", marginBottom: 18 }}>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.text, lineHeight: 1.9, fontWeight: 600 }}>
+            <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.text, lineHeight: 1.8, fontWeight: 600 }}>
               Connecting a wallet makes you a participant. There are no customers here.
             </div>
           </div>
@@ -1447,15 +1448,53 @@ export default function Home() {
             })()}
 
             {swapMode === "transfer" && (
-              <Panel title="Transfer Witness Keys — Zero Fee" theme={C}>
-                <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
-                  Send Witness Keys to any wallet with no fee. Recirculation moves proportionally with the tokens.
-                </p>
-                <Input theme={C} label="Recipient wallet address" value={txTo} onChange={setTxTo} placeholder="0x..." />
-                <Input theme={C} label="Witness Keys amount" value={txAmt} onChange={setTxAmt} placeholder="930" type="number" tag="WK" hint={`Your balance: ${oktNum.toLocaleString()} WK`} />
-                <BigBtn onClick={transfer} theme={C} disabled={!connected}>Transfer — Free</BigBtn>
+              <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: mobile ? 16 : 20, boxShadow: C.shadow }}>
+
+                {/* Header row: title + zero-fee pill */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                  <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 18 : 20, fontWeight: 500, color: C.text }}>
+                    Transfer Keys
+                  </span>
+                  <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, fontWeight: 700, color: C.green, background: C.blueBg, border: `1px solid ${C.green}`, borderRadius: 20, padding: "4px 12px" }}>
+                    0% fee
+                  </span>
+                </div>
+
+                {/* SEND TO */}
+                <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? "12px 14px" : "14px 16px", marginBottom: 10 }}>
+                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.08em", textTransform: "uppercase" as const, fontWeight: 600, marginBottom: 8 }}>Send to</div>
+                  <input type="text" value={txTo} onChange={e => setTxTo(e.target.value)} placeholder="0x..."
+                    style={{ width: "100%", background: "transparent", border: "none", outline: "none", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 16, fontWeight: 600, color: C.text, padding: 0 }} />
+                </div>
+
+                {/* YOU SEND */}
+                <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? "12px 14px" : "14px 16px", marginBottom: 14 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                    <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.08em", textTransform: "uppercase" as const, fontWeight: 600 }}>You send</span>
+                    <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted }}>Balance: {oktNum.toLocaleString()} WK</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <input type="number" value={txAmt} onChange={e => setTxAmt(e.target.value)} placeholder="0"
+                      style={{ flex: 1, minWidth: 0, background: "transparent", border: "none", outline: "none", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 24 : 28, fontWeight: 700, color: C.text, WebkitAppearance: "none" as const, padding: 0 }} />
+                    <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 16, fontWeight: 700, color: C.blue, flexShrink: 0 }}>WK</span>
+                  </div>
+                  {btcPrice > 0 && Number(txAmt) > 0 && (
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, marginTop: 4 }}>
+                      &asymp; {fmtUsd(SatoshisToUsd(Number(txAmt), btcPrice))} USD
+                    </div>
+                  )}
+                </div>
+
+                {/* Note line */}
+                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, marginBottom: 14, padding: "0 2px", textAlign: "center" as const }}>
+                  Recirculation moves proportionally with the Keys &middot; no fee
+                </div>
+
+                <BigBtn onClick={transfer} theme={C} disabled={!connected}>
+                  {connected ? "Transfer Keys" : "Connect wallet to transfer"}
+                </BigBtn>
                 <Status state={txS} msg={txM} theme={C} />
-              </Panel>
+              </div>
             )}
           </div>
           </div>
