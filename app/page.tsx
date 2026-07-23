@@ -1184,7 +1184,7 @@ export default function Home() {
               },
               {
                 name: "The Glass Vault",
-                sub: null,
+                sub: "PATENT PENDING",
                 dial: true,
                 bullets: [
                   "Every collectable has a SeedPod embedded inside it — the private key phrase (password) to that piece's wallet.",
@@ -1203,7 +1203,7 @@ export default function Home() {
                     <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>{b.name}</span>
                   </div>
                   {b.sub && (
-                    <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 600, color: C.textDim, letterSpacing: "0.02em" }}>
+                    <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 600, color: (b as any).dial ? C.text : C.textDim, letterSpacing: "0.02em" }}>
                       {b.sub}
                     </div>
                   )}
