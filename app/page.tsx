@@ -174,6 +174,36 @@ function OrdinalPreview({ ordinalNumber, inscriptionId, mobile, borderColor }: {
   );
 }
 
+function SafeDial({ size = 36, color = "#4A90C2" }: { size?: number; color?: string }) {
+  const ticks = Array.from({ length: 24 }, (_, i) => i * 15);
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" style={{ display: "block", opacity: 0.9 }} aria-label="The Glass Vault">
+      {/* outer ring */}
+      <circle cx="50" cy="50" r="44" stroke={color} strokeWidth="3" />
+      {/* tick marks */}
+      {ticks.map(deg => {
+        const r1 = deg % 45 === 0 ? 33 : 37;
+        const rad = (deg - 90) * Math.PI / 180;
+        return (
+          <line key={deg}
+            x1={50 + r1 * Math.cos(rad)} y1={50 + r1 * Math.sin(rad)}
+            x2={50 + 41 * Math.cos(rad)} y2={50 + 41 * Math.sin(rad)}
+            stroke={color} strokeWidth={deg % 45 === 0 ? 3 : 1.5} strokeLinecap="round" />
+        );
+      })}
+      {/* inner dial face */}
+      <circle cx="50" cy="50" r="26" stroke={color} strokeWidth="2.5" />
+      {/* spokes / grip */}
+      <line x1="50" y1="24" x2="50" y2="76" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="24" y1="50" x2="76" y2="50" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+      {/* hub */}
+      <circle cx="50" cy="50" r="7" stroke={color} strokeWidth="2.5" fill="none" />
+      {/* index pointer */}
+      <path d="M50 4 L45 13 L55 13 Z" fill={color} />
+    </svg>
+  );
+}
+
 function SkeletonKey({ size = 28, dark = false }: { size?: number; dark?: boolean }) {
   const ratio = 190 / 86;
   const w = size * 0.55;
@@ -1156,7 +1186,7 @@ export default function Home() {
                 sub: "Immutable Ordinal Inscription (IOI)",
                 bullets: [
                   "A 1-of-1 written directly onto Bitcoin — the permanent record of the birth certificate of the physical collectable.",
-                  "The embedded SeedPod holds The Private Key where the Origin Key (Ordinal) is; destroy the physical collectable to control the Origin Key and Witness Keys to sweep the digital assets out of The Glass Vault.",
+                  "The embedded SeedPod holds the private key for the wallet where the Origin Key (Ordinal) is; destroy the physical collectable to control the Origin Key and Witness Keys to sweep the digital assets out of The Glass Vault.",
                   "Scan the embedded NFC tag in the collectable to see what is in The Glass Vault straight from the chain. No middleman, no server, no permission.",
                 ],
               },
@@ -1170,11 +1200,11 @@ export default function Home() {
                 ],
               },
               {
-                name: "Together",
-                sub: "The Glass Vault",
+                name: "The Glass Vault",
+                sub: null,
+                dial: true,
                 bullets: [
-                  "Every original work has 1-of-1 Origin Key issued — with a Limited Edition of 30 — the Witnesses each carrying its own Witness Keys.",
-                  "Both keys are born from, encrypted and embedded in the same single SeedPod (private key): the Origin Key is the piece witnessed, the Witness Keys are the attestation to it.",
+                  "One signed 1-of-1, which also carries the Origin Key, and a Limited Edition of 30. All 31 carry their own Witness Keys. Both keys are born from, encrypted and embedded in the same single SeedPod (private key): the Origin Key is the piece witnessed, the Witness Keys are the attestation to it.",
                   "Provenance and interest, sealed in one object of integrity.",
                 ],
               },
@@ -1183,12 +1213,14 @@ export default function Home() {
               <div key={b.name} style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 14 }}>
                 <div style={{ textAlign: "center" as const, marginBottom: 14 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 6 }}>
-                    <SkeletonKey size={36} dark={darkMode} />
+                    {(b as any).dial ? <SafeDial size={36} color={C.blue} /> : <SkeletonKey size={36} dark={darkMode} />}
                     <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.blue, letterSpacing: "0.06em" }}>{b.name}</span>
                   </div>
-                  <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 600, color: C.textDim, letterSpacing: "0.02em" }}>
-                    {b.sub}
-                  </div>
+                  {b.sub && (
+                    <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, fontWeight: 600, color: C.textDim, letterSpacing: "0.02em" }}>
+                      {b.sub}
+                    </div>
+                  )}
                 </div>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.65, fontWeight: 400 }}>
                   {b.bullets.map((t, i) => (
