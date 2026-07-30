@@ -316,38 +316,6 @@ function Panel({ title, children, theme }: { title: string; children: React.Reac
   );
 }
 
-const VIDEOS = [
-  { title: "What is Immutable Editions?",
-    desc: "The collectible space has always struggled with two problems. Authenticity — fake works, fake appraisals, expert opinions that can be bought. And fair value — where interest is measured by hype, not math. Immutable Editions solves both. Every piece carries on-chain provenance through Origin Keys — permanent, verifiable, impossible to forge. Every piece carries Witness Keys that measure real interest through real transactions — buys, sells, and recirculation distributed by math. Where provenance and interest meet market integrity.",
-    url: "https://youtube.com", tag: "START HERE", tc: "#4FA88A" },
-  { title: "How to Verify a Piece",
-    desc: "Tap the NFC chip on the art piece — or go to Vault Check and paste the wallet address. You'll see the vault status instantly — sealed or swept. If there's a linked Origin Key you'll see the actual inscription image and a link to verify on ordinals.com. Check that the owner address matches the vault address shown. If they match — the Origin Key is authentic and untouched. Below that you'll see the Witness Key balance — how many tokens are sealed inside. If recirculation is showing, the piece is actively receiving cbBTC from network activity. If the vault shows swept — someone has accessed the wallet and the provenance chain is broken.",
-    url: "https://youtube.com", tag: "VERIFY", tc: "#4FA88A" },
-  { title: "How Immutable Editions Use Origin Keys",
-    desc: "A Origin Key is data permanently written into the Bitcoin blockchain. It cannot be edited. It cannot be deleted. It cannot be faked. We inscribe every original work as an Origin Key using the Dublin Core Metadata Initiative — the same indexing standard used by libraries and museums worldwide. This is not a certificate of authenticity. This is not an expert opinion. This is not a slab grade. Those can be debated. Those can be forged. An Origin Key cannot. The record is cryptographically secured, fully transparent, and proves both the creation and ownership of the asset directly from the asset itself. Traditional provenance asks you to trust someone. An Origin Key asks you to verify math. That is Real World Inscription — and it is not up for debate. Origin Keys are not Witness Keys. Origin Keys are the permanent provenance layer on Bitcoin. Witness Keys are the value layer on Base chain. One proves the art is real. The other measures interest.",
-    url: "https://youtube.com", tag: "ORIGIN KEYS", tc: "#4A90C2" },
-  { title: "What is a Witness Key?",
-    desc: "A Witness Key is a physical art piece with a Bitcoin wallet sealed inside. That wallet holds Witness Key tokens on Base chain — and those tokens receive cbBTC recirculation from every single trade. Witness Keys are not Origin Keys. Origin Keys are permanent inscriptions on Bitcoin — the provenance layer. Witness Keys are tokens on Base — the value layer. One proves the art is real. The other measures how much interest that art generates. Some pieces carry both. Some carry just Witness Keys. The art receives cbBTC recirculation while it hangs on your wall. Destroy the art to redeem the Bitcoin. Until then — it recirculates.",
-    url: "https://youtube.com", tag: "CONCEPT", tc: "#4A90C2" },
-  { title: "What is a DAO Contract?",
-    desc: "A regular DAO is governed by votes. People argue. People lobby. People manipulate. A DAO Contract is governed by math. Every acquisition, every disposition, every proceed is calculated automatically. No admin can change it. No vote can override it. Math, not votes.",
-    url: "https://youtube.com", tag: "DAO", tc: "#4A90C2" },
-  { title: "How to Get cbBTC on Base",
-    desc: "To acquire Witness Keys you need cbBTC on Base chain. Open Coinbase. Buy Bitcoin. Go to Coinbase Wallet. Tap send. Choose Base network. Send to your wallet address. That's it — your Bitcoin is now cbBTC on Base. Ready to acquire.",
-    url: "https://youtube.com", tag: "BEGINNERS", tc: "#4FA88A" },
-  { title: "How to Acquire Witness Keys",
-    desc: "Go to the SWAP tab. Connect your wallet. Tap Acquire. Enter the amount in Satoshis — minimum 100. First time you'll see two wallet popups — first to approve cbBTC, then to buy. After that it's one tap. Your Witness Keys appear in your balance and recirculation begins immediately.",
-    url: "https://youtube.com", tag: "TRADING", tc: "#4A90C2" },
-  { title: "How to Dispose Witness Keys",
-    desc: "Go to the SWAP tab. Tap Dispose. Enter how many Witness Keys to sell. cbBTC goes directly to your wallet. Seven percent fee gets recirculated to every other holder. Simple.",
-    url: "https://youtube.com", tag: "TRADING", tc: "#4A90C2" },
-  { title: "How to Collect Recirculation",
-    desc: "Every trade generates a seven percent fee. That fee is recirculated proportionally to everyone holding Witness Keys. Your share shows in the Recirculation box. Tap Collect Satoshis to receive cbBTC in your wallet. Or tap Recirculate to convert it into more Witness Keys.",
-    url: "https://youtube.com", tag: "RECIRCULATION", tc: "#4A90C2" },
-  { title: "What Happens When You Destroy the Art?",
-    desc: "Every Witness Key has a private key sealed inside — physically sealed. To access the Bitcoin in that wallet you have to destroy the art piece. Import the private key into a wallet. The Witness Keys and any uncollected recirculation are yours. But the vault is permanently marked as swept on chain. Everyone can see it. The provenance is broken forever. Alternatively, if the piece carries a Origin Key, you may choose to sell the Origin Key on marketplaces like Gamma, UniSat, or Ordinals Wallet instead of destroying the physical art.",
-    url: "https://youtube.com", tag: "REDEMPTION", tc: "#C44444" },
-];
 
 // ─── APPROVE HELPER — fully awaits confirmation + 1s delay for wallet sync ───
 async function ensureAllowance(
@@ -1164,6 +1132,17 @@ export default function Home() {
           {/* ─── KEY DEFINITIONS — hidden once connected ──────────────────── */}
           {!connected && (
           <>
+          {/* PLAIN-LANGUAGE INTRO — hand-holding overview */}
+          <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 14 }}>
+            <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.7, fontWeight: 400 }}>
+              <p style={{ margin: "0 0 12px" }}>Every piece is a physical collectable. A real object you can hold in your hand.</p>
+              <p style={{ margin: "0 0 12px" }}>Each work exists as exactly 33 pieces: one signed 1-of-1, and a Limited Edition of 32. The 1-of-1 holds both an Origin Key and Witness Keys. Each Edition holds Witness Keys only.</p>
+              <p style={{ margin: "0 0 12px" }}>An Origin Key is the piece's birth record, written permanently onto Bitcoin itself.</p>
+              <p style={{ margin: "0 0 12px" }}>Witness Keys make you a witness to the vault, with a measure that's real and fixed.</p>
+              <p style={{ margin: 0 }}>And the Glass Vault is the part that lets you check all of it — see exactly what's inside — without ever breaking the seal.</p>
+            </div>
+          </div>
+
           {(() => {
             const BOXES = [
               {
@@ -1188,7 +1167,7 @@ export default function Home() {
                 dial: true,
                 bullets: [
                   "Every collectable has a SeedPod embedded inside it — the private key phrase (password) to that piece's wallet.",
-                  "The signed 1-of-1 holds the Origin Key and Witness Keys. Each of the 30 Limited Editions holds Witness Keys only.",
+                  "The signed 1-of-1 holds the Origin Key and Witness Keys. Each of the 32 Limited Editions holds Witness Keys only.",
                   "Anyone can look inside. The wallet address is printed on the back, and the NFC tag opens the vault verification with a tap — check balance, confirm everything is there, verify the piece is whole. That's the glass: you can see everything, and touch nothing.",
                   "Reaching the keys means destroying the physical collectable.",
                   "Provenance and interest, sealed in one object of integrity.",
@@ -1977,26 +1956,86 @@ export default function Home() {
 
         {/* LEARN */}
         {tab === "conduct" && (
-          <Panel title="Guides" theme={C}>
-            <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 15, color: C.textDim, lineHeight: 1.7, marginBottom: 12 }}>
-              Everything you need to understand Immutable Editions, Witness Keys, Origin Keys, and how to participate.
-            </p>
-            <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
-              {VIDEOS.map((v, i) => (
-                <a key={i} href={v.url} target="_blank" rel="noopener noreferrer" style={{ display: "flex", gap: 14, padding: "16px 18px", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 10, textDecoration: "none", alignItems: "flex-start" }}>
-                  <div style={{ width: 40, height: 40, background: "#FF0000", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 16, color: "#FFFFFF" }}>▶</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", flexWrap: "wrap" as const, alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 15, color: C.text, fontWeight: 700, lineHeight: 1.3 }}>{v.title}</div>
-                      <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: v.tc, border: `1px solid ${v.tc}`, borderRadius: 4, padding: "2px 8px", flexShrink: 0, letterSpacing: "0.1em", fontWeight: 700 }}>{v.tag}</div>
-                    </div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, color: C.textMuted, lineHeight: 1.6 }}>{v.desc}</div>
-                  </div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 18, color: C.textMuted, flexShrink: 0 }}>↗</div>
-                </a>
-              ))}
+          <div>
+            <div style={{ textAlign: "center" as const, marginBottom: 20 }}>
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 26 : 34, fontWeight: 400, color: C.text, letterSpacing: "-0.01em", marginBottom: 6 }}>Conduct</div>
+              <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textMuted, lineHeight: 1.6 }}>Everything you need to understand Immutable Editions, and how to participate.</div>
             </div>
-          </Panel>
+
+            {(() => {
+              const GUIDES = [
+                {
+                  tag: "START HERE",
+                  title: "Immutable Editions",
+                  body: ["Every piece carries on-chain provenance through an Origin Key — permanent, verifiable, written into Bitcoin itself. Every piece carries Witness Keys, the measure of real interest expressed through real participation. Provenance and interest, meeting market integrity."],
+                },
+                {
+                  tag: "VERIFY",
+                  title: "Verify a Piece",
+                  body: ["Tap the NFC chip, or paste the wallet address into Vault Check. You'll see the piece's state at once — sealed or swept.", "If it carries an Origin Key, you'll see the inscription image and a link to confirm it on ordinals.com; match the owner address to the vault address and the Origin Key stands authentic and whole. Below that, the Witness Key balance the piece holds, sealed inside. Sealed means the piece is whole and its contents intact."],
+                },
+                {
+                  tag: "ORIGIN KEYS",
+                  title: "Origin Keys",
+                  body: ["An Origin Key is data written permanently into the Bitcoin blockchain. Every original work is inscribed as an Origin Key using the Dublin Core Metadata Initiative — the indexing standard libraries and museums use worldwide.", "It is cryptographically secured, fully transparent, and proves both the creation and the ownership of the work directly from the work itself. An Origin Key asks you to verify math. That is Real World Inscription.", "Origin Keys are the permanent provenance layer on Bitcoin; Witness Keys are participation on Base."],
+                },
+                {
+                  tag: "CONCEPT",
+                  title: "What is a Witness Key?",
+                  body: ["A Witness Key is a unit of participation on Base, its measure fixed: 1 Key = 1 Satoshi, backed one-to-one by cbBTC — real Bitcoin, verifiable on-chain.", "A Key exists in one of two states. Sealed — held inside a physical art piece's own wallet, behind a SeedPod, whole and intact for as long as the piece is. Loose — held openly in a wallet, part of the live network, where witnesses acquire, dispose, and realize recirculation by witnessing it.", "You can see into a sealed piece — the address is on the back, a tap verifies it. To reach the digital assets sealed inside, you destroy the art. Until then, the piece holds it, whole."],
+                },
+                {
+                  tag: "DAO",
+                  title: "The DAO Contract",
+                  body: ["A DAO Contract is governed by math. Every acquisition, every disposition, every recirculation is calculated automatically by fixed rule. The math holds. The math decides."],
+                },
+                {
+                  tag: "BEGINNERS",
+                  title: "Get cbBTC on Base",
+                  body: ["To participate you need cbBTC on Base. Open Coinbase, buy Bitcoin, and move it to Coinbase Wallet. Send on the Base network to your wallet address. Your Bitcoin arrives as cbBTC on Base, ready to acquire Witness Keys."],
+                },
+                {
+                  tag: "PARTICIPATING",
+                  title: "Acquire Witness Keys",
+                  body: ["Go to the KEYCHAIN tab and connect your wallet. Tap Acquire and enter the amount in Satoshis, minimum 100. The first time, you'll approve cbBTC, then confirm the acquisition; after that it's one tap. Your Witness Keys arrive in your balance, on Base, and you stand among the live network of witnesses."],
+                },
+                {
+                  tag: "PARTICIPATING",
+                  title: "Dispose Witness Keys",
+                  body: ["Go to the KEYCHAIN tab and tap Dispose. Enter how many Witness Keys to release. cbBTC goes straight to your wallet. A fixed 7% recirculates through the network by math."],
+                },
+                {
+                  tag: "RECIRCULATION",
+                  title: "Recirculation",
+                  body: ["Every acquisition and disposition carries a fixed 7% that recirculates through the network by math. A witness realizes their share by witnessing it. Witness to realize it as cbBTC in your wallet, or witness it forward into more Witness Keys — deepening your standing in the network."],
+                },
+                {
+                  tag: "REDEMPTION",
+                  title: "Destroy the Art",
+                  body: ["Every piece has a SeedPod sealed inside — the private key to that piece's own wallet. Destroy the art, import the key, and everything the piece held is yours: the Witness Keys, the Origin Key, every Satoshi it carried. The vault stands swept on-chain from then on, plain for all to see.", "If the piece carries an Origin Key, you may instead list/sell that Origin Key on Gamma, UniSat, or Ordinals Wallet, and let the provenance travel on digitally."],
+                },
+              ];
+              return (
+                <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
+                  {GUIDES.map((g, i) => (
+                    <div key={i} style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" as const }}>
+                        <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 17 : 20, fontWeight: 400, color: C.blue }}>{g.title}</span>
+                        <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.textMuted, border: `1px solid ${C.border}`, borderRadius: 4, padding: "2px 8px", letterSpacing: "0.12em", fontWeight: 700 }}>{g.tag}</span>
+                      </div>
+                      {g.body.map((p, j) => (
+                        <p key={j} style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.7, margin: j === g.body.length - 1 ? 0 : "0 0 10px" }}>{p}</p>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
+            <div style={{ textAlign: "center" as const, marginTop: 20, fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 16 : 19, fontStyle: "italic", color: C.text }}>
+              See everything. Control nothing till the seal is broken.
+            </div>
+          </div>
         )}
 
         {/* CONTRACT ADDRESSES — Witness Key page only */}
