@@ -30,7 +30,7 @@
               "vault": "0x9FeFc58F80c1E0CA637866f9B6bb0C3794C1eaa1",
               "oktAmount": "50000",
               "shopifyUrl": "",
-              "sold": false
+              "sold": true
             },
             {
               "name": "CORE Edition 2 of 3",
@@ -63,6 +63,303 @@
               "vault": "0x2e0b912A071fc75093021ba1BE4AC54450cb0fB0",
               "oktAmount": "30000",
               "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640935066:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "ARCH Edition 6 of 7",
+              "type": "limited",
+              "edition": "6 of 7",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xE70a4300ba8d161227bA3D15a14461e2366F2E9b",
+              "oktAmount": "30000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640935066:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "ARCH Edition 5 of 7",
+              "type": "limited",
+              "edition": "5 of 7",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x53041E5F98176C6CDbC43892dC6007072a48b87d",
+              "oktAmount": "30000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640935066:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "ARCH Edition 4 of 7",
+              "type": "limited",
+              "edition": "4 of 7",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x0E22bBD2fdeB2DE67E949745bea49c9d9a053e79",
+              "oktAmount": "30000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640935066:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "ARCH Edition 3 of 7",
+              "type": "limited",
+              "edition": "3 of 7",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xB9f5FE9c102AEC37239027F15FcfAbB6B97B0Adf",
+              "oktAmount": "30000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640935066:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "ARCH Edition 2 of 7",
+              "type": "limited",
+              "edition": "2 of 7",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xb7Fc0fa4f55e0330e6Bc430527FbC9A3A4557FcF",
+              "oktAmount": "30000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640935066:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "ARCH Edition 1 of 7",
+              "type": "limited",
+              "edition": "1 of 7",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xaC9ef41417A2AfF8fA044DfF4eCd46B918959204",
+              "oktAmount": "30000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640935066:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 21 of 21",
+              "type": "limited",
+              "edition": "21 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x79051F20bE9b2AD59510D22715e78b2ecD58549f",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 20 of 21",
+              "type": "limited",
+              "edition": "20 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x5487c18D0e4e5ce49554805F5C95dDbA0449eabF",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 19 of 21",
+              "type": "limited",
+              "edition": "19 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x4be4b74E0863e0788c0f3df3899D90FD4CD97971",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 18 of 21",
+              "type": "limited",
+              "edition": "18 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x5eb058e352462c16F6b7C0E6CB00F6Ef52C9906f",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 17 of 21",
+              "type": "limited",
+              "edition": "17 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xcf536E6bA678cc7c6F06E43bccb3D02872ee0c9f",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 16 of 21",
+              "type": "limited",
+              "edition": "16 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xe1C9dC35d55eF07B7517F71e68fE234D2F35b0B0",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 15 of 21",
+              "type": "limited",
+              "edition": "15 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x85e44656C50b75331209709237614ACE0a4B991E",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 14 of 21",
+              "type": "limited",
+              "edition": "14 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x2797aACdDbE8B7e1c3f7a58E232e037CE52733C2",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 13 of 21",
+              "type": "limited",
+              "edition": "13 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x994E182f163c8E3B00E93147112F3Ea00c85E232",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 12 of 21",
+              "type": "limited",
+              "edition": "12 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xe46bf0dbDb8AED07432Da1cB6e1A00a7B2734391",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 11 of 21",
+              "type": "limited",
+              "edition": "11 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x9693B594EF5211ccE8847Ac112EFabFD2e0F3248",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 10 of 21",
+              "type": "limited",
+              "edition": "10 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xd07DEC38142e91f743BBa62578e37318CB8fDc80",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 09 of 21",
+              "type": "limited",
+              "edition": "09 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x652D6c6CEc332fE4D2A0b09bdB759E69404030E6",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 08 of 21",
+              "type": "limited",
+              "edition": "08 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x85105920BA687148184fd3FF901b4f612F1263A5",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 07 of 21",
+              "type": "limited",
+              "edition": "07 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x01fCd50bB5A6aD68ab8341bE5FC787C48dBAAa21",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 06 of 21",
+              "type": "limited",
+              "edition": "06 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xbA79A46A4FeF9aEf7dCf9609460aaCc1E84497c2",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 05 of 21",
+              "type": "limited",
+              "edition": "05 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x2aAbaE10c8FcF7DbfCF7c264a42E3c4c315967a1",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 04 of 21",
+              "type": "limited",
+              "edition": "04 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x311b8325b79Dc126bCA635e9639b499c4C4732df",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 03 of 21",
+              "type": "limited",
+              "edition": "03 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xBA0c0C44E8ce9cc4489508A77E0473f607CEACF8",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 02 of 21",
+              "type": "limited",
+              "edition": "02 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xeD9730d4e5302b81e32484B4eF44C0A162BA8a0e",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "KEYSTONE Edition 01 of 21",
+              "type": "limited",
+              "edition": "01 of 21",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xBE4bF5CD8528B765C1a4B226491C16EF47d10AC7",
+              "oktAmount": "10000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
               "sold": false
             }
           ]
