@@ -1,19 +1,18 @@
+
 {
   "artists": [
     {
-      "id": "michael-james-slattery",
-      "name": "Michael James Slattery",
-      "bio": "Luminist and Innovator",
+      "id": "michael-slattery",
+      "name": "Michael Slattery",
+      "bio": "",
       "collections": [
         {
           "id": "from-my-roof",
-          "name": "from my roof",
-          "private": false,
-          "password": "",
-          "description": "33 Collectable Trading Cards BTCG",
+          "name": "From My Roof",
+          "description": "",
           "pieces": [
             {
-              "name": "from my roof ",
+              "name": "from my roof",
               "type": "original",
               "edition": "1 of 1",
               "ordinalNumber": "127030068",
@@ -22,7 +21,7 @@
               "oktAmount": "200000",
               "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886629433498:1?channel=buy_button",
               "sold": false
-            },
+            }
           ]
         }
       ]
