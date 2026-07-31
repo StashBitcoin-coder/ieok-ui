@@ -1045,15 +1045,18 @@ export default function Home() {
                 <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 12 }}>
                   {selectedCollection.pieces.map((piece: any, idx: number) => (
                     <div key={idx} onClick={() => setSelectedPiece(piece)}
-                      style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, overflow: "hidden", cursor: "pointer", boxShadow: C.shadow, transition: "border-color 0.2s" }}
+                      style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, overflow: "hidden", cursor: "pointer", boxShadow: C.shadow, transition: "border-color 0.2s", position: "relative" as const }}
                       onMouseEnter={(e: any) => e.currentTarget.style.borderColor = C.blue}
                       onMouseLeave={(e: any) => e.currentTarget.style.borderColor = C.border}>
+                      {piece.sold && (
+                        <div style={{ position: "absolute" as const, top: 8, right: 8, zIndex: 2, background: C.red, color: "#FFFFFF", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", padding: "3px 9px", borderRadius: 4 }}>SOLD</div>
+                      )}
                       {piece.inscriptionId ? (
                         <img src={`https://ordinals.com/content/${piece.inscriptionId}`} alt={piece.name}
-                          style={{ width: "100%", height: mobile ? 120 : 160, objectFit: "cover" }}
+                          style={{ width: "100%", height: mobile ? 120 : 160, objectFit: "cover", opacity: piece.sold ? 0.5 : 1, filter: piece.sold ? "grayscale(0.4)" : "none" }}
                           onError={(e: any) => { e.target.style.display = "none"; }} />
                       ) : (
-                        <div style={{ width: "100%", height: mobile ? 120 : 160, background: C.panel, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <div style={{ width: "100%", height: mobile ? 120 : 160, background: C.panel, display: "flex", alignItems: "center", justifyContent: "center", opacity: piece.sold ? 0.5 : 1 }}>
                           <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted }}>Witness Keys Only</span>
                         </div>
                       )}
@@ -1108,7 +1111,11 @@ export default function Home() {
                   {/* Links */}
                   <div style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
 
-                    {selectedPiece.shopifyUrl && (
+                    {selectedPiece.sold ? (
+                      <div style={{ display: "block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "12px 16px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, fontWeight: 700, textAlign: "center" as const, letterSpacing: "0.1em" }}>
+                        SOLD
+                      </div>
+                    ) : selectedPiece.shopifyUrl && (
                       <a href={selectedPiece.shopifyUrl} target="_blank" rel="noopener noreferrer"
                         style={{ display: "block", background: C.green, borderRadius: 8, padding: "12px 16px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: "#FFFFFF", textDecoration: "none", fontWeight: 700, textAlign: "center" as const }}>
                         Purchase This Piece ↗
@@ -1648,7 +1655,15 @@ export default function Home() {
                                 const updated = JSON.parse(JSON.stringify(galleryData));
                                 const a = updated.artists.find((x: any) => x.id === artist.id);
                                 const c = a.collections.find((x: any) => x.id === col.id);
-                                c.pieces.splice(pIdx, 1);
+                                c.pieces[pIdx].sold = !c.pieces[pIdx].sold;
+                                setGalleryData(updated);
+                                const json = JSON.stringify(updated, null, 2);
+                                setGalEntry(json);
+                                navigator.clipboard.writeText(json);
+                              }} style={{ background: piece.sold ? C.redBg : "transparent", border: `1px solid ${piece.sold ? C.red : C.green}`, borderRadius: 4, padding: "4px 8px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: piece.sold ? C.red : C.green, fontWeight: 700, cursor: "pointer", flexShrink: 0, minWidth: 74 }}>
+                                {piece.sold ? "● SOLD" : "○ For sale"}
+                              </button>
+                              <button onClick={() => {
                                 if (c.pieces.length === 0) {
                                   a.collections = a.collections.filter((x: any) => x.id !== col.id);
                                 }
@@ -1686,7 +1701,8 @@ export default function Home() {
                       inscriptionId: insInsId || "",
                       vault: insVault || "",
                       oktAmount: insCbbtc || "",
-                      shopifyUrl: galShopify || ""
+                      shopifyUrl: galShopify || "",
+                      sold: false
                     };
 
                     // Find or create artist
