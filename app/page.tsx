@@ -1159,9 +1159,7 @@ export default function Home() {
           <>
           {/* PLAIN-LANGUAGE INTRO — hand-holding overview */}
           <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 14 }}>
-            <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.7, fontWeight: 400 }}>
-              <p style={{ margin: "0 0 12px" }}>Every piece is a physical collectable. A real object you can hold in your hand.</p>
-              <p style={{ margin: "0 0 12px" }}>Each work exists as exactly 33 pieces: one signed 1-of-1, and a Limited Edition of 32. The 1-of-1 holds both an Origin Key and Witness Keys. Each Edition holds Witness Keys only.</p>
+            <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.7, fontWeight: 400, textAlign: "center" as const }}>
               <p style={{ margin: "0 0 12px" }}>An Origin Key is the piece's birth record, written permanently onto Bitcoin itself.</p>
               <p style={{ margin: "0 0 12px" }}>Witness Keys make you a witness to the vault, with a measure that's real and fixed.</p>
               <p style={{ margin: 0 }}>And the Glass Vault is the part that lets you check all of it — see exactly what's inside — without ever breaking the seal.</p>
