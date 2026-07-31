@@ -689,7 +689,25 @@ export default function Home() {
       ]);
       const [registered, swept, balance, assetId]                    = core;
       const [ordinalNumber, hasOrdinal, ordinalMoved, ordinalMovedAt, inscriptionId] = ordinal;
-      setVResult({ registered, swept, balance: balance.toString(), recirculation: divAmount.toString(), assetId: assetId.toString(), ordinalNumber: ordinalNumber.toString(), hasOrdinal, ordinalMoved, ordinalMovedAt: ordinalMovedAt.toString(), inscriptionId: inscriptionId || "" });
+      // Fallback: if the contract has no inscriptionId (was inscribed with a blank
+      // string), pull it from gallery.json by matching the vault address. The image
+      // still loads from the real Ordinal on ordinals.com — this only supplies the ID.
+      let resolvedInscriptionId = inscriptionId || "";
+      if (!resolvedInscriptionId && galleryData) {
+        try {
+          const target = vAddr.toLowerCase();
+          for (const a of (galleryData.artists || [])) {
+            for (const col of (a.collections || [])) {
+              for (const p of (col.pieces || [])) {
+                if (p.vault && p.vault.toLowerCase() === target && p.inscriptionId) {
+                  resolvedInscriptionId = p.inscriptionId;
+                }
+              }
+            }
+          }
+        } catch {}
+      }
+      setVResult({ registered, swept, balance: balance.toString(), recirculation: divAmount.toString(), assetId: assetId.toString(), ordinalNumber: ordinalNumber.toString(), hasOrdinal, ordinalMoved, ordinalMovedAt: ordinalMovedAt.toString(), inscriptionId: resolvedInscriptionId });
       setVS("idle"); setVM("");
     } catch (e: any) { setVS("failed"); setVM("Could not query — check address and try again"); setVResult(null); }
   }
