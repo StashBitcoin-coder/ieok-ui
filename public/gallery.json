@@ -1,4 +1,3 @@
-
 {
   "artists": [
     {
@@ -20,6 +19,17 @@
               "vault": "0x0027dC10bBc4FE49a32415eeb589eF1D1adBE16c",
               "oktAmount": "200000",
               "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886629433498:1?channel=buy_button",
+              "sold": true
+            },
+            {
+              "name": "CORE Edition 3 of 3",
+              "type": "limited",
+              "edition": "3 of 3",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x9FeFc58F80c1E0CA637866f9B6bb0C3794C1eaa1",
+              "oktAmount": "50000",
+              "shopifyUrl": "",
               "sold": false
             }
           ]
