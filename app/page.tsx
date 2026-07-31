@@ -1664,6 +1664,10 @@ export default function Home() {
                                 {piece.sold ? "● SOLD" : "○ For sale"}
                               </button>
                               <button onClick={() => {
+                                const updated = JSON.parse(JSON.stringify(galleryData));
+                                const a = updated.artists.find((x: any) => x.id === artist.id);
+                                const c = a.collections.find((x: any) => x.id === col.id);
+                                c.pieces.splice(pIdx, 1);
                                 if (c.pieces.length === 0) {
                                   a.collections = a.collections.filter((x: any) => x.id !== col.id);
                                 }
