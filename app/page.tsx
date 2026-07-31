@@ -1902,6 +1902,22 @@ export default function Home() {
 
 
                       </div>
+                    ) : vResult.inscriptionId ? (
+                      <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? 16 : 24, display: "inline-block" }}>
+
+                        {/* Edition — artwork image, no Origin Key claim */}
+                        <OrdinalPreview ordinalNumber={vResult.ordinalNumber} inscriptionId={vResult.inscriptionId || ""} mobile={mobile} borderColor={C.border} />
+
+                        <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, marginBottom: 4 }}>
+                          Sealed in vault:
+                        </div>
+                        <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textDim, wordBreak: "break-all" as const, padding: "6px 10px", background: C.card, borderRadius: 6, border: `1px solid ${C.border}` }}>
+                          {vAddr}
+                        </div>
+                        <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, marginTop: 10 }}>
+                          Limited Edition — Witness Keys only. The Origin Key lives with the signed 1-of-1.
+                        </div>
+                      </div>
                     ) : (
                       <div style={{ display: "inline-block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 24px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted }}>
                         No Origin Key linked — Witness Keys only
