@@ -6,40 +6,21 @@
       "bio": "Luminist and Founder of Immutable Editions",
       "collections": [
         {
-          "id": "the-beginning...",
-          "name": "The beginning...",
+          "id": "from-my-roof",
+          "name": "from my roof",
           "private": false,
           "password": "",
-          "description": "One signed Ordinal and 5ive sets of 4our",
+          "description": "33 fine art collectable trading cards of my first Luminous View",
           "pieces": [
             {
-              "name": "from my roof",
+              "name": "Origin",
               "type": "original",
               "edition": "1 of 1",
-              "ordinalNumber": "121806833",
-              "inscriptionId": "35daa67dc8fe3bbd9bb96e3e859c83cbb98bd262c9eab243ac40875e0ff05872i0",
-              "vault": "0xAfc04a4438D1Da2cC1292b293F04F3A3F74748DF",
-              "oktAmount": "10000",
-              "shopifyUrl": "https://luminous-views.com/cart/45693593321626:1"
-            }
-          ]
-        },
-        {
-          "id": "donations",
-          "name": "Donations",
-          "private": true,
-          "password": "2026",
-          "description": "Giving back to the community",
-          "pieces": [
-            {
-              "name": "Redwood Skywalk",
-              "type": "original",
-              "edition": "1 of 1",
-              "ordinalNumber": "117551551",
-              "inscriptionId": "56fc23383104e6b0032695b020ec10afd8cac9a5fa731a8b6b58696ab13b90c1i0",
-              "vault": "0xa521c6f332B61Ab69CB897D8311dD37f7370B120",
-              "oktAmount": "10000",
-              "shopifyUrl": "https://luminous-views.com/cart/45693730717850:1"
+              "ordinalNumber": "122906009",
+              "inscriptionId": "",
+              "vault": "0x0027dC10bBc4FE49a32415eeb589eF1D1adBE16c",
+              "oktAmount": "200000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48878260453530:1?channel=buy_button"
             }
           ]
         }
