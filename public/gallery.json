@@ -31,6 +31,39 @@
               "oktAmount": "50000",
               "shopifyUrl": "",
               "sold": false
+            },
+            {
+              "name": "CORE Edition 2 of 3",
+              "type": "limited",
+              "edition": "2 of 3",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x086001EacCDBb67d27c261b5B64e89C8e9620B19",
+              "oktAmount": "50000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640902298:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "CORE Edition 1 of 3",
+              "type": "limited",
+              "edition": "1 of 3",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0xFC279098b898E6A3fff26f53aBaBBb35484D92a8",
+              "oktAmount": "50000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640902298:1?channel=buy_button",
+              "sold": false
+            },
+            {
+              "name": "ARCH Edition 7 of 7",
+              "type": "limited",
+              "edition": "7 of 7",
+              "ordinalNumber": "",
+              "inscriptionId": "115067eef659e980a7384ca0135a15e5e78cbe7c544275df671f85aa853a6d0ei0",
+              "vault": "0x2e0b912A071fc75093021ba1BE4AC54450cb0fB0",
+              "oktAmount": "30000",
+              "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640935066:1?channel=buy_button",
+              "sold": false
             }
           ]
         }
