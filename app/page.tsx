@@ -1547,12 +1547,11 @@ export default function Home() {
               </div>
               <Input theme={C} label="Vault wallet address (sealed inside the art)" value={insVault} onChange={setInsVault} placeholder="0x..." />
               <Input theme={C} label="Asset ID (max 31 characters)" value={insAsset} onChange={setInsAsset} placeholder="RWI-001" hint="e.g. RWI-001, IE-GENESIS-001, AB-001" />
-              <Input theme={C} label="Ordinal inscription number (optional)" value={insOrd} onChange={setInsOrd} placeholder="68743291 or leave blank" type="number" hint="Leave blank for series pieces without a linked Origin Key" />
-              {insOrd && Number(insOrd) > 0 ? (
-                <Input theme={C} label="Ordinal inscription ID" value={insInsId} onChange={setInsInsId} placeholder="01b0dd658974e98059a753bab23e3cdbd4c86c7b49b92c2b03f7ede01b09031ei0" hint="Paste the full inscription ID from ordinals.com/inscription/YOUR_NUMBER — this displays the ordinal image in the vault checker" />
-              ) : (
+              <Input theme={C} label="Ordinal inscription number (optional)" value={insOrd} onChange={setInsOrd} placeholder="68743291 or leave blank" type="number" hint="Only the 1-of-1 has an Origin Key number. Leave blank for the 32 editions (Witness Keys only)." />
+              <Input theme={C} label="Ordinal inscription ID — for gallery/vault image (optional)" value={insInsId} onChange={setInsInsId} placeholder="115067ee...a6d0ei0" hint="Paste the artwork's inscription ID to display its image. Editions reuse the 1-of-1's ID here to show the same artwork — leave the number above blank." />
+              {(!insOrd || Number(insOrd) === 0) && (
                 <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, marginBottom: 20, padding: "10px 14px", background: C.panel, borderRadius: 8, border: `1px solid ${C.border}` }}>
-                  No Origin Key — this vault will hold Witness Keys only. The vault checker will show token balance and recirculation but no linked Bitcoin inscription.
+                  No Origin Key number — this vault holds Witness Keys only. It can still show the artwork image if you paste an inscription ID above.
                 </div>
               )}
               <Input theme={C} label="cbBTC to spend (Satoshis) — 7% fee, rest becomes WK in vault" value={insCbbtc} onChange={setInsCbbtc} placeholder="10000" type="number" tag="SATS"
