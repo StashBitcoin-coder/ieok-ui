@@ -109,6 +109,19 @@ function preview7(Satoshis: string) {
   return { fee, out: n - fee };
 }
 function b32(str: string) { return ethers.encodeBytes32String(str.slice(0, 31)); }
+function decodeAssetId(raw: string) {
+  if (!raw) return "";
+  try {
+    // Stored on-chain as bytes32. If it's a hex string, decode it back to text.
+    if (raw.startsWith("0x")) {
+      if (/^0x0*$/.test(raw)) return "";
+      return ethers.decodeBytes32String(raw);
+    }
+    return raw;
+  } catch {
+    return "";
+  }
+}
 
 const useIsMobile = () => {
   const [mobile, setMobile] = useState(false);
@@ -742,7 +755,7 @@ export default function Home() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("vault");
-    if (v) { setVAddr(v); setTab("vault"); }
+    if (v) { setVResult(null); setAutoChecked(false); setVAddr(v); setTab("vault"); }
   }, []);
   useEffect(() => { if (vAddr && tab === "vault" && !autoChecked) { setAutoChecked(true); setTimeout(() => checkVault(), 300); } }, [vAddr, tab]);
 
@@ -1122,7 +1135,7 @@ export default function Home() {
                       </a>
                     )}
                     {selectedPiece.vault && (
-                      <button onClick={(e: any) => { e.stopPropagation(); setSelectedPiece(null); setVAddr(selectedPiece.vault); setTab("vault"); }}
+                      <button onClick={(e: any) => { e.stopPropagation(); setSelectedPiece(null); setVResult(null); setAutoChecked(false); setVAddr(selectedPiece.vault); setTab("vault"); }}
                         style={{ display: "block", background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 16px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.textDim, fontWeight: 700, cursor: "pointer", textAlign: "center" as const, width: "100%" }}>
                         Check Vault Status →
                       </button>
@@ -1546,7 +1559,7 @@ export default function Home() {
                 ))}
               </div>
               <Input theme={C} label="Vault wallet address (sealed inside the art)" value={insVault} onChange={setInsVault} placeholder="0x..." />
-              <Input theme={C} label="Asset ID (max 31 characters)" value={insAsset} onChange={setInsAsset} placeholder="RWI-001" hint="e.g. RWI-001, IE-GENESIS-001, AB-001" />
+              <Input theme={C} label="Asset ID (max 31 characters)" value={insAsset} onChange={setInsAsset} placeholder="RWI001-KEYSTONE-21of21" hint="Combine catalog ID + edition, e.g. RWI001-KEYSTONE-21of21 or RWI001-ARCH-3of7. Sealed on-chain and shown in the vault check." />
               <Input theme={C} label="Ordinal inscription number (optional)" value={insOrd} onChange={setInsOrd} placeholder="68743291 or leave blank" type="number" hint="Only the 1-of-1 has an Origin Key number. Leave blank for the 32 editions (Witness Keys only)." />
               <Input theme={C} label="Ordinal inscription ID — for gallery/vault image (optional)" value={insInsId} onChange={setInsInsId} placeholder="115067ee...a6d0ei0" hint="Paste the artwork's inscription ID to display its image. Editions reuse the 1-of-1's ID here to show the same artwork — leave the number above blank." />
               {(!insOrd || Number(insOrd) === 0) && (
@@ -1814,7 +1827,7 @@ export default function Home() {
               <input
                 type="text"
                 value={vAddr}
-                onChange={e => setVAddr(e.target.value)}
+                onChange={e => { setVAddr(e.target.value); setVResult(null); setAutoChecked(false); }}
                 placeholder="0x..."
                 style={{ width: "100%", background: "transparent", border: "none", outline: "none", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 16, fontWeight: 600, color: C.text, padding: 0, boxSizing: "border-box" as const }}
               />
@@ -1933,6 +1946,12 @@ export default function Home() {
                     <div>
                       <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Vault Address</div>
                       <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, wordBreak: "break-all" as const }}>{vAddr}</div>
+                      {decodeAssetId(vResult.assetId) && (
+                        <>
+                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", margin: "12px 0 6px", textTransform: "uppercase" as const, fontWeight: 600 }}>Asset ID</div>
+                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 15 : 17, color: C.blue, fontWeight: 700 }}>{decodeAssetId(vResult.assetId)}</div>
+                        </>
+                      )}
                     </div>
                     <div>
                       <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.1em", marginBottom: 6, textTransform: "uppercase" as const, fontWeight: 600 }}>Witness Key Balance</div>
@@ -1958,9 +1977,9 @@ export default function Home() {
                     {btcPrice > 0 && (
                       <div style={{ gridColumn: "1 / -1", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "16px 20px" }}>
                         <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.blue, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 700 }}>Total Redeemable Value</div>
-                        <div style={{ display: "flex", alignItems: "baseline", gap: 14, flexWrap: "wrap" as const }}>
-                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 24 : 30, color: C.blue, fontWeight: 700 }}>{fmtUsd(SatoshisToUsd(Number(vResult.balance) + Number(vResult.recirculation), btcPrice))} USD</div>
-                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.textMuted }}>{fmtCbbtc((Number(vResult.balance) + Number(vResult.recirculation)).toString())}&nbsp;·&nbsp;{(Number(vResult.balance) + Number(vResult.recirculation)).toLocaleString()} Satoshis</div>
+                        <div style={{ display: "flex", flexDirection: "column" as const, gap: 2 }}>
+                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 24 : 30, color: C.blue, fontWeight: 700 }}>{(Number(vResult.balance) + Number(vResult.recirculation)).toLocaleString()} Satoshis</div>
+                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.textMuted }}>{fmtUsd(SatoshisToUsd(Number(vResult.balance) + Number(vResult.recirculation), btcPrice))} USD&nbsp;·&nbsp;{fmtCbbtc((Number(vResult.balance) + Number(vResult.recirculation)).toString())}</div>
                         </div>
                         <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, marginTop: 6 }}>
                           WK tokens + accumulated cbBTC recirculation — redeemable by destroying the art piece and acquiring the embedded SeedPod (Private Key) to the wallet holding the digital assets.
