@@ -975,11 +975,9 @@ export default function Home() {
                 <div style={{ textAlign: "center" as const, marginBottom: 28 }}>
                   <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.06em", marginBottom: 12 }}>Michael James Slattery</div>
                   <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.8, maxWidth: 640, margin: "0 auto", marginBottom: 16 }}>
-                    Michael, The Luminist, captures the profound intersection of civilization and nature. Fusing hours-long exposures with darkroom alchemy, his archival prints reveal the extraordinary light hidden within the ordinary.
+                    Michael, The Luminist, fuses hours-long exposures with darkroom alchemy to reveal the extraordinary light hidden in the ordinary — then seals each masterpiece in The Glass Vault, where its Origin Key and Witness Keys rest together.
                     <br /><br />
-                    Today, he pioneers the future of provenance and interest via Immutable Editions. By inscribing his physical masterpieces as Origin Keys, he anchors art to history's most secure ledger. Furthermore, every edition acts as an Witness Key Token (WK) vault, continuously recirculating cbBTC upon subsequent publishing of new work.
-                    <br /><br />
-                    A sovereign creator, Michael masters every phase of his craft — from hand-building the physical frames to authoring the on-chain inscriptions. From capture to collector, with zero intermediaries.
+                    A sovereign creator from hand-built frames to on-chain inscriptions, he carries his art from capture to collector with zero intermediaries, the vault standing guard: see everything, touch nothing until the seal is broken.
                   </div>
                   <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 13 : 15, color: C.textMuted, fontStyle: "italic", marginBottom: 8 }}>
                     "Most art captures just a moment of perception. WK Luminism captures what could be."
