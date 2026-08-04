@@ -353,9 +353,11 @@ export default function Home() {
   const mobile = useIsMobile();
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("wk-theme") === "dark";
+      const saved = localStorage.getItem("wk-theme");
+      if (saved === "light") return false;
+      return true; // default dark
     }
-    return false;
+    return true;
   });
   const C = darkMode ? DARK : LIGHT;
 
@@ -836,122 +838,51 @@ export default function Home() {
 
         {/* HOME / SPLASH — reached via IMMUTABLE EDITIONS title */}
         {tab === "home" && (
-          <div>
-            {/* HERO — plain, compact */}
-            <div style={{ padding: mobile ? "8px 0 4px" : "12px 0 4px", margin: "16px 0 20px", textAlign: "center" as const }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 13, color: C.textMuted, letterSpacing: "0.15em", marginBottom: 12, textTransform: "uppercase" as const }}>
-                THE GLASS VAULT™ · PATENT PENDING
+          <div style={{ position: "relative" as const, minHeight: "72vh", display: "flex", flexDirection: "column" as const, justifyContent: "center", alignItems: "center", textAlign: "center" as const, padding: mobile ? "20px 24px 40px" : "10px 28px 60px" }}>
+
+            {/* etched-glass vertical lines backdrop */}
+            <div style={{ position: "absolute" as const, inset: 0, backgroundImage: `repeating-linear-gradient(to right, ${darkMode ? "rgba(255,255,255,0.018)" : "rgba(0,0,0,0.020)"} 0, ${darkMode ? "rgba(255,255,255,0.018)" : "rgba(0,0,0,0.020)"} 1px, transparent 1px, transparent 84px)`, pointerEvents: "none" as const, zIndex: 0 }} />
+
+            <div style={{ position: "relative" as const, zIndex: 1, width: "100%", display: "flex", flexDirection: "column" as const, alignItems: "center" }}>
+
+              {/* eyebrow */}
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, fontWeight: 500, letterSpacing: "0.34em", color: C.textMuted, textTransform: "uppercase" as const, marginBottom: mobile ? 28 : 40 }}>
+                Immutable Editions
               </div>
-              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 30 : 38, fontWeight: 400, color: C.text, lineHeight: 1.15, marginBottom: 8, letterSpacing: "-0.01em" }}>
-                Integrity, <span style={{ color: C.blue, fontStyle: "italic" }}>witnessed.</span>
-              </div>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 14, color: C.textMuted, letterSpacing: "0.05em", marginBottom: 12 }}>
-                Collect the card, hold the Keys.
-              </div>
-              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textMuted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto", fontWeight: 300 }}>
-                The collectible space has always struggled with authenticity and fair value. We built the infrastructure to fix both — permanently, on chain, with no one in control.
+
+              {/* headline */}
+              <h1 style={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 300, fontSize: mobile ? "3.2rem" : "clamp(3.2rem, 9vw, 7rem)", lineHeight: 0.98, letterSpacing: "-0.02em", marginBottom: mobile ? 24 : 30, color: C.text }}>
+                Integrity,<br /><span style={{ fontStyle: "italic", fontWeight: 400, color: C.blue }}>witnessed.</span>
+              </h1>
+
+              {/* lede */}
+              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? "0.95rem" : "1.15rem", lineHeight: 1.6, color: C.textMuted, maxWidth: "30ch", marginBottom: mobile ? 48 : 66 }}>
+                Tokenized physical real-world assets.
               </p>
-            </div>
 
-            {/* THE PROBLEM — boxed */}
-            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: mobile ? "18px 22px" : "22px 32px", margin: "0 0 32px", boxShadow: C.shadow, textAlign: "center" as const }}>
-              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 15 : 18, color: C.textDim, lineHeight: 1.5, maxWidth: 640, margin: "0 auto", fontStyle: "italic", fontWeight: 400 }}>
-                "The collectable market runs on trust — but trust is not provenance, interest is not measured accurately, and integrity is not always enforced."
-              </p>
-            </div>
-
-            {/* THREE PILLARS */}
-            <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "1fr 1fr 1fr", gap: mobile ? 16 : 20, marginBottom: 56 }}>
-              {[
-                {
-                  label: "Provenance",
-                  title: "Origin Key",
-                  desc: "Tokenizing physical collectables with the unquestionable Origin Key standard. Using the embedded SeedPod (wallet private key) and NFC scan for verification of provenance. Tap any piece to see its entire origin — unalterable, on chain, forever.",
-                  site: "AnalogBitcoin.com",
-                  url: "https://analogbitcoin.com",
-                  tab: null,
-                },
-                {
-                  label: "Interest",
-                  title: "Witness Key",
-                  desc: "Every physical creation is embedded with Witness Keys at birth. Held tokens receive cbBTC recirculation each time another creation comes to life or when a trade happens. Fees from every collectable creation (and WK trade) flow automatically to all holders — including each already (still Vaulted) creation.",
-                  site: "Acquire Witness Keys",
-                  url: null,
-                  tab: "keychain",
-                },
-                {
-                  label: "Market Integrity",
-                  title: "Keychain",
-                  desc: "Deployed on Base for the best performance and support. The Witness Key is pegged to Bitcoin (1 WK = 1 Sat). The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.",
-                  site: "Verify Transactions",
-                  url: `${BLOCK_EXPLORER}/address/${WK_ADDRESS}`,
-                  tab: null,
-                },
-              ].map((p, i) => (
-                <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.blue}`, borderRadius: "0 0 12px 12px", padding: "28px 24px", boxShadow: C.shadow }}>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: C.blue, textTransform: "uppercase" as const, marginBottom: 12 }}>
-                    {p.label}
-                  </div>
-                  <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 20, color: C.text, marginBottom: 14, lineHeight: 1.2 }}>
-                    {p.title}
-                  </div>
-                  <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontWeight: 300 }}>
-                    {i === 1 ? (
-                      <>Every physical creation is embedded with Witness Keys at birth. Held tokens receive <img src="/coinbase-wrapped-btc.png" width={18} height={18} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC recirculation each time another creation comes to life or when a trade happens. Fees from every collectable creation (and WK trade) flow automatically to all holders — including each already (still Vaulted) creation.</>
-                    ) : i === 2 ? (
-                      <>Deployed on Base for the best performance and support. The Witness Key is pegged to Bitcoin (1 WK = 1 Sat) so volatility in Automated Market Maker pricing <span style={{ color: "#DA3A3A", fontWeight: 700 }}>IS NOT HERE</span> to provide extractors one of their most valuable weapons. The protocol has been audited. There is no admin. No governance. No intervention. The market is pure math.</>
-                    ) : p.desc}
-                  </p>
-                  {p.url ? (
-                    <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
-                      {p.site} ↗
-                    </a>
-                  ) : (
-                    <button onClick={() => setTab(p.tab as Tab)} style={{ background: "none", border: "none", padding: 0, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.blue, fontWeight: 600, cursor: "pointer" }}>
-                      {p.site} →
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* HOW IT WORKS */}
-            <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: mobile ? "32px 24px" : "40px 48px", marginBottom: 56 }}>
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: C.blue, textTransform: "uppercase" as const, marginBottom: 24 }}>
-                How It Works
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: mobile ? "1fr" : "repeat(5, 1fr)", gap: mobile ? 20 : 12 }}>
-                {[
-                  { n: "01", title: "Vault the Origin Key and Witness Keys", desc: "Both digital assets are placed in two different digital wallets — both sharing the same Private Key within the SeedPod." },
-                  { n: "02", title: "Physical Art", desc: "A finished physical collectable is embedded with the SeedPod (printed wallet Private Key) along with a programmed read-only NFC Tag. Sealed securely within the asset." },
-                  { n: "03", title: "Vault Verification", desc: "The owner can scan the NFC Tag anytime to see the Origin Key and Witness Keys along with the recirculation received." },
-                  { n: "04", title: "Physical Bitcoin Interest", desc: "" },
-                  { n: "05", title: "Redemption (if necessary)", desc: "Destruction of the collectable can reveal the SeedPod one can use to sweep all digital assets out of the Vault." },
-                ].map((s, i) => (
-                  <div key={i} style={{ position: "relative" as const }}>
-                    <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 32, color: C.border, fontWeight: 400, lineHeight: 1, marginBottom: 10 }}>{s.n}</div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 8 }}>{s.title}</div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, lineHeight: 1.6, fontWeight: 300 }}>
-                      {i === 3 ? (
-                        <>Every published work and trade pays <img src="/coinbase-wrapped-btc.png" width={14} height={14} alt="cbBTC" style={{ display: "inline", verticalAlign: "middle", margin: "0 1px -2px 1px" }} /> cbBTC recirculation to all Immutable Editions collectable holders and Witness Key holders.</>
-                      ) : s.desc}
-                    </div>
-                  </div>
+              {/* the four ways in — ledger rows */}
+              <nav style={{ width: "100%", maxWidth: 440, borderTop: `1px solid ${C.border}` }}>
+                {([
+                  ["gallery",  "Gallery",  "The Work"],
+                  ["vault",    "Vault",    "The Verification"],
+                  ["keychain", "Keychain", "The Connection"],
+                  ["conduct",  "Conduct",  "The Guide"],
+                ] as const).map(([dest, name, tag]) => (
+                  <button key={dest} onClick={() => setTab(dest as Tab)}
+                    onMouseEnter={(e: any) => { e.currentTarget.style.color = C.blue; e.currentTarget.style.paddingLeft = "14px"; e.currentTarget.querySelector(".rtag").style.color = C.blue; }}
+                    onMouseLeave={(e: any) => { e.currentTarget.style.color = C.text; e.currentTarget.style.paddingLeft = "6px"; e.currentTarget.querySelector(".rtag").style.color = C.textMuted; }}
+                    style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", width: "100%", background: "none", border: "none", borderBottom: `1px solid ${C.border}`, color: C.text, padding: "22px 6px", cursor: "pointer", transition: "color 0.25s ease, padding-left 0.25s ease", textAlign: "left" as const }}>
+                    <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? "1.3rem" : "1.5rem", fontWeight: 400, letterSpacing: "0.01em" }}>{name}</span>
+                    <span className="rtag" style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10.5, letterSpacing: "0.16em", textTransform: "uppercase" as const, color: C.textMuted, transition: "color 0.25s ease" }}>{tag}</span>
+                  </button>
                 ))}
-              </div>
+              </nav>
+
             </div>
 
-            {/* FOOTER CTA */}
-            <div style={{ textAlign: "center" as const, padding: mobile ? "32px 0 48px" : "40px 0 64px" }}>
-              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 24 : 36, color: C.text, marginBottom: 16, fontStyle: "italic" }}>
-                Ready to own a piece of the future?
-              </div>
-              <p style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, color: C.textMuted, marginBottom: 28, fontWeight: 300 }}>
-                Collect physical assets that represent a trustless, permissionless and unquestionable integrity.
-              </p>
-              <button onClick={() => setTab("keychain")} style={{ background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "15px 40px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 15, fontWeight: 700, cursor: "pointer", letterSpacing: "0.08em" }}>
-                GET THE KEYS
-              </button>
+            {/* seal */}
+            <div style={{ position: "relative" as const, zIndex: 1, marginTop: mobile ? 40 : 56, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10.5, letterSpacing: "0.2em", color: C.textMuted, textTransform: "uppercase" as const }}>
+              The Glass Vault<span style={{ verticalAlign: "super", fontSize: 7 }}>&trade;</span> <span style={{ color: C.blue, fontWeight: 500 }}>&middot; Patent Pending</span>
             </div>
           </div>
         )}
@@ -2025,83 +1956,74 @@ export default function Home() {
         {/* LEARN */}
         {tab === "conduct" && (
           <div>
-            <div style={{ textAlign: "center" as const, marginBottom: 20 }}>
-              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 26 : 34, fontWeight: 400, color: C.text, letterSpacing: "-0.01em", marginBottom: 6 }}>Conduct</div>
-              <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textMuted, lineHeight: 1.6 }}>Everything you need to understand Immutable Editions, and how to participate.</div>
+            <div style={{ textAlign: "center" as const, marginBottom: 24 }}>
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 26 : 34, fontWeight: 400, color: C.text, letterSpacing: "-0.01em", marginBottom: 12 }}>Conduct</div>
+              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 14 : 16, fontStyle: "italic", color: C.textMuted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto" }}>
+                The collectible market runs on trust. We built a vault that runs on proof — glass on every side. Look in from anywhere, verify everything, take nothing until you break the seal yourself.
+              </p>
             </div>
 
             {(() => {
-              const GUIDES = [
-                {
-                  tag: "START HERE",
-                  title: "Immutable Editions",
-                  body: ["Every piece carries on-chain provenance through an Origin Key — permanent, verifiable, written into Bitcoin itself. Every piece carries Witness Keys, the measure of real interest expressed through real participation. Provenance and interest, meeting market integrity."],
-                },
-                {
-                  tag: "VERIFY",
-                  title: "Verify a Piece",
-                  body: ["Tap the NFC chip, or paste the wallet address into Vault Check. You'll see the piece's state at once — sealed or swept.", "If it carries an Origin Key, you'll see the inscription image and a link to confirm it on ordinals.com; match the owner address to the vault address and the Origin Key stands authentic and whole. Below that, the Witness Key balance the piece holds, sealed inside. Sealed means the piece is whole and its contents intact."],
-                },
-                {
-                  tag: "ORIGIN KEYS",
-                  title: "Origin Keys",
-                  body: ["An Origin Key is data written permanently into the Bitcoin blockchain. Every original work is inscribed as an Origin Key using the Dublin Core Metadata Initiative — the indexing standard libraries and museums use worldwide.", "It is cryptographically secured, fully transparent, and proves both the creation and the ownership of the work directly from the work itself. An Origin Key asks you to verify math. That is Real World Inscription.", "Origin Keys are the permanent provenance layer on Bitcoin; Witness Keys are participation on Base."],
-                },
-                {
-                  tag: "CONCEPT",
-                  title: "What is a Witness Key?",
-                  body: ["A Witness Key is a unit of participation on Base, its measure fixed: 1 Key = 1 Satoshi, backed one-to-one by cbBTC — real Bitcoin, verifiable on-chain.", "A Key exists in one of two states. Sealed — held inside a physical art piece's own wallet, behind a SeedPod, whole and intact for as long as the piece is. Loose — held openly in a wallet, part of the live network, where witnesses acquire, dispose, and realize recirculation by witnessing it.", "You can see into a sealed piece — the address is on the back, a tap verifies it. To reach the digital assets sealed inside, you destroy the art. Until then, the piece holds it, whole."],
-                },
-                {
-                  tag: "DAO",
-                  title: "The DAO Contract",
-                  body: ["A DAO Contract is governed by math. Every acquisition, every disposition, every recirculation is calculated automatically by fixed rule. The math holds. The math decides."],
-                },
-                {
-                  tag: "BEGINNERS",
-                  title: "Get cbBTC on Base",
-                  body: ["To participate you need cbBTC on Base. Open Coinbase, buy Bitcoin, and move it to Coinbase Wallet. Send on the Base network to your wallet address. Your Bitcoin arrives as cbBTC on Base, ready to acquire Witness Keys."],
-                },
-                {
-                  tag: "PARTICIPATING",
-                  title: "Acquire Witness Keys",
-                  body: ["Go to the KEYCHAIN tab and connect your wallet. Tap Acquire and enter the amount in Satoshis, minimum 100. The first time, you'll approve cbBTC, then confirm the acquisition; after that it's one tap. Your Witness Keys arrive in your balance, on Base, and you stand among the live network of witnesses."],
-                },
-                {
-                  tag: "PARTICIPATING",
-                  title: "Dispose Witness Keys",
-                  body: ["Go to the KEYCHAIN tab and tap Dispose. Enter how many Witness Keys to release. cbBTC goes straight to your wallet. A fixed 7% recirculates through the network by math."],
-                },
-                {
-                  tag: "RECIRCULATION",
-                  title: "Recirculation",
-                  body: ["Every acquisition and disposition carries a fixed 7% that recirculates through the network by math. A witness realizes their share by witnessing it. Witness to realize it as cbBTC in your wallet, or witness it forward into more Witness Keys — deepening your standing in the network."],
-                },
-                {
-                  tag: "REDEMPTION",
-                  title: "Destroy the Art",
-                  body: ["Every piece has a SeedPod sealed inside — the private key to that piece's own wallet. Destroy the art, import the key, and everything the piece held is yours: the Witness Keys, the Origin Key, every Satoshi it carried. The vault stands swept on-chain from then on, plain for all to see.", "If the piece carries an Origin Key, you may instead list/sell that Origin Key on Gamma, UniSat, or Ordinals Wallet, and let the provenance travel on digitally."],
-                },
+              const PART1 = [
+                { tag: "START HERE", title: "The Glass Vault", intro: "A vault you can see straight through.",
+                  body: "Every piece is a physical collectable with real digital assets sealed inside its own wallet. The wallet address is printed on the back; a tap of the embedded chip opens it on-chain. You can confirm exactly what a piece holds — anytime, from anywhere, without asking anyone. To reach what's inside, you destroy the art. Until then it stands whole, and everyone can see what it carries." },
+                { tag: "PROVENANCE", title: "Origin Key", intro: "The birth record, written onto Bitcoin itself.",
+                  body: "Each original work is inscribed as an Origin Key — a 1-of-1 written permanently into the Bitcoin blockchain using the Dublin Core standard that libraries and museums use to catalog the world. It proves the creation and the ownership of the work, directly from the work. Not a certificate in a drawer. Proof anyone can check, that no one can forge." },
+                { tag: "INTEREST", title: "Witness Key", intro: "Real Bitcoin interest, sealed in the same vault.",
+                  body: "A Witness Key is a unit of participation on Base, measure fixed: 1 Key = 1 Satoshi, backed one-to-one by cbBTC — real Bitcoin, verifiable on-chain. Every original is issued as one signed 1-of-1 plus a Limited Edition of 32 — 33 pieces, each carrying its own Witness Keys. A Key rests in one of two states: Sealed inside a piece's wallet, whole and intact; or Loose in a wallet on the live network, where witnesses acquire, dispose, and realize recirculation." },
+                { tag: "THE MATH", title: "The DAO Contract", intro: "Governed by rule, not by rulers.",
+                  body: "Deterministic Automatic Operation. Every acquisition, disposition, and recirculation is calculated automatically by fixed math. No owner. No admin. No governance. No intervention. The math holds. The math decides." },
               ];
-              return (
-                <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
-                  {GUIDES.map((g, i) => (
-                    <div key={i} style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" as const }}>
-                        <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 17 : 20, fontWeight: 400, color: C.blue }}>{g.title}</span>
-                        <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.textMuted, border: `1px solid ${C.border}`, borderRadius: 4, padding: "2px 8px", letterSpacing: "0.12em", fontWeight: 700 }}>{g.tag}</span>
-                      </div>
-                      {g.body.map((p, j) => (
-                        <p key={j} style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.7, margin: j === g.body.length - 1 ? 0 : "0 0 10px" }}>{p}</p>
-                      ))}
-                    </div>
-                  ))}
+              const PART2 = [
+                { tag: "VERIFY", title: "Verify a Piece", intro: "Trust nothing. Check everything.",
+                  body: "Tap the NFC chip, or paste the wallet address into the Vault. You'll see the piece's state at once — sealed or swept. If it carries an Origin Key, you'll see the inscription and a link to confirm it independently; match the owner address to the vault address and the Origin Key stands authentic. Below that, the Witness Keys it holds. Sealed means whole and intact." },
+                { tag: "BEGINNERS", title: "Get cbBTC on Base", intro: "Your on-ramp, once.",
+                  body: "To participate you need cbBTC on Base. Open Coinbase, buy Bitcoin, move it to Coinbase Wallet, and send it on the Base network to your wallet. It arrives as cbBTC — real Bitcoin on Base — ready to acquire Witness Keys." },
+                { tag: "PARTICIPATE", title: "Acquire & Dispose", intro: "Step onto the live network.",
+                  body: "Open Keychain, connect your wallet. Tap Acquire, enter the amount in Satoshis (minimum 100) — first time you approve cbBTC, then confirm; after that it's one tap. Tap Dispose to release Keys back for cbBTC, straight to your wallet. A fixed 7% recirculates through the network by math." },
+                { tag: "THE TELLING", title: "Recirculation", intro: "A witness realizes their share by witnessing it.",
+                  body: "Every acquisition and disposition carries a fixed 7% that recirculates to holders, proportionate to the Keys each wallet holds. Realize it as cbBTC in your wallet, or send it forward into more Witness Keys — deepening your standing in the network." },
+                { tag: "BREAK THE GLASS", title: "Redeem", intro: "The seal is yours to break.",
+                  body: "Every piece has a SeedPod sealed inside — the private key to its own wallet. Destroy the art, import the key, and everything the piece held is yours: the Witness Keys, the Origin Key, every Satoshi. On-chain, the vault stands swept from then on, plain for all to see. If the piece carried an Origin Key, you may instead list it on Gamma, UniSat, or Ordinals Wallet and let the provenance travel on." },
+              ];
+              const Card = (g: any, i: number) => (
+                <div key={i} style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, flexWrap: "wrap" as const }}>
+                    <span style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 17 : 20, fontWeight: 400, color: C.blue }}>{g.title}</span>
+                    <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.textMuted, border: `1px solid ${C.border}`, borderRadius: 4, padding: "2px 8px", letterSpacing: "0.12em", fontWeight: 700 }}>{g.tag}</span>
+                  </div>
+                  <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 14 : 15, fontStyle: "italic", color: C.textDim, lineHeight: 1.5, margin: "0 0 10px" }}>{g.intro}</p>
+                  <p style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.7, margin: 0 }}>{g.body}</p>
                 </div>
+              );
+              return (
+                <>
+                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, letterSpacing: "0.2em", color: C.textMuted, textTransform: "uppercase" as const, fontWeight: 700, textAlign: "center" as const, margin: "8px 0 12px" }}>Part I — Understand It</div>
+                  <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>{PART1.map(Card)}</div>
+
+                  <div style={{ textAlign: "center" as const, fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 15 : 17, fontStyle: "italic", color: C.textMuted, margin: "26px 0" }}>Now you understand it. Here's how to use it.</div>
+
+                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, letterSpacing: "0.2em", color: C.textMuted, textTransform: "uppercase" as const, fontWeight: 700, textAlign: "center" as const, margin: "0 0 12px" }}>Part II — Use It</div>
+                  <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>{PART2.map(Card)}</div>
+                </>
               );
             })()}
 
-            <div style={{ textAlign: "center" as const, marginTop: 20, fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 16 : 19, fontStyle: "italic", color: C.text }}>
-              See everything. Control nothing till the seal is broken.
+            <div style={{ textAlign: "center" as const, marginTop: 24, fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 16 : 19, fontStyle: "italic", color: C.text }}>
+              See everything. Touch nothing until the seal is broken.
+            </div>
+
+            {/* Closing teaser */}
+            <div style={{ textAlign: "center" as const, marginTop: 40, paddingTop: 28, borderTop: `1px solid ${C.border}` }}>
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 18 : 22, fontWeight: 700, color: C.text, marginBottom: 8 }}>
+                The first card grade no one can rig.
+              </div>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: C.textMuted, letterSpacing: "0.04em", marginBottom: 14 }}>
+                Seen by light. Sealed by math. Judged by the many.
+              </div>
+              <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 20 : 24, fontStyle: "italic", fontWeight: 700, color: C.blue }}>
+                Coming to The Glass Vault.
+              </div>
             </div>
           </div>
         )}
@@ -2123,11 +2045,12 @@ export default function Home() {
         </div>
         )}
 
-        {/* FOOTER */}
-        <div style={{ textAlign: "center" as const, padding: "32px 0 16px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, letterSpacing: "0.15em", lineHeight: 2 }}>
-          NO ADMIN — NO GOVERNANCE — NO INTERVENTION<br />
-          IMMUTABLEEDITIONS.COM — ANALOGBITCOIN.COM
+        {/* FOOTER — matches home seal line (hidden on home; home has its own) */}
+        {tab !== "home" && (
+        <div style={{ textAlign: "center" as const, padding: "26px 28px 34px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10.5, color: C.textMuted, letterSpacing: "0.2em", textTransform: "uppercase" as const }}>
+          The Glass Vault<span style={{ verticalAlign: "super", fontSize: 7 }}>&trade;</span> <span style={{ color: C.blue, fontWeight: 500 }}>&middot; Patent Pending</span>
         </div>
+        )}
 
       </div>
     </main>
