@@ -786,7 +786,7 @@ export default function Home() {
     <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", WebkitOverflowScrolling: "touch" as any }}>
 
       {/* HEADER */}
-      <div style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: 0, display: "flex", flexDirection: "column" as const, alignItems: "center", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: C.shadow }}>
+      <div style={{ background: tab === "home" ? "transparent" : C.card, borderBottom: tab === "home" ? "none" : `1px solid ${C.border}`, padding: 0, display: "flex", flexDirection: "column" as const, alignItems: "center", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: tab === "home" ? "none" : C.shadow }}>
         {/* ROW 1 — cbBTC price left, dark mode right */}
         <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: mobile ? "6px 12px" : "6px 24px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -806,14 +806,17 @@ export default function Home() {
           </button>
         </div>
 
-        {/* ROW 2 — IMMUTABLE EDITIONS centered */}
+        {/* ROW 2 — IMMUTABLE EDITIONS centered (hidden on home) */}
+        {tab !== "home" && (
         <div style={{ padding: mobile ? "2px 0 4px" : "2px 0 6px" }}>
           <span onClick={() => setTab("home")} style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 30, fontWeight: 400, color: C.text, letterSpacing: "0.08em", textTransform: "uppercase" as const, cursor: "pointer" }}>
             Immutable Editions
           </span>
         </div>
+        )}
 
-        {/* ROW 3 — Tabs with line that fits under title */}
+        {/* ROW 3 — Tabs with line that fits under title (hidden on home) */}
+        {tab !== "home" && (
         <div style={{ display: "inline-flex", justifyContent: "center", borderTop: `1px solid ${C.border}`, overflowX: "auto" as const, WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const }}>
           {tabs.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{ flexShrink: 0, padding: mobile ? "7px 10px" : "8px 18px", fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 12 : 14, letterSpacing: "0.08em", background: "transparent", color: tab === t.id ? C.blue : C.textMuted, border: "none", borderBottom: tab === t.id ? `2px solid ${C.blue}` : "2px solid transparent", cursor: "pointer", fontWeight: 500, WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" as const, textTransform: "uppercase" as const }}>
@@ -821,9 +824,10 @@ export default function Home() {
             </button>
           ))}
         </div>
+        )}
       </div>
 
-      <div style={{ height: mobile ? 100 : 115 }} />
+      <div style={{ height: tab === "home" ? (mobile ? 40 : 48) : (mobile ? 100 : 115) }} />
 
 
 
@@ -1099,15 +1103,6 @@ export default function Home() {
           {/* ─── KEY DEFINITIONS — hidden once connected ──────────────────── */}
           {!connected && (
           <>
-          {/* PLAIN-LANGUAGE INTRO — hand-holding overview */}
-          <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", marginBottom: 14 }}>
-            <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.7, fontWeight: 400, textAlign: "center" as const }}>
-              <p style={{ margin: "0 0 12px" }}>An Origin Key is the piece's birth record, written permanently onto Bitcoin itself.</p>
-              <p style={{ margin: "0 0 12px" }}>Witness Keys make you a witness to the vault, with a measure that's real and fixed.</p>
-              <p style={{ margin: 0 }}>And the Glass Vault is the part that lets you check all of it — see exactly what's inside — without ever breaking the seal.</p>
-            </div>
-          </div>
-
           {(() => {
             const BOXES = [
               {
