@@ -910,17 +910,19 @@ export default function Home() {
                 <div style={{ marginBottom: 28 }}>
                   <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.06em", marginBottom: 12, textAlign: "center" as const }}>Michael James Slattery</div>
                   <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", maxWidth: 640, margin: "0 auto" }}>
-                    <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.75 }}>
+                    <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.75, textAlign: "center" as const }}>
                       Michael, The Luminist, fuses day and night exposures with darkroom alchemy to reveal the extraordinary light hidden in the ordinary — then seals each masterpiece in immutable, trustless and permissionless glory.
                       <br /><br />
                       A sovereign creator from hand-built frames to on-chain inscriptions. He carries his art from capture to collector with zero intermediaries.
                     </div>
-                    <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 14 : 15, color: C.textMuted, fontStyle: "italic", lineHeight: 1.6, margin: "14px 0 12px", paddingTop: 14, borderTop: `1px solid ${C.border}` }}>
+                    <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 14 : 15, color: C.textMuted, fontStyle: "italic", lineHeight: 1.6, margin: "14px 0 12px", paddingTop: 14, borderTop: `1px solid ${C.border}`, textAlign: "center" as const }}>
                       "The vault standing guard: see everything, touch nothing. Until the seal is broken."
                     </div>
-                    <a href="https://luminous-views.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
-                      Michael's fine art — Luminous Views Gallery ↗
-                    </a>
+                    <div style={{ textAlign: "center" as const }}>
+                      <a href="https://luminous-views.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
+                        Michael's fine art — Luminous Views Gallery ↗
+                      </a>
+                    </div>
                   </div>
                 </div>
 
