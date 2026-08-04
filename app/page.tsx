@@ -913,7 +913,7 @@ export default function Home() {
                     <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.75, textAlign: "center" as const }}>
                       Michael, The Luminist, fuses day and night exposures with darkroom alchemy to reveal the extraordinary light hidden in the ordinary — then seals each masterpiece in immutable, trustless and permissionless glory.
                       <br /><br />
-                      A sovereign creator from hand-built frames to on-chain inscriptions. He carries his art from capture to collector with zero intermediaries.
+                      A sovereign creator. He hand-builds frames and programs on-chain inscriptions. He carries his art from capture to collector. With zero intermediaries.
                     </div>
                     <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 14 : 15, color: C.textMuted, fontStyle: "italic", lineHeight: 1.6, margin: "14px 0 12px", paddingTop: 14, borderTop: `1px solid ${C.border}`, textAlign: "center" as const }}>
                       "The vault standing guard: see everything, touch nothing. Until the seal is broken."
@@ -1954,7 +1954,7 @@ export default function Home() {
             {(() => {
               const PART1 = [
                 { tag: "START HERE", title: "The Glass Vault", intro: "A vault you can see straight through.",
-                  body: ["Every piece is a physical collectable with real digital assets sealed inside its own wallet. The wallet address is printed on the back; a tap of the embedded chip opens it on-chain. You can confirm exactly what a piece holds — anytime, from anywhere, without asking anyone.", "Control of the immutable records and assets are embedded in the SeedPod. To reach the private key inside the SeedPod, you destroy the art. Until then it stands whole, and everyone can see what it carries. No one can touch it unless they hold it."] },
+                  body: ["Every piece is a physical collectable — a real object in your hands — with real digital assets sealed inside its own crypto Bitcoin wallet. That wallet's address is printed on the back, and a tap of the embedded chip opens it on-chain, so you can confirm exactly what the piece holds — anytime, from anywhere, without asking anyone.", "Sealed inside is the SeedPod: the private key that controls the wallet and everything in it — the immutable records and the assets alike. To reach that key, you have to destroy the art. Until you do, the piece stands whole, its contents plain for everyone to see but no one to touch. To hold what's inside, you must first hold the piece itself."] },
                 { tag: "PROVENANCE", title: "Origin Key", intro: "The birth record, written onto Bitcoin itself.",
                   body: "Each original work is inscribed as an Origin Key — a 1-of-1 written permanently into the Bitcoin blockchain using the Dublin Core standard that libraries and museums use to catalog the world. It proves the creation and the ownership of the work, directly from the work. Not a certificate in a drawer. Proof anyone can check, that no one can forge." },
                 { tag: "THE MATH", title: "Witness Key", intro: "Real Bitcoin interest, sealed in the same vault — governed by rule, not by rulers.",
