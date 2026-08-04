@@ -1957,10 +1957,8 @@ export default function Home() {
                   body: "Every piece is a physical collectable with real digital assets sealed inside its own wallet. The wallet address is printed on the back; a tap of the embedded chip opens it on-chain. You can confirm exactly what a piece holds — anytime, from anywhere, without asking anyone. To reach what's inside, you destroy the art. Until then it stands whole, and everyone can see what it carries." },
                 { tag: "PROVENANCE", title: "Origin Key", intro: "The birth record, written onto Bitcoin itself.",
                   body: "Each original work is inscribed as an Origin Key — a 1-of-1 written permanently into the Bitcoin blockchain using the Dublin Core standard that libraries and museums use to catalog the world. It proves the creation and the ownership of the work, directly from the work. Not a certificate in a drawer. Proof anyone can check, that no one can forge." },
-                { tag: "INTEREST", title: "Witness Key", intro: "Real Bitcoin interest, sealed in the same vault.",
-                  body: "A Witness Key is a unit of participation on Base, measure fixed: 1 Key = 1 Satoshi, backed one-to-one by cbBTC — real Bitcoin, verifiable on-chain. Every original is issued as one signed 1-of-1 plus a Limited Edition of 32 — 33 pieces, each carrying its own Witness Keys. A Key rests in one of two states: Sealed inside a piece's wallet, whole and intact; or Loose in a wallet on the live network, where witnesses acquire, dispose, and realize recirculation." },
-                { tag: "THE MATH", title: "The DAO Contract", intro: "Governed by rule, not by rulers.",
-                  body: "Deterministic Automatic Operation. Every acquisition, disposition, and recirculation is calculated automatically by fixed math. No owner. No admin. No governance. No intervention. The math holds. The math decides." },
+                { tag: "THE MATH", title: "Witness Key", intro: "Real Bitcoin interest, sealed in the same vault — governed by rule, not by rulers.",
+                  body: "A Witness Key is a unit of participation on Base, measure fixed: 1 Key = 1 Satoshi, backed one-to-one by cbBTC — real Bitcoin, verifiable on-chain. Every original is issued as one signed 1-of-1 (Origin Key) plus a Limited Edition of 32. So 33 pieces total, each carrying its own Witness Keys. A Key rests in one of two states: Sealed inside a piece's wallet, whole and intact; or Loose in a wallet on the live network, where witnesses acquire, dispose, and realize recirculation.\\n\\nThe math runs the protocol. It is a **DAO** — Deterministic Automatic Operation. Every acquisition, disposition, and recirculation is calculated automatically by fixed rule. No owner. No admin. No governance. No intervention. The math holds. The math decides." },
               ];
               const PART2 = [
                 { tag: "VERIFY", title: "Verify a Piece", intro: "Trust nothing. Check everything.",
@@ -1981,7 +1979,7 @@ export default function Home() {
                     <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.textMuted, border: `1px solid ${C.border}`, borderRadius: 4, padding: "2px 8px", letterSpacing: "0.12em", fontWeight: 700 }}>{g.tag}</span>
                   </div>
                   <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 14 : 15, fontStyle: "italic", color: C.textDim, lineHeight: 1.5, margin: "0 0 10px" }}>{g.intro}</p>
-                  <p style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.7, margin: 0 }}>{g.body}</p>
+                  <p style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" as const }}>{g.body.split("**").map((seg: string, si: number) => si % 2 === 1 ? <strong key={si} style={{ color: C.text, fontWeight: 700 }}>{seg}</strong> : seg)}</p>
                 </div>
               );
               return (
