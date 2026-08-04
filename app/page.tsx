@@ -1109,16 +1109,14 @@ export default function Home() {
                 name: "Origin Key",
                 sub: "Immutable Ordinal Inscription (IOI)",
                 bullets: [
-                  "An Origin Key is a 1-of-1 record written directly onto Bitcoin — the permanent unquestionable record of the birth certificate of the original physical collectable.",
+                  "An Origin Key is the piece's birth record, written permanently onto Bitcoin itself.",
                 ],
               },
               {
                 name: "Witness Key",
                 sub: "Deterministic Automatic Operation (DAO) Contract",
                 bullets: [
-                  "A Witness Key is a cbBTC-backed token on Base. 1 Key = 1 Satoshi, permanently pegged.",
-                  "There is a 7% inscribe, mint and burn fee that recirculates proportionately to the Witness Keys each wallet contains.",
-                  "No one directs participation in the protocol's math or function as a proof of witness — no owner, no admin, no governance.",
+                  "Witness Keys make you a witness to the vault, with a measure that's real and fixed.",
                 ],
               },
               {
@@ -1126,11 +1124,7 @@ export default function Home() {
                 sub: "PATENT PENDING",
                 dial: true,
                 bullets: [
-                  "Every collectable has a SeedPod embedded inside it — the private key phrase (password) to that piece's wallet.",
-                  "The signed 1-of-1 holds the Origin Key and Witness Keys. Each of the 32 Limited Editions holds Witness Keys only.",
-                  "Anyone can look inside. The wallet address is printed on the back, and the NFC tag opens the vault verification with a tap — check balance, confirm everything is there, verify the piece is whole. That's the glass: you can see everything, and touch nothing.",
-                  "Reaching the keys means destroying the physical collectable.",
-                  "Provenance and interest, sealed in one object of integrity.",
+                  "And the Glass Vault is the part that lets you check all of it — see exactly what's inside — without ever breaking the seal.",
                 ],
               },
             ];
@@ -1147,14 +1141,9 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0, fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.65, fontWeight: 400 }}>
-                  {b.bullets.map((t, i) => (
-                    <li key={i} style={{ display: "flex", gap: 10, marginBottom: 8, textAlign: "left" as const }}>
-                      <span style={{ color: C.blue, fontWeight: 700, flexShrink: 0 }}>&bull;</span>
-                      <span>{t}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div style={{ fontFamily: "'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif", fontSize: mobile ? 13 : 14, color: C.textDim, lineHeight: 1.65, fontWeight: 400, textAlign: "center" as const }}>
+                  {b.bullets[0]}
+                </div>
               </div>
             ));
           })()}
