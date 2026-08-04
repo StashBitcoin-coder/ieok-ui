@@ -1895,7 +1895,7 @@ export default function Home() {
                       <div style={{ gridColumn: "1 / -1", background: C.blueBg, border: `1px solid ${C.blue}`, borderRadius: 8, padding: "16px 20px" }}>
                         <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.blue, letterSpacing: "0.1em", marginBottom: 8, textTransform: "uppercase" as const, fontWeight: 700 }}>Total Redeemable Value</div>
                         <div style={{ display: "flex", flexDirection: "column" as const, gap: 2 }}>
-                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 24 : 30, color: C.blue, fontWeight: 700 }}>{(Number(vResult.balance) + Number(vResult.recirculation)).toLocaleString()} Satoshis</div>
+                          <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 22 : 26, color: C.blue, fontWeight: 700 }}>{(Number(vResult.balance) + Number(vResult.recirculation)).toLocaleString()} Satoshis</div>
                           <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 13, color: C.textMuted }}>{fmtUsd(SatoshisToUsd(Number(vResult.balance) + Number(vResult.recirculation), btcPrice))} USD&nbsp;·&nbsp;{fmtCbbtc((Number(vResult.balance) + Number(vResult.recirculation)).toString())}</div>
                         </div>
                         <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textMuted, marginTop: 6 }}>
