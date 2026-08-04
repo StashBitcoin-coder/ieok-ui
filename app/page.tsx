@@ -915,9 +915,12 @@ export default function Home() {
                       <br /><br />
                       A sovereign creator from hand-built frames to on-chain inscriptions. He carries his art from capture to collector with zero intermediaries.
                     </div>
-                    <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 14 : 15, color: C.textMuted, fontStyle: "italic", lineHeight: 1.6, margin: "14px 0 0", paddingTop: 14, borderTop: `1px solid ${C.border}` }}>
+                    <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 14 : 15, color: C.textMuted, fontStyle: "italic", lineHeight: 1.6, margin: "14px 0 12px", paddingTop: 14, borderTop: `1px solid ${C.border}` }}>
                       "The vault standing guard: see everything, touch nothing. Until the seal is broken."
                     </div>
+                    <a href="https://luminous-views.com" target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.blue, fontWeight: 600, textDecoration: "none" }}>
+                      Michael's fine art — Luminous Views Gallery ↗
+                    </a>
                   </div>
                 </div>
 
