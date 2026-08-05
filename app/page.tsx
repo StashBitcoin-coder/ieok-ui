@@ -925,10 +925,10 @@ export default function Home() {
               <>
                 <div style={{ maxWidth: 640, margin: "0 auto 20px", background: "#1a1206", border: "1px solid #FFB020", borderRadius: 6, padding: mobile ? "12px 14px" : "14px 18px", textAlign: "center" as const }}>
                   <style>{`@keyframes testnetBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.62; } }`}</style>
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 11, color: "#FFB020", lineHeight: 1.7, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase" as const, animation: "testnetBlink 2.4s ease-in-out infinite" }}>
+                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 9 : 10, color: "#FFB020", lineHeight: 1.7, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase" as const, animation: "testnetBlink 2.4s ease-in-out infinite" }}>
                     ⚠ This is all testnet. These collectables are keepsakes — not actual real crypto.
                     <br /><br />
-                    If you would like to collect, use discount code <span style={{ fontWeight: 700, letterSpacing: "0.12em" }}>90off</span> to get 90% off collectables.
+                    If you would like to collect, use discount code <span style={{ fontWeight: 700, letterSpacing: "0.12em", textTransform: "none" as const, display: "inline-block" }}>90off</span> to get 90% off collectables.
                   </div>
                 </div>
 
