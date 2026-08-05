@@ -791,8 +791,8 @@ export default function Home() {
       {/* ═══════════ TESTNET BANNER — DELETE THIS ENTIRE BLOCK WHEN GOING TO MAINNET ═══════════ */}
       {showTestnetBanner && (
         <div style={{ position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, background: "#1a1206", borderBottom: "1px solid #FFB020", padding: "5px 14px" }}>
-          <style>{`@keyframes testnetBlink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0.25; } }`}</style>
-          <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", color: "#FFB020", textTransform: "uppercase" as const, animation: "testnetBlink 1s steps(1) infinite" }}>
+          <style>{`@keyframes testnetBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.62; } }`}</style>
+          <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", color: "#FFB020", textTransform: "uppercase" as const, animation: "testnetBlink 2.4s ease-in-out infinite" }}>
             ⚠ TESTNET — Base Sepolia · not real funds
           </span>
           <button onClick={() => setShowTestnetBanner(false)} aria-label="Dismiss testnet banner"
