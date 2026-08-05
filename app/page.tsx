@@ -1963,7 +1963,7 @@ export default function Home() {
             <div style={{ textAlign: "center" as const, marginBottom: 24 }}>
               <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 26 : 34, fontWeight: 400, color: C.text, letterSpacing: "-0.01em", marginBottom: 12 }}>Conduct</div>
               <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 14 : 16, fontStyle: "italic", color: C.textMuted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto" }}>
-                The collectible market runs on trust.<br />We built a vault that runs on proof.<br />Transparent glass on every side. Look in from anywhere, verify everything, take nothing until the seal is broken.
+                The collectible market runs on trust.<br />We built a vault that runs on proof.<br />Transparent glass on every side. Look through The Glass Vault from anywhere, verify everything, take nothing until the seal is broken.
               </p>
             </div>
 
