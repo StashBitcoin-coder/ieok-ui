@@ -923,6 +923,14 @@ export default function Home() {
               const artist = galleryData.artists[0];
               return (
               <>
+                <div style={{ maxWidth: 640, margin: "0 auto 20px", background: "#1a1206", border: "1px solid #FFB020", borderRadius: 6, padding: mobile ? "12px 14px" : "14px 18px", textAlign: "center" as const }}>
+                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 12 : 13, color: "#FFB020", lineHeight: 1.6, fontWeight: 500 }}>
+                    ⚠ This is all testnet. These collectables are keepsakes — not actual real crypto.
+                    <br /><br />
+                    If you would like to collect, use discount code <span style={{ fontWeight: 700, letterSpacing: "0.05em" }}>90off</span> to get 90% off collectables.
+                  </div>
+                </div>
+
                 <div style={{ marginBottom: 28 }}>
                   <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: mobile ? 22 : 28, fontWeight: 400, color: C.text, letterSpacing: "0.06em", marginBottom: 12, textAlign: "center" as const }}>Michael James Slattery</div>
                   <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.blue}`, borderRadius: 6, padding: mobile ? "16px 16px" : "20px 22px", maxWidth: 640, margin: "0 auto" }}>
