@@ -420,6 +420,9 @@ export default function Home() {
   const [galPrivate, setGalPrivate]       = useState(false);
   const [galPassword, setGalPassword]     = useState("");
   const [galEntry, setGalEntry]           = useState("");
+  const [galColPath, setGalColPath]       = useState("");
+  const [galColJson, setGalColJson]       = useState("");
+  const [pendingDeleteArtist, setPendingDeleteArtist] = useState("");
   const [galShopify, setGalShopify]       = useState("");
   const [insS, setInsS]         = useState<TxState>("idle");
   const [insM, setInsM]         = useState("");
@@ -737,9 +740,32 @@ export default function Home() {
 
   useEffect(() => { fetchBtcPrice(); const iv = setInterval(fetchBtcPrice, 60000); return () => clearInterval(iv); }, []);
 
-  // Load gallery data
+  // Load gallery data — assembles from /gallery/index.json + per-collection files.
+  // Falls back to the legacy single /gallery.json if the index isn't present.
   useEffect(() => {
-    fetch("/gallery.json").then(r => r.json()).then(d => setGalleryData(d)).catch(() => {});
+    (async () => {
+      try {
+        const idx = await fetch("/gallery/index.json").then(r => { if (!r.ok) throw new Error("no index"); return r.json(); });
+        const artists = await Promise.all((idx.artists || []).map(async (a: any) => {
+          const collections = await Promise.all((a.collections || []).map(async (c: any) => {
+            try {
+              const colFile = await fetch(`/gallery/${c.file}`).then(r => r.json());
+              return { id: colFile.id || c.id, name: colFile.name || c.name, description: colFile.description || "", pieces: colFile.pieces || [] };
+            } catch {
+              return { id: c.id, name: c.name, description: "", pieces: [] };
+            }
+          }));
+          return { id: a.id, name: a.name, bio: a.bio || "", collections };
+        }));
+        setGalleryData({ artists });
+      } catch {
+        // legacy fallback
+        try {
+          const legacy = await fetch("/gallery.json").then(r => r.json());
+          setGalleryData(legacy);
+        } catch { /* leave gallery empty */ }
+      }
+    })();
   }, []);
   useEffect(() => {
     if (!account) return;
@@ -1594,14 +1620,38 @@ export default function Home() {
                 {galleryData && galleryData.artists.length > 0 && (
                   <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 12 }}>
                     <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, fontWeight: 700, color: C.textDim, marginBottom: 8 }}>Current Gallery Pieces</div>
-                    <div style={{ maxHeight: 200, overflow: "auto" }}>
-                      {galleryData.artists.map((artist: any) =>
-                        artist.collections.map((col: any) =>
+                    <div style={{ maxHeight: 260, overflow: "auto" }}>
+                      {galleryData.artists.map((artist: any) => (
+                        <div key={artist.id} style={{ marginBottom: 10 }}>
+                          {/* Artist header + confirm-gated delete */}
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 8px", background: C.card, borderRadius: 6, marginBottom: 4, gap: 8 }}>
+                            <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, fontWeight: 700, color: C.blue, letterSpacing: "0.05em" }}>{artist.name}</span>
+                            {pendingDeleteArtist === artist.id ? (
+                              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                                <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.red }}>Delete entire artist?</span>
+                                <button onClick={() => {
+                                  const updated = JSON.parse(JSON.stringify(galleryData));
+                                  updated.artists = updated.artists.filter((x: any) => x.id !== artist.id);
+                                  setGalleryData(updated);
+                                  setPendingDeleteArtist("");
+                                  const slugify = (s: string) => s.toLowerCase().trim().replace(/\s+/g, "-").replace(/\//g, "-");
+                                  const index = { artists: updated.artists.map((a: any) => ({ id: a.id || slugify(a.name), name: a.name, bio: a.bio || "", collections: (a.collections || []).map((c: any) => ({ id: c.id || slugify(c.name), name: c.name, file: `${a.id || slugify(a.name)}/${c.id || slugify(c.name)}.json` })) })) };
+                                  const idxJson = JSON.stringify(index, null, 2);
+                                  setGalEntry(idxJson);
+                                  navigator.clipboard.writeText(idxJson);
+                                }} style={{ background: C.red, border: "none", borderRadius: 4, padding: "3px 8px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: "#FFFFFF", fontWeight: 700, cursor: "pointer" }}>Yes, delete</button>
+                                <button onClick={() => setPendingDeleteArtist("")} style={{ background: "transparent", border: `1px solid ${C.border}`, borderRadius: 4, padding: "3px 8px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textDim, fontWeight: 700, cursor: "pointer" }}>Cancel</button>
+                              </div>
+                            ) : (
+                              <button onClick={() => setPendingDeleteArtist(artist.id)} style={{ background: "transparent", border: `1px solid ${C.red}`, borderRadius: 4, padding: "3px 8px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.red, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>Delete Artist</button>
+                            )}
+                          </div>
+                          {artist.collections.map((col: any) =>
                           col.pieces.map((piece: any, pIdx: number) => (
                             <div key={`${artist.id}-${col.id}-${pIdx}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 8px", borderBottom: `1px solid ${C.border}`, gap: 8 }}>
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, fontWeight: 700, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{piece.name}</div>
-                                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted }}>{artist.name} · {col.name} · {piece.edition}</div>
+                                <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted }}>{col.name} · {piece.edition}</div>
                               </div>
                               <button onClick={() => {
                                 const updated = JSON.parse(JSON.stringify(galleryData));
@@ -1609,9 +1659,12 @@ export default function Home() {
                                 const c = a.collections.find((x: any) => x.id === col.id);
                                 c.pieces[pIdx].sold = !c.pieces[pIdx].sold;
                                 setGalleryData(updated);
-                                const json = JSON.stringify(updated, null, 2);
-                                setGalEntry(json);
-                                navigator.clipboard.writeText(json);
+                                const slugify = (s: string) => s.toLowerCase().trim().replace(/\s+/g, "-").replace(/\//g, "-");
+                                const colFile = { id: c.id || slugify(c.name), name: c.name, description: c.description || "", pieces: c.pieces };
+                                const colJson = JSON.stringify(colFile, null, 2);
+                                setGalColPath(`public/gallery/${a.id || slugify(a.name)}/${c.id || slugify(c.name)}.json`);
+                                setGalColJson(colJson);
+                                navigator.clipboard.writeText(colJson);
                               }} style={{ background: piece.sold ? C.redBg : "transparent", border: `1px solid ${piece.sold ? C.red : C.green}`, borderRadius: 4, padding: "4px 8px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: piece.sold ? C.red : C.green, fontWeight: 700, cursor: "pointer", flexShrink: 0, minWidth: 74 }}>
                                 {piece.sold ? "● SOLD" : "○ For sale"}
                               </button>
@@ -1620,23 +1673,21 @@ export default function Home() {
                                 const a = updated.artists.find((x: any) => x.id === artist.id);
                                 const c = a.collections.find((x: any) => x.id === col.id);
                                 c.pieces.splice(pIdx, 1);
-                                if (c.pieces.length === 0) {
-                                  a.collections = a.collections.filter((x: any) => x.id !== col.id);
-                                }
-                                if (a.collections.length === 0) {
-                                  updated.artists = updated.artists.filter((x: any) => x.id !== artist.id);
-                                }
+                                const slugify = (s: string) => s.toLowerCase().trim().replace(/\s+/g, "-").replace(/\//g, "-");
+                                const colFile = { id: c.id || slugify(c.name), name: c.name, description: c.description || "", pieces: c.pieces };
+                                const colJson = JSON.stringify(colFile, null, 2);
+                                setGalColPath(`public/gallery/${a.id || slugify(a.name)}/${c.id || slugify(c.name)}.json`);
+                                setGalColJson(colJson);
                                 setGalleryData(updated);
-                                const json = JSON.stringify(updated, null, 2);
-                                setGalEntry(json);
-                                navigator.clipboard.writeText(json);
+                                navigator.clipboard.writeText(colJson);
                               }} style={{ background: C.redBg, border: `1px solid ${C.red}`, borderRadius: 4, padding: "4px 8px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.red, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
                                 Delete
                               </button>
                             </div>
                           ))
-                        )
-                      )}
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -1697,39 +1748,67 @@ export default function Home() {
                     // Add piece
                     col.pieces.push(newPiece);
 
-                    // Generate JSON
-                    const json = JSON.stringify(current, null, 2);
-                    setGalEntry(json);
-                    navigator.clipboard.writeText(json);
+                    // ── NEW STRUCTURE OUTPUT ──
+                    // Collection file (the pieces) + index.json (artist/collection metadata + file pointers)
+                    const slugify = (s: string) => s.toLowerCase().trim().replace(/\s+/g, "-").replace(/\//g, "-");
+                    const aSlug = artist.id || slugify(artist.name);
+                    const cSlug = col.id || slugify(col.name);
+                    const colFile = { id: cSlug, name: col.name, description: col.description || "", pieces: col.pieces };
+                    const index = { artists: current.artists.map((a: any) => ({
+                      id: a.id || slugify(a.name),
+                      name: a.name,
+                      bio: a.bio || "",
+                      collections: (a.collections || []).map((c: any) => ({
+                        id: c.id || slugify(c.name),
+                        name: c.name,
+                        file: `${a.id || slugify(a.name)}/${c.id || slugify(c.name)}.json`,
+                      })),
+                    })) };
+                    const colJson = JSON.stringify(colFile, null, 2);
+                    const idxJson = JSON.stringify(index, null, 2);
+                    setGalColPath(`public/gallery/${aSlug}/${cSlug}.json`);
+                    setGalColJson(colJson);
+                    setGalEntry(idxJson);
+                    navigator.clipboard.writeText(colJson);
                     setGalleryData(current);
                   }} style={{ width: "100%", padding: "14px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 14, fontWeight: 700, background: C.blue, color: "#FFFFFF", border: "none", borderRadius: 8, cursor: "pointer", marginBottom: 8 }}>
-                    ✚ Add Piece to Gallery + Copy Full JSON
+                    ✚ Add Piece + Copy Collection File
                   </button>
                   <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, marginBottom: 8 }}>
-                    This adds the piece to the gallery preview above AND copies the complete gallery.json to your clipboard.
+                    Adds the piece to the preview above AND copies this collection's file to your clipboard. If you created a new artist or collection, also paste the index below.
                   </div>
                 </div>
 
-                {/* Step 3 — Paste into file */}
-                {galEntry && (
+                {/* Step 3 — Paste collection file */}
+                {galColJson && (
                   <div style={{ background: C.greenBg, border: `1px solid ${C.green}`, borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, fontWeight: 700, color: C.green, marginBottom: 8 }}>✓ Copied! Now do this:</div>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, fontWeight: 700, color: C.green, marginBottom: 8 }}>✓ Collection file copied! Paste it here:</div>
                     <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, lineHeight: 1.8 }}>
-                      1. Open terminal and type: <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>code /c/Users/Slattery/ieok-ui/frontend/public/gallery.json</code><br />
-                      2. Select all: <strong>Ctrl+A</strong><br />
-                      3. Paste: <strong>Ctrl+V</strong><br />
-                      4. Save: <strong>Ctrl+S</strong><br />
-                      5. Push: <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>git add . && git commit -m "Add piece" && git push</code>
+                      1. <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>code /c/Users/Slattery/ieok-ui/frontend/{galColPath}</code><br />
+                      2. <strong>Ctrl+A</strong> → <strong>Ctrl+V</strong> → <strong>Ctrl+S</strong><br />
+                      <span style={{ color: C.textMuted }}>(new artist? first run: <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>mkdir -p /c/Users/Slattery/ieok-ui/frontend/public/gallery/{galColPath.split("/")[2]}</code>)</span><br />
+                      3. Then copy + paste the index below (only needed if you added an artist or collection).
                     </div>
+                    <button onClick={() => navigator.clipboard.writeText(galColJson)} style={{ marginTop: 8, background: C.green, border: "none", borderRadius: 6, padding: "6px 12px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: "#FFFFFF", fontWeight: 700, cursor: "pointer" }}>Re-copy collection file</button>
                   </div>
                 )}
 
-                {/* Current gallery preview */}
+                {/* Step 4 — Paste index (only if artist/collection added) */}
                 {galEntry && (
-                  <details style={{ marginBottom: 12 }}>
-                    <summary style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, cursor: "pointer", marginBottom: 4 }}>View full gallery.json</summary>
-                    <pre style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.textMuted, background: C.panel, padding: 8, borderRadius: 6, overflow: "auto", maxHeight: 200, border: `1px solid ${C.border}` }}>{galEntry}</pre>
-                  </details>
+                  <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, fontWeight: 700, color: C.blue, marginBottom: 8 }}>Index (paste only if you added an artist or collection):</div>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, lineHeight: 1.8 }}>
+                      <code style={{ background: C.card, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>code /c/Users/Slattery/ieok-ui/frontend/public/gallery/index.json</code> → <strong>Ctrl+A</strong> → paste → <strong>Ctrl+S</strong>
+                    </div>
+                    <button onClick={() => navigator.clipboard.writeText(galEntry)} style={{ marginTop: 8, background: C.blue, border: "none", borderRadius: 6, padding: "6px 12px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: "#FFFFFF", fontWeight: 700, cursor: "pointer" }}>Copy index.json</button>
+                  </div>
+                )}
+
+                {/* push reminder */}
+                {galColJson && (
+                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, marginBottom: 12, padding: "0 2px" }}>
+                    Then push: <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 10 }}>cd /c/Users/Slattery/ieok-ui/frontend && git add . && git commit -m "Update gallery" && git push</code>
+                  </div>
                 )}
               </div>
               <BigBtn onClick={inscribe} theme={C} disabled={!connected}>Inscribe Vault</BigBtn>

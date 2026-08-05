@@ -1,0 +1,16 @@
+{
+  "artists": [
+    {
+      "id": "michael-slattery",
+      "name": "Michael Slattery",
+      "bio": "",
+      "collections": [
+        {
+          "id": "from-my-roof",
+          "name": "From My Roof",
+          "file": "michael-slattery/from-my-roof.json"
+        }
+      ]
+    }
+  ]
+}
