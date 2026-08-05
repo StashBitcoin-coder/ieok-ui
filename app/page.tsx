@@ -351,6 +351,9 @@ async function ensureAllowance(
 
 export default function Home() {
   const mobile = useIsMobile();
+  /* ── TESTNET BANNER state — delete this line when going to mainnet ── */
+  const [showTestnetBanner, setShowTestnetBanner] = useState(true);
+
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("wk-theme");
@@ -785,8 +788,21 @@ export default function Home() {
   return (
     <main style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", WebkitOverflowScrolling: "touch" as any }}>
 
+      {/* ═══════════ TESTNET BANNER — DELETE THIS ENTIRE BLOCK WHEN GOING TO MAINNET ═══════════ */}
+      {showTestnetBanner && (
+        <div style={{ position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, background: "#1a1206", borderBottom: "1px solid #FFB020", padding: "5px 14px" }}>
+          <style>{`@keyframes testnetBlink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0.25; } }`}</style>
+          <span style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", color: "#FFB020", textTransform: "uppercase" as const, animation: "testnetBlink 1s steps(1) infinite" }}>
+            ⚠ TESTNET — Base Sepolia · not real funds
+          </span>
+          <button onClick={() => setShowTestnetBanner(false)} aria-label="Dismiss testnet banner"
+            style={{ position: "absolute" as const, right: 10, background: "none", border: "none", color: "#FFB020", fontSize: 15, lineHeight: 1, cursor: "pointer", padding: "0 4px", fontWeight: 700 }}>×</button>
+        </div>
+      )}
+      {/* ═══════════ END TESTNET BANNER ═══════════ */}
+
       {/* HEADER */}
-      <div style={{ background: tab === "home" ? "transparent" : C.card, borderBottom: tab === "home" ? "none" : `1px solid ${C.border}`, padding: 0, display: "flex", flexDirection: "column" as const, alignItems: "center", position: "fixed" as const, top: 0, left: 0, right: 0, zIndex: 100, boxShadow: tab === "home" ? "none" : C.shadow }}>
+      <div style={{ background: tab === "home" ? "transparent" : C.card, borderBottom: tab === "home" ? "none" : `1px solid ${C.border}`, padding: 0, display: "flex", flexDirection: "column" as const, alignItems: "center", position: "fixed" as const, top: showTestnetBanner ? 27 : 0, left: 0, right: 0, zIndex: 100, boxShadow: tab === "home" ? "none" : C.shadow }}>
         {/* ROW 1 — cbBTC price left, dark mode right */}
         <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: mobile ? "6px 12px" : "6px 24px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -827,7 +843,7 @@ export default function Home() {
         )}
       </div>
 
-      <div style={{ height: tab === "home" ? (mobile ? 40 : 48) : (mobile ? 100 : 115) }} />
+      <div style={{ height: (tab === "home" ? (mobile ? 40 : 48) : (mobile ? 100 : 115)) + (showTestnetBanner ? 27 : 0) }} />
 
 
 
