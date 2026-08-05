@@ -1593,8 +1593,8 @@ export default function Home() {
                     </select>
                     {(galCollection === "" || !galleryData?.artists.find((a: any) => a.name === galArtist)?.collections.find((c: any) => c.name === galCollection)) && (
                       <>
-                        <Input theme={C} label="New collection name" value={galCollection} onChange={setGalCollection} placeholder="Curry Cards" />
-                        <Input theme={C} label="Collection description" value={galColDesc} onChange={setGalColDesc} placeholder="160 collectible fine art trading cards" />
+                        <Input theme={C} label="New collection name" value={galCollection} onChange={setGalCollection} placeholder="NAME OF PIECE" />
+                        <Input theme={C} label="Collection description" value={galColDesc} onChange={setGalColDesc} placeholder="Limited 01 of 21 or Original 1 of 1" />
                       </>
                     )}
                   </div>
