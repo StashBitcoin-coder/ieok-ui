@@ -254,7 +254,7 @@
       "vault": "0xd07DEC38142e91f743BBa62578e37318CB8fDc80",
       "oktAmount": "10000",
       "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
-      "sold": false
+      "sold": true
     },
     {
       "name": "KEYSTONE Edition 09 of 21",
@@ -353,7 +353,7 @@
       "vault": "0xBE4bF5CD8528B765C1a4B226491C16EF47d10AC7",
       "oktAmount": "10000",
       "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/48886640967834:1?channel=buy_button",
-      "sold": false
+      "sold": true
     }
   ]
 }
