@@ -1779,35 +1779,29 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Step 3 — Paste collection file */}
+                {/* Paste + push — one clean linear flow */}
                 {galColJson && (
                   <div style={{ background: C.greenBg, border: `1px solid ${C.green}`, borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, fontWeight: 700, color: C.green, marginBottom: 8 }}>✓ Collection file copied! Paste it here:</div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, lineHeight: 1.8 }}>
-                      1. <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>code /c/Users/Slattery/ieok-ui/frontend/{galColPath}</code><br />
-                      2. <strong>Ctrl+A</strong> → <strong>Ctrl+V</strong> → <strong>Ctrl+S</strong><br />
-                      <span style={{ color: C.textMuted }}>(new artist? first run: <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>mkdir -p /c/Users/Slattery/ieok-ui/frontend/public/gallery/{galColPath.split("/")[2]}</code>)</span><br />
-                      3. Then copy + paste the index below (only needed if you added an artist or collection).
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, fontWeight: 700, color: C.green, marginBottom: 10 }}>✓ Copied. Do these 4 steps in order:</div>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, lineHeight: 2.0 }}>
+                      <strong>1.</strong> Open the file: <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>code /c/Users/Slattery/ieok-ui/frontend/{galColPath}</code><br />
+                      <strong>2.</strong> Select all, paste, save: <strong>Ctrl+A → Ctrl+V → Ctrl+S</strong><br />
+                      <strong>3.</strong> Push it live: <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 10 }}>cd /c/Users/Slattery/ieok-ui/frontend && git add . && git commit -m "Update gallery" && git push</code><br />
+                      <strong>4.</strong> Done — wait ~1 min, refresh the site.
                     </div>
-                    <button onClick={() => navigator.clipboard.writeText(galColJson)} style={{ marginTop: 8, background: C.green, border: "none", borderRadius: 6, padding: "6px 12px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: "#FFFFFF", fontWeight: 700, cursor: "pointer" }}>Re-copy collection file</button>
-                  </div>
-                )}
+                    <button onClick={() => navigator.clipboard.writeText(galColJson)} style={{ marginTop: 10, background: C.green, border: "none", borderRadius: 6, padding: "6px 12px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: "#FFFFFF", fontWeight: 700, cursor: "pointer" }}>Re-copy file (step 1 clipboard)</button>
 
-                {/* Step 4 — Paste index (only if artist/collection added) */}
-                {galEntry && (
-                  <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, fontWeight: 700, color: C.blue, marginBottom: 8 }}>Index (paste only if you added an artist or collection):</div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.textDim, lineHeight: 1.8 }}>
-                      <code style={{ background: C.card, padding: "2px 6px", borderRadius: 4, fontSize: 11 }}>code /c/Users/Slattery/ieok-ui/frontend/public/gallery/index.json</code> → <strong>Ctrl+A</strong> → paste → <strong>Ctrl+S</strong>
-                    </div>
-                    <button onClick={() => navigator.clipboard.writeText(galEntry)} style={{ marginTop: 8, background: C.blue, border: "none", borderRadius: 6, padding: "6px 12px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: "#FFFFFF", fontWeight: 700, cursor: "pointer" }}>Copy index.json</button>
-                  </div>
-                )}
-
-                {/* push reminder */}
-                {galColJson && (
-                  <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, marginBottom: 12, padding: "0 2px" }}>
-                    Then push: <code style={{ background: C.panel, padding: "2px 6px", borderRadius: 4, fontSize: 10 }}>cd /c/Users/Slattery/ieok-ui/frontend && git add . && git commit -m "Update gallery" && git push</code>
+                    {/* Rare case: new artist or collection — demoted footnote */}
+                    {galEntry && (
+                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: `1px dashed ${C.border}` }}>
+                        <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.textMuted, lineHeight: 1.7 }}>
+                          <strong style={{ color: C.textDim }}>Only if you added a NEW artist or collection</strong> — otherwise ignore this:<br />
+                          • New artist? First run <code style={{ background: C.panel, padding: "2px 5px", borderRadius: 3, fontSize: 10 }}>mkdir -p /c/Users/Slattery/ieok-ui/frontend/public/gallery/{galColPath.split("/")[2]}</code><br />
+                          • Then update the index too: <code style={{ background: C.panel, padding: "2px 5px", borderRadius: 3, fontSize: 10 }}>code /c/Users/Slattery/ieok-ui/frontend/public/gallery/index.json</code> → paste → save (before step 3 push).
+                        </div>
+                        <button onClick={() => navigator.clipboard.writeText(galEntry)} style={{ marginTop: 8, background: "transparent", border: `1px solid ${C.blue}`, borderRadius: 6, padding: "5px 10px", fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.blue, fontWeight: 700, cursor: "pointer" }}>Copy index.json</button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
