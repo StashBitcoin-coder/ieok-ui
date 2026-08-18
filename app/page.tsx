@@ -1876,13 +1876,13 @@ export default function Home() {
                 {[
                   { label: "Locked in Tokenized Physical Art", val: supplyBench.embedded, color: C.blue },
                   { label: "Loose (circulating)", val: supplyBench.loose, color: C.text },
-                  { label: "Total in contract", val: supplyBench.total, color: C.textDim },
+                  { label: "Total in Contract", val: supplyBench.total, color: C.textDim },
                 ].map((s, i) => (
                   <div key={i} style={{ flex: "1 1 0", minWidth: 0, background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: mobile ? "8px 6px" : "10px 8px", textAlign: "center" as const }}>
                     <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 17, fontWeight: 700, color: s.color }}>
                       {Number(s.val).toLocaleString()}
                     </div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 7.5 : 8, color: C.textMuted, letterSpacing: "0.03em", marginTop: 4, lineHeight: 1.3 }}>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 9.5 : 10, color: C.textMuted, letterSpacing: "0.03em", marginTop: 4, lineHeight: 1.3 }}>
                       {s.label}
                     </div>
                   </div>
