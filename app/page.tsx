@@ -437,6 +437,10 @@ export default function Home() {
   const [vM, setVM]             = useState("");
   const [autoChecked, setAutoChecked] = useState(false);
 
+  // ── Live supply benchmark (embedded vs loose vs total) ──
+  const [supplyBench, setSupplyBench] = useState<{ total: string; embedded: string; loose: string } | null>(null);
+  const [supplyLoading, setSupplyLoading] = useState(false);
+
   // Gallery state
   const [galleryData, setGalleryData] = useState<any>(null);
   const [vaultMode, setVaultMode] = useState<"keychain" | "conduct" | "checker">("checker");
@@ -482,6 +486,34 @@ export default function Home() {
       setCbbtcBal(cb.toString()); setOktBal(ob.toString());
       setDivs(dv.toString()); setSupply(ts.toString());
     } catch (e) { console.error(e); }
+  }
+
+  // ─── Live supply benchmark: embedded (sealed in art) vs loose vs total ───
+  async function loadSupplyBench() {
+    setSupplyLoading(true);
+    try {
+      const provider = new ethers.JsonRpcProvider(PUBLIC_RPC);
+      const wk = new ethers.Contract(WK_ADDRESS, WK_ABI, provider);
+      // gather every vault address from gallery data
+      const vaults: string[] = [];
+      (galleryData?.artists || []).forEach((a: any) =>
+        (a.collections || []).forEach((col: any) =>
+          (col.pieces || []).forEach((p: any) => {
+            if (p.vault && /^0x[0-9a-fA-F]{40}$/.test(p.vault)) vaults.push(p.vault);
+          })));
+      const uniqueVaults = Array.from(new Set(vaults.map(v => v.toLowerCase())));
+      const total = await wk.totalSupply();
+      const balances = await Promise.all(uniqueVaults.map(v => wk.balanceOf(v).catch(() => 0n)));
+      const embedded = balances.reduce((s: bigint, b: any) => s + BigInt(b.toString()), 0n);
+      const totalBI = BigInt(total.toString());
+      const loose = totalBI > embedded ? totalBI - embedded : 0n;
+      setSupplyBench({ total: totalBI.toString(), embedded: embedded.toString(), loose: loose.toString() });
+    } catch (e) {
+      console.error("supply benchmark failed", e);
+      setSupplyBench(null);
+    } finally {
+      setSupplyLoading(false);
+    }
   }
 
   // ─── Helper: get ethers signer from wagmi walletClient ──────────────────
@@ -789,6 +821,8 @@ export default function Home() {
     if (v) { setVResult(null); setAutoChecked(false); setVAddr(v); setTab("vault"); }
   }, []);
   useEffect(() => { if (vAddr && tab === "vault" && !autoChecked) { setAutoChecked(true); setTimeout(() => checkVault(), 300); } }, [vAddr, tab]);
+  // Live supply benchmark: refetch every time the Vault tab is opened
+  useEffect(() => { if (tab === "vault") loadSupplyBench(); }, [tab]);
 
   const bPrev    = preview7(buyAmt);
   const sPrev    = preview7(sellAmt);
@@ -1822,6 +1856,36 @@ export default function Home() {
 
         {tab === "vault" && (
           <>
+          {/* ── Live supply benchmark ── */}
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: mobile ? 14 : 18, boxShadow: C.shadow, marginBottom: 14 }}>
+            <style>{`@keyframes benchBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }`}</style>
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.blue, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 700, marginBottom: 12 }}>
+              Witness Key Supply — live on-chain
+            </div>
+            {supplyLoading || !supplyBench ? (
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 16, color: C.textMuted, fontWeight: 700, animation: "benchBlink 1s ease-in-out infinite", padding: "6px 0" }}>
+                loading…
+              </div>
+            ) : (
+              <div style={{ display: "flex", gap: mobile ? 10 : 20, flexWrap: "wrap" as const }}>
+                {[
+                  { label: "Embedded in art", val: supplyBench.embedded, color: C.blue },
+                  { label: "Loose (circulating)", val: supplyBench.loose, color: C.text },
+                  { label: "Total in contract", val: supplyBench.total, color: C.textDim },
+                ].map((s, i) => (
+                  <div key={i} style={{ flex: "1 1 30%", minWidth: 92 }}>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 18 : 22, fontWeight: 700, color: s.color }}>
+                      {Number(s.val).toLocaleString()}
+                    </div>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted, letterSpacing: "0.05em", marginTop: 2 }}>
+                      {s.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: mobile ? 16 : 20, boxShadow: C.shadow }}>
 
             {/* Header row: title + read-only pill */}
