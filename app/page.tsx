@@ -1857,27 +1857,27 @@ export default function Home() {
         {tab === "vault" && (
           <>
           {/* ── Live supply benchmark ── */}
-          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: mobile ? 14 : 18, boxShadow: C.shadow, marginBottom: 14 }}>
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 11, padding: mobile ? 11 : 14, boxShadow: C.shadow, marginBottom: 14 }}>
             <style>{`@keyframes benchBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }`}</style>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 11, color: C.blue, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 700, marginBottom: 12 }}>
-              Witness Key Supply — live on-chain
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.blue, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 700, marginBottom: 10, textAlign: "center" as const }}>
+              Witness Key Vault — Verified On-Chain
             </div>
             {supplyLoading || !supplyBench ? (
-              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 16, color: C.textMuted, fontWeight: 700, animation: "benchBlink 1s ease-in-out infinite", padding: "6px 0" }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.textMuted, fontWeight: 700, animation: "benchBlink 1s ease-in-out infinite", padding: "5px 0", textAlign: "center" as const }}>
                 loading…
               </div>
             ) : (
-              <div style={{ display: "flex", gap: mobile ? 10 : 20, flexWrap: "wrap" as const }}>
+              <div style={{ display: "flex", gap: mobile ? 6 : 10, justifyContent: "center" }}>
                 {[
-                  { label: "Embedded in art", val: supplyBench.embedded, color: C.blue },
+                  { label: "Locked in Tokenized Physical Art", val: supplyBench.embedded, color: C.blue },
                   { label: "Loose (circulating)", val: supplyBench.loose, color: C.text },
                   { label: "Total in contract", val: supplyBench.total, color: C.textDim },
                 ].map((s, i) => (
-                  <div key={i} style={{ flex: "1 1 30%", minWidth: 92 }}>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 18 : 22, fontWeight: 700, color: s.color }}>
+                  <div key={i} style={{ flex: "1 1 0", minWidth: 0, background: C.panel, border: `1px solid ${C.border}`, borderRadius: 8, padding: mobile ? "8px 6px" : "10px 8px", textAlign: "center" as const }}>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 14 : 17, fontWeight: 700, color: s.color }}>
                       {Number(s.val).toLocaleString()}
                     </div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10, color: C.textMuted, letterSpacing: "0.05em", marginTop: 2 }}>
+                    <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 7.5 : 8, color: C.textMuted, letterSpacing: "0.03em", marginTop: 4, lineHeight: 1.3 }}>
                       {s.label}
                     </div>
                   </div>
