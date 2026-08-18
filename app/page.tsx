@@ -494,6 +494,9 @@ export default function Home() {
     try {
       const provider = new ethers.JsonRpcProvider(PUBLIC_RPC);
       const wk = new ethers.Contract(WK_ADDRESS, WK_ABI, provider);
+      // total supply first — this alone proves the read works
+      const total = await wk.totalSupply();
+      const totalBI = BigInt(total.toString());
       // gather every vault address from gallery data
       const vaults: string[] = [];
       (galleryData?.artists || []).forEach((a: any) =>
@@ -502,10 +505,8 @@ export default function Home() {
             if (p.vault && /^0x[0-9a-fA-F]{40}$/.test(p.vault)) vaults.push(p.vault);
           })));
       const uniqueVaults = Array.from(new Set(vaults.map(v => v.toLowerCase())));
-      const total = await wk.totalSupply();
       const balances = await Promise.all(uniqueVaults.map(v => wk.balanceOf(v).catch(() => BigInt(0))));
       const embedded = balances.reduce((s: bigint, b: any) => s + BigInt(b.toString()), BigInt(0));
-      const totalBI = BigInt(total.toString());
       const loose = totalBI > embedded ? totalBI - embedded : BigInt(0);
       setSupplyBench({ total: totalBI.toString(), embedded: embedded.toString(), loose: loose.toString() });
     } catch (e) {
@@ -1859,12 +1860,16 @@ export default function Home() {
           {/* ── Live supply benchmark ── */}
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 11, padding: mobile ? 11 : 14, boxShadow: C.shadow, marginBottom: 14 }}>
             <style>{`@keyframes benchBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }`}</style>
-            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 9, color: C.blue, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 700, marginBottom: 10, textAlign: "center" as const }}>
+            <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 12, color: C.blue, letterSpacing: "0.1em", textTransform: "uppercase" as const, fontWeight: 700, marginBottom: 10, textAlign: "center" as const }}>
               Witness Key Vault — Verified On-Chain
             </div>
-            {supplyLoading || !supplyBench ? (
+            {supplyLoading ? (
               <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 11 : 12, color: C.textMuted, fontWeight: 700, animation: "benchBlink 1s ease-in-out infinite", padding: "5px 0", textAlign: "center" as const }}>
                 loading…
+              </div>
+            ) : !supplyBench ? (
+              <div style={{ fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: mobile ? 10 : 11, color: C.textMuted, padding: "5px 0", textAlign: "center" as const }}>
+                on-chain read unavailable — <span onClick={() => loadSupplyBench()} style={{ color: C.blue, cursor: "pointer", textDecoration: "underline" }}>retry</span>
               </div>
             ) : (
               <div style={{ display: "flex", gap: mobile ? 6 : 10, justifyContent: "center" }}>
