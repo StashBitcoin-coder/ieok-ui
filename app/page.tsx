@@ -503,10 +503,10 @@ export default function Home() {
           })));
       const uniqueVaults = Array.from(new Set(vaults.map(v => v.toLowerCase())));
       const total = await wk.totalSupply();
-      const balances = await Promise.all(uniqueVaults.map(v => wk.balanceOf(v).catch(() => 0n)));
-      const embedded = balances.reduce((s: bigint, b: any) => s + BigInt(b.toString()), 0n);
+      const balances = await Promise.all(uniqueVaults.map(v => wk.balanceOf(v).catch(() => BigInt(0))));
+      const embedded = balances.reduce((s: bigint, b: any) => s + BigInt(b.toString()), BigInt(0));
       const totalBI = BigInt(total.toString());
-      const loose = totalBI > embedded ? totalBI - embedded : 0n;
+      const loose = totalBI > embedded ? totalBI - embedded : BigInt(0);
       setSupplyBench({ total: totalBI.toString(), embedded: embedded.toString(), loose: loose.toString() });
     } catch (e) {
       console.error("supply benchmark failed", e);
