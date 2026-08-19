@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title:       "Immutable Editions",
-  description: "Original luminist fine-art photography — seascapes and landscapes you own outright, with authenticity and ownership provable on-chain. The work in your hands, the proof on the ledger",
+  description: "Original handmade works of fine-art luminism with authenticity, participation and ownership verified in your hands.",
   verification: {
     google: "dGgCyYoAZ7uXR6Hybs5qr5INLZyp9zM4CUzfJ61j_eA",
   },
