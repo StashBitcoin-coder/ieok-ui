@@ -491,13 +491,18 @@ export default function Home() {
   // ─── Live supply benchmark: embedded (sealed in art) vs loose vs total ───
   async function loadSupplyBench() {
     setSupplyLoading(true);
+    // small retry helper: public RPC intermittently returns null; retry a few times before giving up
+    const withRetry = async (fn: () => Promise<any>, tries = 4): Promise<any> => {
+      for (let i = 0; i < tries; i++) {
+        try { return await fn(); }
+        catch (e) { if (i === tries - 1) throw e; await new Promise(r => setTimeout(r, 400 * (i + 1))); }
+      }
+    };
     try {
       const provider = new ethers.JsonRpcProvider(PUBLIC_RPC);
       const wk = new ethers.Contract(WK_ADDRESS, WK_ABI, provider);
-      // total supply first — this alone proves the read works
-      const total = await wk.totalSupply();
+      const total = await withRetry(() => wk.totalSupply());
       const totalBI = BigInt(total.toString());
-      // gather every vault address from gallery data
       const vaults: string[] = [];
       (galleryData?.artists || []).forEach((a: any) =>
         (a.collections || []).forEach((col: any) =>
@@ -505,7 +510,7 @@ export default function Home() {
             if (p.vault && /^0x[0-9a-fA-F]{40}$/.test(p.vault)) vaults.push(p.vault);
           })));
       const uniqueVaults = Array.from(new Set(vaults.map(v => v.toLowerCase())));
-      const balances = await Promise.all(uniqueVaults.map(v => wk.balanceOf(v).catch(() => BigInt(0))));
+      const balances = await Promise.all(uniqueVaults.map(v => withRetry(() => wk.balanceOf(v)).catch(() => BigInt(0))));
       const embedded = balances.reduce((s: bigint, b: any) => s + BigInt(b.toString()), BigInt(0));
       const loose = totalBI > embedded ? totalBI - embedded : BigInt(0);
       setSupplyBench({ total: totalBI.toString(), embedded: embedded.toString(), loose: loose.toString() });
