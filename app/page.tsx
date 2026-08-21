@@ -970,6 +970,9 @@ export default function Home() {
             <div style={{ position: "relative" as const, zIndex: 1, marginTop: mobile ? 40 : 56, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10.5, letterSpacing: "0.2em", color: C.textMuted, textTransform: "uppercase" as const }}>
               The Glass Vault<span style={{ verticalAlign: "super", fontSize: 7 }}>&trade;</span> <span style={{ color: C.blue, fontWeight: 500 }}>&middot; Patent Pending</span>
             </div>
+            <div style={{ position: "relative" as const, zIndex: 1, marginTop: 10, fontFamily: "'IBM Plex Mono', ui-monospace, monospace", fontSize: 10.5, letterSpacing: "0.2em", color: C.textMuted, textTransform: "uppercase" as const }}>
+              Foundation &middot; <a href="https://realworldinscriptions.com" target="_blank" rel="noopener noreferrer" style={{ color: C.blue, fontWeight: 500, textDecoration: "none" }}>RealWorldInscriptions.com</a>
+            </div>
           </div>
         )}
 
