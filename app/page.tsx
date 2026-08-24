@@ -828,7 +828,7 @@ export default function Home() {
   }, []);
   useEffect(() => { if (vAddr && tab === "vault" && !autoChecked) { setAutoChecked(true); setTimeout(() => checkVault(), 300); } }, [vAddr, tab]);
   // Live supply benchmark: refetch every time the Vault tab is opened
-  useEffect(() => { if (tab === "vault") loadSupplyBench(); }, [tab]);
+  useEffect(() => { if (tab === "vault" && galleryData) loadSupplyBench(); }, [tab, galleryData]);
 
   const bPrev    = preview7(buyAmt);
   const sPrev    = preview7(sellAmt);
