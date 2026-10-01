@@ -1,0 +1,18 @@
+{
+  "id": "del-mar",
+  "name": "del mar",
+  "description": "Testnet Collectable",
+  "pieces": [
+    {
+      "name": "del mar BTCG testnet piece name",
+      "type": "original",
+      "edition": "5/750",
+      "ordinalNumber": "127495073",
+      "inscriptionId": "51708548281c2115ec38fe3a47f5d8ec39a2d41a551f6907657a03efd9d0f966i0",
+      "vault": "0xBEeaC66609f9181d7dE072394EB619Df518C2fcc",
+      "oktAmount": "1000000",
+      "shopifyUrl": "https://luminous-views-gallery.myshopify.com/cart/67643162099866:1?channel=buy_button",
+      "sold": false
+    }
+  ]
+}
