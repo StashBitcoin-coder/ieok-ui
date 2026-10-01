@@ -9,6 +9,11 @@
           "id": "from-my-roof",
           "name": "From My Roof",
           "file": "michael-slattery/from-my-roof.json"
+        },
+        {
+          "id": "del-mar",
+          "name": "del mar",
+          "file": "michael-slattery/del-mar.json"
         }
       ]
     }
